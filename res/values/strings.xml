@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Connect SDK Sampler</string>
+    <string name="title_section1">Media Player</string>
+    <string name="title_section2">TV</string>
+    <string name="title_section3">Apps</string>
+    <string name="title_section4">Fiveway</string>
+    <string name="title_section5">Inputs</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_connect">Connect</string>
+    <string name="action_disconnect">Disconnect</string>
+
+</resources>
