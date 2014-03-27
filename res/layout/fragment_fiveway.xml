@@ -11,11 +11,26 @@
         android:layout_marginTop="20dp" >
 
         <Button
+            android:id="@+id/dummyButton"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dummy"
+            android:visibility="invisible" />
+        
+        <Button
             android:id="@+id/upButton"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Up" />
+        
+        <Button
+            android:id="@+id/openKeyboardButton"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Keyboard" />
         
     </LinearLayout>
 

@@ -2,23 +2,23 @@ package com.example.connect_sdk_sampler.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.view.KeyEvent;
 import android.widget.Button;
 
 import com.connectsdk.device.ConnectableDevice;
 import com.connectsdk.service.capability.ExternalInputControl;
-import com.connectsdk.service.capability.FivewayControl;
-import com.connectsdk.service.capability.KeyboardControl;
+import com.connectsdk.service.capability.KeyControl;
 import com.connectsdk.service.capability.Launcher;
 import com.connectsdk.service.capability.MediaControl;
 import com.connectsdk.service.capability.MediaPlayer;
 import com.connectsdk.service.capability.MouseControl;
 import com.connectsdk.service.capability.PowerControl;
-import com.connectsdk.service.capability.SystemControl;
 import com.connectsdk.service.capability.TVControl;
+import com.connectsdk.service.capability.TextInputControl;
 import com.connectsdk.service.capability.ToastControl;
 import com.connectsdk.service.capability.VolumeControl;
+import com.connectsdk.service.capability.WebAppLauncher;
 
 public class BaseFragment extends Fragment {
 	
@@ -30,11 +30,11 @@ public class BaseFragment extends Fragment {
 	private VolumeControl volumeControl;
 	private ToastControl toastControl;
 	private MouseControl mouseControl;
-	private KeyboardControl keyboardControl;
+	private TextInputControl textInputControl;
 	private PowerControl powerControl;
 	private ExternalInputControl externalInputControl;
-	private SystemControl systemControl;
-	private FivewayControl fivewayControl;
+	private KeyControl keyControl;
+	private WebAppLauncher webAppLauncher;
     public Button[] buttons;
     Context mContext;
 
@@ -62,12 +62,12 @@ public class BaseFragment extends Fragment {
         	tvControl = null;
         	volumeControl = null;
         	toastControl = null;
-        	keyboardControl = null;
+        	textInputControl = null;
         	mouseControl = null;
         	externalInputControl = null;
         	powerControl = null;
-        	systemControl = null;
-        	fivewayControl = null;
+        	keyControl = null;
+        	webAppLauncher = null;
         	
             disableButtons();
         }
@@ -78,12 +78,12 @@ public class BaseFragment extends Fragment {
         	tvControl = mTv.getTVControl();
         	volumeControl = mTv.getVolumeControl();
         	toastControl = mTv.getToastControl();
-        	keyboardControl = mTv.getKeyboardControl();
+        	textInputControl = mTv.getTextInputControl();
         	mouseControl = mTv.getMouseControl();
         	externalInputControl = mTv.getExternalInputControl();
         	powerControl = mTv.getPowerControl();
-        	systemControl = mTv.getSystemControl();
-        	fivewayControl = mTv.getFivewayControl();
+        	keyControl = mTv.getKeyControl();
+        	webAppLauncher = mTv.getWebAppLauncher();
         	
             enableButtons();
         }
@@ -106,6 +106,14 @@ public class BaseFragment extends Fragment {
             for (Button button : buttons)
                 button.setEnabled(true);
         }
+    }
+    
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    	return false;
+    }
+    
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+    	return false;
     }
 
     public ConnectableDevice getTv()
@@ -143,9 +151,9 @@ public class BaseFragment extends Fragment {
     	return toastControl;
     }
     
-    public KeyboardControl getKeyboardControl() 
+    public TextInputControl getTextInputControl() 
     {
-    	return keyboardControl;
+    	return textInputControl;
     }
     
     public MouseControl getMouseControl() 
@@ -163,14 +171,14 @@ public class BaseFragment extends Fragment {
     	return powerControl;
     }
     
-    public SystemControl getSystemControl()
+    public KeyControl getKeyControl() 
     {
-    	return systemControl;
+    	return keyControl;
     }
     
-    public FivewayControl getFivewayControl() 
+    public WebAppLauncher getWebAppLauncher() 
     {
-    	return fivewayControl;
+    	return webAppLauncher;
     }
     
     public Context getContext()
@@ -178,8 +186,7 @@ public class BaseFragment extends Fragment {
     	return mContext;
     }
 
-	void runOnUiThread(Runnable run) {
-		new Handler(getContext().getMainLooper()).post(run);
-	}
-
+    protected void disableButton(final Button button) {
+		button.setEnabled(false);
+    }
 }

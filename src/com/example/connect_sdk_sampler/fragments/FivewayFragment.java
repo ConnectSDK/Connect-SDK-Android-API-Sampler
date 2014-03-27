@@ -23,11 +23,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.connectsdk.core.KeyboardInputInfo;
-import com.connectsdk.core.KeyboardInputInfo.KeyboardType;
+import com.connectsdk.core.TextInputStatusInfo;
+import com.connectsdk.core.TextInputStatusInfo.TextInputType;
 import com.connectsdk.device.ConnectableDevice;
+import com.connectsdk.service.capability.KeyControl;
+import com.connectsdk.service.capability.TextInputControl;
+import com.connectsdk.service.capability.TextInputControl.TextInputStatusListener;
 import com.connectsdk.service.command.ServiceCommandError;
-import com.connectsdk.service.webos.WebOSTVKeyboardInput.KeyboardInputListener;
 import com.example.connect_sdk_sampler.R;
 
 public class FivewayFragment extends BaseFragment {
@@ -38,6 +40,7 @@ public class FivewayFragment extends BaseFragment {
     public Button backButton;
     public Button downButton;
     public Button homeButton;
+    public Button openKeyboardButton;
     public View trackpadView;
 
     boolean isDown = false;
@@ -78,9 +81,11 @@ public class FivewayFragment extends BaseFragment {
         backButton = (Button) rootView.findViewById(R.id.backButton);
         downButton = (Button) rootView.findViewById(R.id.downButton);
         homeButton = (Button) rootView.findViewById(R.id.homeButton);
+        openKeyboardButton = (Button) rootView.findViewById(R.id.openKeyboardButton);
+        openKeyboardButton.setSelected(false);
         trackpadView = rootView.findViewById(R.id.trackpadView);
 
-        buttons = new Button[7];
+        buttons = new Button[8];
         buttons[0] = upButton;
         buttons[1] = leftButton;
         buttons[2] = clickButton;
@@ -88,6 +93,7 @@ public class FivewayFragment extends BaseFragment {
         buttons[4] = backButton;
         buttons[5] = downButton;
         buttons[6] = homeButton;
+        buttons[7] = openKeyboardButton;
         
         editText = (EditText) rootView.findViewById(R.id.editField);
         
@@ -114,7 +120,7 @@ public class FivewayFragment extends BaseFragment {
 
 			@Override
 			public void onTextChanged(CharSequence s, int start, int beforeLength, int charsChanged) {
-				if ( getKeyboardControl() == null ) {
+				if ( getTextInputControl() == null ) {
 					System.err.println("Keyboard Control is null");
 					return;
 				}
@@ -125,7 +131,7 @@ public class FivewayFragment extends BaseFragment {
 
 				if (s.length() == 0 ) { 
 					// all characters including the sentinel were deleted
-					getKeyboardControl().sendDelete();
+					getTextInputControl().sendDelete();
 					
 				} else {
 					String newString = s.toString().replace("\u200B", ""); // nasty hack
@@ -133,17 +139,17 @@ public class FivewayFragment extends BaseFragment {
 					int matching = getMatchingCharacterLength(lastString, newString);
 					
 					if (matching == 0) {
-						getKeyboardControl().send("");
+						getTextInputControl().sendText("");
 					} else if (matching < lastString.length()) {
 						// Delete old characters
 						for (int i = 0; i < lastString.length() - matching; i++) {
-							getKeyboardControl().sendDelete();
+							getTextInputControl().sendDelete();
 						}
 					}
 					
 					if (matching < newString.length()) {
 						// Insert new characters
-						getKeyboardControl().send(newString.substring(matching));
+						getTextInputControl().sendText(newString.substring(matching));
 					}
 				}
 			}
@@ -152,7 +158,7 @@ public class FivewayFragment extends BaseFragment {
         editText.setOnEditorActionListener(new OnEditorActionListener () {
 			@Override
 			public boolean onEditorAction(TextView arg0, int arg1, KeyEvent arg2) {
-				getKeyboardControl().sendEnter();
+				getTextInputControl().sendEnter();
 				return false;
 			}
         });
@@ -162,9 +168,9 @@ public class FivewayFragment extends BaseFragment {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
  				if(keyCode == KeyEvent.KEYCODE_DEL){  
- 					getKeyboardControl().sendDelete();
-                 }
-                 return false;       
+ 					getTextInputControl().sendDelete();
+ 				}
+ 				return false;       
             }
         });
         
@@ -172,13 +178,7 @@ public class FivewayFragment extends BaseFragment {
 	}
 	
     void clearLocalText() {
-    	runOnUiThread(new Runnable() {
-			
-			@Override
-			public void run() {
-		    	editText.setText("\u200B");
-			}
-		});
+		editText.setText("\u200B");
     }
 
     int getMatchingCharacterLength (String oldString, String newString) {
@@ -207,161 +207,214 @@ public class FivewayFragment extends BaseFragment {
     @Override
     public void enableButtons()
     {
+        super.enableButtons();
+
     	if ( getMouseControl() != null ) {
         	getMouseControl().connectMouse();
     	}
     	
-        upButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            	if ( getFivewayControl() != null ) {
-            		getFivewayControl().up(null);
-            	}
-            }
-        });
+    	if ( getTv().hasCapability(KeyControl.Up) ) {
+            upButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                	if ( getKeyControl() != null ) {
+                		getKeyControl().up(null);
+                	}
+                }
+            });
+    	}
+    	else {
+    		disableButton(upButton);
+    	}
 
-        leftButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            	if ( getFivewayControl() != null ) {
-            		getFivewayControl().left(null);
-            	}
-            }
-        });
+    	if ( getTv().hasCapability(KeyControl.Left) ) {
+	        leftButton.setOnClickListener(new View.OnClickListener() {
+	            @Override
+	            public void onClick(View view) {
+	            	if ( getKeyControl() != null ) {
+	            		getKeyControl().left(null);
+	            	}
+	            }
+	        });
+    	} 
+    	else {
+    		disableButton(leftButton);
+    	}
+    	
+    	if ( getTv().hasCapability(KeyControl.OK) ) {
+	        clickButton.setOnClickListener(new View.OnClickListener() {
+	            @Override
+	            public void onClick(View view) {
+	            	if ( getKeyControl() != null ) {
+	            		getKeyControl().ok(null);
+	            	}
+	            }
+	        });
+    	}
+    	else {
+    		disableButton(clickButton);
+    	}
 
-        clickButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            	if ( getFivewayControl() != null ) {
-            		getFivewayControl().ok(null);
-            	}
-            }
-        });
+    	if ( getTv().hasCapability(KeyControl.Right) ) {
+	        rightButton.setOnClickListener(new View.OnClickListener() {
+	            @Override
+	            public void onClick(View view) {
+	            	if ( getKeyControl() != null ) {
+	            		getKeyControl().right(null);
+	            	}
+	            }
+	        });
+    	}
+    	else {
+    		disableButton(rightButton);
+    	}
 
-        rightButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            	if ( getFivewayControl() != null ) {
-            		getFivewayControl().right(null);
-            	}
-            }
-        });
+    	if ( getTv().hasCapability(KeyControl.Back) ) {
+	        backButton.setOnClickListener(new View.OnClickListener() {
+	            @Override
+	            public void onClick(View view) {
+	            	if ( getKeyControl() != null ) {
+	            		getKeyControl().back(null);
+	            	}
+	            }
+	        });
+    	}
+    	else {
+    		disableButton(backButton);
+    	}
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            	if ( getFivewayControl() != null ) {
-            		getFivewayControl().back(null);
-            	}
-            }
-        });
+    	if ( getTv().hasCapability(KeyControl.Down) ) {
+	        downButton.setOnClickListener(new View.OnClickListener() {
+	            @Override
+	            public void onClick(View view) {
+	            	if ( getKeyControl() != null ) {
+	            		getKeyControl().down(null);
+	            	}
+	            }
+	        });
+    	}
+    	else {
+    		disableButton(downButton);
+    	}
 
-        downButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            	if ( getFivewayControl() != null ) {
-            		getFivewayControl().down(null);
-            	}
-            }
-        });
-
-        homeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            	if ( getFivewayControl() != null ) {
-            		getFivewayControl().home(null);
-            	}
-            }
-        });
-        
-        if ( getKeyboardControl() != null ) {
-        	getKeyboardControl().subscribeKeyboard(new KeyboardInputListener() {
-				
-				@Override
-				public void onGetKeyboardInputSuccess(KeyboardInputInfo keyboard) {
-					boolean focused = keyboard.isFocused();
-					KeyboardType keyboardType = keyboard.getKeyboardType();
-					boolean predictionEnabled = keyboard.isPredictionEnabled();
-					boolean correctionEnabled = keyboard.isCorrectionEnabled();
-					boolean autoCapitalization = keyboard.isAutoCapitalization();
-					boolean hiddenText = keyboard.isHiddenText();
-					boolean focusChanged = keyboard.isFocusChanged();
-					int type; 
-					
-					if (keyboardType != KeyboardType.DEFAULT) {
-						if (keyboardType == KeyboardType.NUMBER) {
-							type = InputType.TYPE_CLASS_NUMBER;
-						} 
-						else if (keyboardType == KeyboardType.PHONE_NUMBER ) {
-							type = InputType.TYPE_CLASS_PHONE;
-						} 
-						else {
-							type = InputType.TYPE_CLASS_TEXT;
+    	if ( getTv().hasCapability(KeyControl.Home) ) {
+	        homeButton.setOnClickListener(new View.OnClickListener() {
+	            @Override
+	            public void onClick(View view) {
+	            	if ( getKeyControl() != null ) {
+	            		getKeyControl().home(null);
+	            	}
+	            }
+	        });
+    	}
+    	else {
+    		disableButton(homeButton);
+    	}
+    	
+        if ( getTextInputControl() != null ) {
+        	if ( getTv().hasCapability(TextInputControl.Subscribe) ) {
+        		disableButton(openKeyboardButton);
+						
+            	getTextInputControl().subscribeTextInputStatus(new TextInputStatusListener() {
+    				
+    				@Override
+    				public void onSuccess(TextInputStatusInfo keyboard) {
+    					boolean focused = keyboard.isFocused();
+    					TextInputType textInputType = keyboard.getTextInputType();
+    					boolean predictionEnabled = keyboard.isPredictionEnabled();
+    					boolean correctionEnabled = keyboard.isCorrectionEnabled();
+    					boolean autoCapitalization = keyboard.isAutoCapitalization();
+    					boolean hiddenText = keyboard.isHiddenText();
+    					boolean focusChanged = keyboard.isFocusChanged();
+    					int type; 
+    					
+    					if (textInputType != TextInputType.DEFAULT) {
+    						if (textInputType == TextInputType.NUMBER) {
+    							type = InputType.TYPE_CLASS_NUMBER;
+    						} 
+    						else if (textInputType == TextInputType.PHONE_NUMBER ) {
+    							type = InputType.TYPE_CLASS_PHONE;
+    						} 
+    						else {
+    							type = InputType.TYPE_CLASS_TEXT;
+    							
+    							if (textInputType == TextInputType.URL ) {
+    								type |= InputType.TYPE_TEXT_VARIATION_URI;
+    							} else if (textInputType == TextInputType.EMAIL) {
+    								type |= InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
+    							}
+    							
+    							if ( predictionEnabled ) {
+    								type |= InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE;
+    							}
+    							
+    							if ( correctionEnabled ) {
+    								type |= InputType.TYPE_TEXT_FLAG_AUTO_CORRECT;
+    							}
+    							
+    							if ( autoCapitalization ) {
+    								type |= InputType.TYPE_TEXT_FLAG_CAP_SENTENCES;
+    							}
+    							
+    							if ( hiddenText ) {
+    								type |= InputType.TYPE_TEXT_VARIATION_PASSWORD;
+    							}
+    							
+    							if (!canReplaceText) {
+    								type |= InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
+    							}
+    						}
+    	
+    						final int fType = type;
+    						if (editText.getInputType() != type) {
+    							editText.setInputType(fType);
+    						}
+    					}
+    					
+    					if (focused) {
+    						if ( focusChanged ) {
+    							clearLocalText();
+    						}
+    						editText.requestFocus();
+    						InputMethodManager mgr = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+    						mgr.showSoftInput(((Activity)mContext).getCurrentFocus(), InputMethodManager.SHOW_FORCED);
+    					} else {
+    						canReplaceText = false;
+    						InputMethodManager mgr = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+    						mgr.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+    						clearLocalText();
+    					}					
+    				}
+    				
+    				@Override
+    				public void onError(ServiceCommandError arg0) {
+    				}
+    			});
+        	}
+        	else {
+        		openKeyboardButton.setOnClickListener(new View.OnClickListener() {
+    	            @Override
+    	            public void onClick(View view) {
+    	            	if ( openKeyboardButton.isSelected() == false ) {
+    	            		openKeyboardButton.setSelected(true);
+    	            
+    						editText.requestFocus();
 							
-							if (keyboardType == KeyboardType.URL ) {
-								type |= InputType.TYPE_TEXT_VARIATION_URI;
-							} else if (keyboardType == KeyboardType.EMAIL) {
-								type |= InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
-							}
-							
-							if ( predictionEnabled ) {
-								type |= InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE;
-							}
-							
-							if ( correctionEnabled ) {
-								type |= InputType.TYPE_TEXT_FLAG_AUTO_CORRECT;
-							}
-							
-							if ( autoCapitalization ) {
-								type |= InputType.TYPE_TEXT_FLAG_CAP_SENTENCES;
-							}
-							
-							if ( hiddenText ) {
-								type |= InputType.TYPE_TEXT_VARIATION_PASSWORD;
-							}
-							
-							if (!canReplaceText) {
-								type |= InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
-							}
-						}
-	
-						final int fType = type;
-						if (editText.getInputType() != type) {
-							runOnUiThread(new Runnable() {
-								public void run() {
-									editText.setInputType(fType);
-								}
-							});
-						}
-					}
-					
-					if (focused) {
-						if ( focusChanged ) {
-							clearLocalText();
-						}
-						runOnUiThread(new Runnable() {
-							public void run() {
-								editText.requestFocus();
-								InputMethodManager mgr = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-								mgr.showSoftInput(((Activity)mContext).getCurrentFocus(), InputMethodManager.SHOW_FORCED);
-							}
-						});
-					} else {
-						canReplaceText = false;
-						runOnUiThread(new Runnable() {
-							public void run() {
-								InputMethodManager mgr = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-								mgr.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-							}
-						});
-						clearLocalText();
-					}					
-				}
-				
-				@Override
-				public void onGetKeyboardInputFailed(ServiceCommandError arg0) {
-				}
-			});
+    	    				InputMethodManager mgr = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+    	    				mgr.showSoftInput(((Activity)mContext).getCurrentFocus(), InputMethodManager.SHOW_FORCED);
+    	            	}
+    	            	else {
+    	            		openKeyboardButton.setSelected(false);
+    	            		
+    						InputMethodManager mgr = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+    						mgr.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+    	            	}
+    	            }
+    	        });
+        	}
+        }
+        else {
+        	disableButton(openKeyboardButton);
         }
         
         trackpadView.setOnTouchListener(new View.OnTouchListener() {
@@ -467,7 +520,5 @@ public class FivewayFragment extends BaseFragment {
                 return true;
             }
         });
-
-        super.enableButtons();
     }
 }

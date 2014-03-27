@@ -4,37 +4,37 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <!-- LinearLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:layout_marginTop="20dp" >
 
         <Button
-            android:id="@+id/smartWorldButton"
+            android:id="@+id/launchWebAppButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="LG Smart World" />
+            android:text="Launch Web App" />
 
-    </LinearLayout -->
+    </LinearLayout>
     
-    <LinearLayout
+     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:layout_marginTop="20dp" >
 
         <Button
-            android:id="@+id/browserButton"
+            android:id="@+id/sendMessageButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Browser" />
+            android:text="Send Message" />
 
         <Button
-            android:id="@+id/toastButton"
+            android:id="@+id/sendJSONButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Show Toast" />
+            android:text="Send JSON" />
 
     </LinearLayout>
 
@@ -45,24 +45,24 @@
         android:layout_marginTop="20dp" >
 
         <Button
-            android:id="@+id/deepLinkButton"
+            android:id="@+id/closeWebAppButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Netflix" />
-
-        <Button
-            android:id="@+id/youtubeButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="YouTube" />
+            android:text="Close WebApp" />
 
     </LinearLayout>
-
-    <ListView
-        android:id="@+id/appListView"
+    
+         
+     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:layout_marginTop="20dp" >
-    </ListView>
+
+   	 	<TextView android:id="@+id/responseMessageTextView"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content" />
+
+    </LinearLayout>
 
 </LinearLayout>

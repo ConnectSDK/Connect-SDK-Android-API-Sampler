@@ -20,15 +20,19 @@ import android.widget.ToggleButton;
 
 import com.connectsdk.core.ChannelInfo;
 import com.connectsdk.device.ConnectableDevice;
+import com.connectsdk.service.capability.MediaControl;
+import com.connectsdk.service.capability.PowerControl;
 import com.connectsdk.service.capability.TVControl;
+import com.connectsdk.service.capability.TVControl.ChannelListListener;
+import com.connectsdk.service.capability.TVControl.ChannelListener;
 import com.connectsdk.service.capability.ToastControl;
 import com.connectsdk.service.capability.VolumeControl;
-import com.connectsdk.service.capability.listeners.ChannelListListener;
-import com.connectsdk.service.capability.listeners.ChannelListener;
-import com.connectsdk.service.capability.listeners.VolumeStatusListener;
+import com.connectsdk.service.capability.VolumeControl.MuteListener;
+import com.connectsdk.service.capability.VolumeControl.VolumeListener;
 import com.connectsdk.service.command.ServiceCommandError;
 import com.connectsdk.service.command.ServiceSubscription;
 import com.example.connect_sdk_sampler.R;
+import com.example.connect_sdk_sampler.widget.ChannelAdapter;
 
 public class TVFragment extends BaseFragment {
     public ToggleButton muteToggleButton;
@@ -42,7 +46,7 @@ public class TVFragment extends BaseFragment {
     public SeekBar volumeSlider;
 
     public ListView channelListView;
-    public ArrayAdapter<String> adapter;
+    public ArrayAdapter<ChannelInfo> adapter;
     List<ChannelInfo> channelList;
     
     public TextView channelNumberTextView;
@@ -52,9 +56,10 @@ public class TVFragment extends BaseFragment {
     boolean mode3DToggle;
     boolean incomingCallToggle;
     
-    ServiceSubscription currentChannelSubscription;
+    private ServiceSubscription<ChannelListener> mCurrentChannelSubscription;
 
-    private ServiceSubscription mVolumeStatusSubscription;
+    private ServiceSubscription<VolumeListener> mVolumeSubscription;
+    private ServiceSubscription<MuteListener> mMuteSubscription;
 
     public TVFragment(ConnectableDevice tv, Context context)
     {
@@ -77,7 +82,8 @@ public class TVFragment extends BaseFragment {
         mode3DButton = (Button) rootView.findViewById(R.id.mode3DButton);
 
         channelListView = (ListView) rootView.findViewById(R.id.channelListView);
-        adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1);
+        adapter = new ChannelAdapter(getContext(), R.layout.channel_item);
+
         channelListView.setAdapter(adapter);
         
         volumeSlider = (SeekBar) rootView.findViewById(R.id.volumeSlider);
@@ -104,8 +110,8 @@ public class TVFragment extends BaseFragment {
 
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				String channelNumber = (String) arg0.getItemAtPosition(arg2);
-				getTVControl().setChannelByNumber(channelNumber, null);
+				ChannelInfo channelInfo = (ChannelInfo) arg0.getItemAtPosition(arg2);
+				getTVControl().setChannel(channelInfo, null);
 			}
 		});
         
@@ -115,89 +121,133 @@ public class TVFragment extends BaseFragment {
     @Override
     public void enableButtons()
     {
-        muteToggleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            	muteToggle = !muteToggle;
-            	getVolumeControl().setMute(muteToggle, null);
-            }
-        });
+        super.enableButtons();
 
-        volumeUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            	getVolumeControl().volumeUp(null);
-            }
-        });
+    	if ( getTv().hasCapability(VolumeControl.Mute_Set) ) {
+	        muteToggleButton.setOnClickListener(new View.OnClickListener() {
+	            @Override
+	            public void onClick(View view) {
+	            	muteToggle = !muteToggle;
+	            	getVolumeControl().setMute(muteToggle, null);
+	            }
+	        });
+    	}
+    	else {
+    		disableButton(muteToggleButton);
+    	}
 
-        volumeDownButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            	getVolumeControl().volumeDown(null);
-            }
-        });
+    	if ( getTv().hasCapability(VolumeControl.Volume_Up_Down) ) {
+	        volumeUpButton.setOnClickListener(new View.OnClickListener() {
+	            @Override
+	            public void onClick(View view) {
+	            	getVolumeControl().volumeUp(null);
+	            }
+	        });
 
-        channelUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            	getTVControl().channelUp(null);
-            }
-        });
+	        volumeDownButton.setOnClickListener(new View.OnClickListener() {
+	            @Override
+	            public void onClick(View view) {
+	            	getVolumeControl().volumeDown(null);
+	            }
+	        });
+    	}
+    	else {
+    		disableButton(volumeDownButton);
+    		disableButton(volumeUpButton);
+    	}
 
-        channelDownButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            	getTVControl().channelDown(null);
-            }
-        });
+    	if ( getTv().hasCapability(TVControl.Channel_Up) ) {
+	        channelUpButton.setOnClickListener(new View.OnClickListener() {
+	            @Override
+	            public void onClick(View view) {
+	            	getTVControl().channelUp(null);
+	            }
+	        });
+    	}
+    	else {
+    		disableButton(channelUpButton);
+    	}
 
-        powerOffButton.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				getPowerControl().powerOff(null);
-			}
-		});
-        
-        incomingCallButton.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				incomingCallToggle = !incomingCallToggle;
+    	if ( getTv().hasCapability(TVControl.Channel_Down) ) {
+	        channelDownButton.setOnClickListener(new View.OnClickListener() {
+	            @Override
+	            public void onClick(View view) {
+	            	getTVControl().channelDown(null);
+	            }
+	        });
+    	}
+    	else {
+    		disableButton(channelDownButton);
+    	}
+
+    	if ( getTv().hasCapability(PowerControl.Off) ) {
+	        powerOffButton.setOnClickListener(new View.OnClickListener() {
 				
-				if ( incomingCallToggle == true ) {
-					getMediaControl().pause(null);
-					getVolumeControl().setMute(true, null);
-					
-					if ( getTv().hasCapability(ToastControl.kToastControlShowToast) ) {
-						getToastControl().showToast("Incoming Call, Paused", null);
-					}
+				@Override
+				public void onClick(View v) {
+					getPowerControl().powerOff(null);
 				}
-				else {
-					getMediaControl().play(null);
-					getVolumeControl().setMute(false, null);
+			});
+    	}
+    	else {
+    		disableButton(powerOffButton);
+    	}
+        
+    	if ( getTv().hasCapability(VolumeControl.Mute_Set) ) {
+            incomingCallButton.setOnClickListener(new View.OnClickListener() {
+    			
+    			@Override
+    			public void onClick(View v) {
+    				incomingCallToggle = !incomingCallToggle;
+    				
+    				if ( incomingCallToggle == true ) {
+    					getVolumeControl().setMute(true, null);
 
-					if ( getTv().hasCapability(ToastControl.kToastControlShowToast) ) {
-						getToastControl().showToast("Resume Play", null);
-					}
+    					if ( getTv().hasCapability(MediaControl.Pause) ) {
+    			    		getMediaControl().pause(null);
+    			    	}
+    					
+    					if ( getTv().hasCapability(ToastControl.Show_Toast) ) {
+    						getToastControl().showToast("Incoming Call, Paused", null);
+    					}
+    				}
+    				else {
+    					getVolumeControl().setMute(false, null);
+
+    					if ( getTv().hasCapability(MediaControl.Play) ) {
+    			    		getMediaControl().play(null);
+    			    	}
+
+    					if ( getTv().hasCapability(ToastControl.Show_Toast) ) {
+    						getToastControl().showToast("Resume Play", null);
+    					}
+    				}
+    			}
+    		});
+    	}
+    	else {
+    		disableButton(incomingCallButton);
+    	}
+        
+		if ( getTv().hasCapability(TVControl.Set_3D) ) {
+	        mode3DButton.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+			        if ( getTv().hasCapability(TVControl.Set_3D) ) {
+			        	if ( getTVControl() != null ) {
+			        		mode3DToggle = !mode3DToggle;
+			        		getTVControl().set3DEnabled(mode3DToggle, null);
+			        	}
+			        }
 				}
-			}
-		});
+			});
+		}
+		else {
+			disableButton(mode3DButton);
+		}
         
-        mode3DButton.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-		        if ( getTv().hasCapability(TVControl.kTVControl3DSet) ) {
-		        	if ( getTVControl() != null ) {
-		        		mode3DToggle = !mode3DToggle;
-		        		getTVControl().set3DEnabled(mode3DToggle, null);
-		        	}
-		        }
-			}
-		});
-        
-        if ( getTv().hasCapability(VolumeControl.kVolumeControlVolumeSet) ) {
+        if ( getTv().hasCapability(VolumeControl.Volume_Set) ) {
             volumeSlider.setEnabled(true);
 
             volumeSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -224,84 +274,77 @@ public class TVFragment extends BaseFragment {
         	volumeSlider.setEnabled(false);
         }
         
-        if ( getTv().hasCapability(TVControl.kTVControlChannelSubscribe) ) {
-        	currentChannelSubscription = getTVControl().subscribeCurrentChannel(new ChannelListener() {
+        if ( getTv().hasCapability(TVControl.Channel_Subscribe) ) {
+        	mCurrentChannelSubscription = getTVControl().subscribeCurrentChannel(new ChannelListener() {
     			
     			@Override
-    			public void onGetChannelSuccess(final ChannelInfo ch) {
-    				runOnUiThread(new Runnable() {
+    			public void onSuccess(final ChannelInfo ch) {
+    				String channelNumber = ch.getNumber();
+    				String channelName = ch.getName();
+    				
+    				channelNumberTextView.setText(channelNumber);
     					
-    					@Override
-    					public void run() {
-    						String channelNumber = ch.getNumber();
-    						String channelName = ch.getName();
-    						
-    						channelNumberTextView.setText(channelNumber);
-    							
-    						if ( channelName == null || channelName.length() == 0 ) 
-    							channelNameTextView.setText("No Database");
-    						else
-    							channelNameTextView.setText(channelName);
-    					}
-    				});
+    				if ( channelName == null || channelName.length() == 0 ) 
+    					channelNameTextView.setText("No Database");
+    				else
+    					channelNameTextView.setText(channelName);
     			}
     			
     			@Override
-    			public void onGetChannelFailed(ServiceCommandError error) {
+    			public void onError(ServiceCommandError error) {
     				
     			}
     		});
         }
         
-        if ( getTv().hasCapability(VolumeControl.kVolumeControlVolumeSubscribe) ) {
-        	mVolumeStatusSubscription = getVolumeControl().subscribeVolumeStatus(new VolumeStatusListener() {
+        if ( getTv().hasCapability(VolumeControl.Volume_Subscribe) ) {
+        	mVolumeSubscription = getVolumeControl().subscribeVolume(new VolumeListener() {
 				
-				@Override
-				public void onGetVolumeStatusSuccess(final boolean isMute, final float volume) {
-	            	runOnUiThread(new Runnable() {
-						
-						@Override
-						public void run() {
-							int intVol = (int) (volume * 100);
-			                muteToggleButton.setChecked(isMute);
-			                volumeSlider.setProgress(intVol);
-						}
-					});		
+        		public void onSuccess(Float volume) {
+			        volumeSlider.setProgress((int) (volume * 100));
 				}
 				
 				@Override
-				public void onGetVolumeStatusFailed(ServiceCommandError error) {
-	                Log.d("ConnectSDK", "Error subscribing to volume status: " + error.getDesc());
+				public void onError(ServiceCommandError error) {
+	                Log.d("LG", "Error subscribing to volume: " + error);
 				}
 			});
         }
         
-        getTVControl().getChannelList(new ChannelListListener() {
-			
-			@Override
-			public void onGetChannelListSuccess(ArrayList<ChannelInfo> arg0) {
-				channelList = new ArrayList<ChannelInfo>(arg0);
-				for (int i = 0; i < channelList.size(); i++) {
-					ChannelInfo channel = channelList.get(i);
-					final String channelNumber = channel.getNumber();
-
-					runOnUiThread(new Runnable() {
-						
-						@Override
-						public void run() {
-							adapter.add(channelNumber);
-						}
-					});
-				}				
-			}
-			
-			@Override
-			public void onGetChannelListFailed(ServiceCommandError arg0) {
+        if (getTv().hasCapability(VolumeControl.Mute_Subscribe)) {
+        	mMuteSubscription = getVolumeControl().subscribeMute(new MuteListener() {
 				
-			}
-		});
+				@Override
+				public void onSuccess(Boolean object) {
+			        muteToggleButton.setChecked(object);
+				}
+				
+				@Override
+				public void onError(ServiceCommandError error) {
+					Log.d("LG", "Error subscribing to mute: " + error);
+				}
+			});
+        }
         
-        super.enableButtons();
+        if ( getTv().hasCapability(TVControl.Channel_List) ) {
+            getTVControl().getChannelList(new ChannelListListener() {
+    			
+    			@Override
+    			public void onSuccess(ArrayList<ChannelInfo> arg0) {
+    				channelList = new ArrayList<ChannelInfo>(arg0);
+    				for (int i = 0; i < channelList.size(); i++) {
+    					ChannelInfo channel = channelList.get(i);
+
+    					adapter.add(channel);
+    				}
+    			}
+    			
+    			@Override
+    			public void onError(ServiceCommandError arg0) {
+    				
+    			}
+    		});
+        }
     }
 
     @Override
@@ -310,11 +353,22 @@ public class TVFragment extends BaseFragment {
     	adapter.clear();
         volumeSlider.setEnabled(false);
         volumeSlider.setOnSeekBarChangeListener(null);
-
-        if (mVolumeStatusSubscription != null)
+        
+        if (mCurrentChannelSubscription != null)
         {
-            mVolumeStatusSubscription.unsubscribe();
-            mVolumeStatusSubscription = null;
+        	mCurrentChannelSubscription.unsubscribe();
+        	mCurrentChannelSubscription = null;
+        }
+        
+        if (mVolumeSubscription != null)
+        {
+            mVolumeSubscription.unsubscribe();
+            mVolumeSubscription = null;
+        }
+        
+        if (mMuteSubscription != null) {
+        	mMuteSubscription.unsubscribe();
+        	mMuteSubscription = null;
         }
 
         super.disableButtons();

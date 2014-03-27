@@ -3,12 +3,14 @@ package com.example.connect_sdk_sampler;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +31,7 @@ import com.example.connect_sdk_sampler.fragments.FivewayFragment;
 import com.example.connect_sdk_sampler.fragments.InputsFragment;
 import com.example.connect_sdk_sampler.fragments.MediaPlayerFragment;
 import com.example.connect_sdk_sampler.fragments.TVFragment;
+import com.example.connect_sdk_sampler.fragments.WebAppFragment;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -48,35 +51,27 @@ public class MainActivity extends ActionBarActivity
     private ConnectableDevice mTV;
     private AlertDialog dialog;
     private AlertDialog pairingAlertDialog;
+    
+    private MenuItem connectItem;
 
     private ConnectableDeviceListener deviceListener = new ConnectableDeviceListener() {
 		
 		@Override
-		public void onPairingRequired(PairingType pairingType) {
+		public void onPairingRequired(ConnectableDevice device, PairingType pairingType) {
 	        Log.d("2ndScreenAPP", "Connected to " + mTV.getIpAddress());
 
 			switch (pairingType) { 
 				case FIRST_SCREEN:
 					Log.d("2ndScreenAPP", "First Screen");
-		            runOnUiThread(new Runnable() {
-		    			
-		    			@Override
-		    			public void run() {
-		    				pairingAlertDialog.show();
-		    			}
-		    		});
+		    		pairingAlertDialog.show();
 					break;
 					
 				case PIN_CODE:
 					Log.d("2ndScreenAPP", "Pin Code");
-					runOnUiThread(new Runnable() {
-						public void run() {
-							PairingDialog dialog = new PairingDialog(MainActivity.this, mTV);
-							
-							AlertDialog d = dialog.getPairingDialog("Enter Pairing Code on TV");
-							d.show();
-						}
-					});
+					PairingDialog dialog = new PairingDialog(MainActivity.this, mTV);
+					
+					AlertDialog d = dialog.getPairingDialog("Enter Pairing Code on TV");
+					d.show();
 					break;
 				
 				case NONE:
@@ -86,45 +81,33 @@ public class MainActivity extends ActionBarActivity
 		}
 		
 		@Override
-		public void onConnectionFailed(ServiceCommandError error) {
+		public void onConnectionFailed(ConnectableDevice device, ServiceCommandError error) {
 			Log.d("2ndScreenAPP", "onConnectFailed");
 			connectFailed(mTV);
 		}
 
 		@Override
-		public void onDeviceReady() {
+		public void onDeviceReady(ConnectableDevice device) {
             if ( pairingAlertDialog.isShowing() ) {
             	Log.d("2ndScreenAPP", "onPairingSuccess");
-            	runOnUiThread(new Runnable()  {
-    				
-    				@Override
-    				public void run() {
-    		        	pairingAlertDialog.dismiss();
-    				}
-    			});
+    		    pairingAlertDialog.dismiss();
             }
         	registerSuccess(mTV);			
 		}
 
 		@Override
-		public void onDeviceDisconnected() {
+		public void onDeviceDisconnected(ConnectableDevice device) {
 			Log.d("2ndScreenAPP", "Device Disconnected");
 			connectEnded(mTV);
 			
 			if ( mActiveFragment != null ) {
-	            runOnUiThread(new Runnable() {
-					
-					@Override
-					public void run() {
-						Toast.makeText(getApplicationContext(), "Device Disconnected", Toast.LENGTH_SHORT).show();
-						mActiveFragment.disableButtons();
-					}
-				});
-			}			
+				Toast.makeText(getApplicationContext(), "Device Disconnected", Toast.LENGTH_SHORT).show();
+				mActiveFragment.disableButtons();
+			}
 		}
 
 		@Override
-		public void onCapabilityUpdated(List<String> added, List<String> removed) {
+		public void onCapabilityUpdated(ConnectableDevice device, List<String> added, List<String> removed) {
 			
 		}
 	};
@@ -134,6 +117,10 @@ public class MainActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+		
+		if (DiscoveryManager.isAirplaneMode()) {
+			return;
+		}
 
         setupPicker();
 
@@ -145,6 +132,9 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+    	DiscoveryManager.getInstance().setPairingLevel(PairingLevel.ON);
+		DiscoveryManager.getInstance().start();
     }
 
     @Override
@@ -152,7 +142,7 @@ public class MainActivity extends ActionBarActivity
 		super.onDestroy();
 
 		if ( dialog != null ) {
-			dialog.dismiss();;
+			dialog.dismiss();
 		}
 		
 		if ( mTV != null ) {
@@ -181,6 +171,10 @@ public class MainActivity extends ActionBarActivity
             case 4:
                 newFragment = new InputsFragment(mTV, this);
                 break;
+           
+            case 5:
+            	newFragment = new WebAppFragment(mTV, this);
+            	break;
 
             case 0:
             default:
@@ -191,13 +185,7 @@ public class MainActivity extends ActionBarActivity
 
         if (mActiveFragment != null)
         {
-            runOnUiThread(new Runnable() {
-				
-				@Override
-				public void run() {
-		            mActiveFragment.setTv(null);
-				}
-			});
+		    mActiveFragment.setTv(null);
             fragmentManager.beginTransaction().remove(mActiveFragment).commit();
         }
 
@@ -215,19 +203,12 @@ public class MainActivity extends ActionBarActivity
             {
                 if (mTV.isConnected())
                     mTV.disconnect();
-
+                
+                connectItem.setTitle("Connect");
                 mTV = null;
-                runOnUiThread(new Runnable() {
-    				
-    				@Override
-    				public void run() {
-    			           mActiveFragment.setTv(null);
-    				}
-    			});
+    			mActiveFragment.setTv(null);
             } else
             {
-            	DiscoveryManager.getInstance(getApplicationContext()).setPairingLevel(PairingLevel.ON);
-            	DiscoveryManager.getInstance(getApplicationContext()).start();
                 dialog.show();
             }
     	}
@@ -235,19 +216,19 @@ public class MainActivity extends ActionBarActivity
 
     private void setupPicker()
     {
-    	DiscoveryManager.getInstance(getApplicationContext()).registerDefaultDeviceTypes();
+    	DiscoveryManager.getInstance().registerDefaultDeviceTypes();
 
         DevicePicker dp = new DevicePicker(this);
         dialog = dp.getPickerDialog("Device List", new AdapterView.OnItemClickListener() {
 
             @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-                                    long arg3) {
-            	DiscoveryManager.getInstance(getApplicationContext()).stop();
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+//            	DiscoveryManager.getInstance().stop();
 
                 mTV = (ConnectableDevice)arg0.getItemAtPosition(arg2);
                 mTV.addListener(deviceListener);
                 mTV.connect();
+                connectItem.setTitle("Connected");
             }
         });
         
@@ -258,34 +239,45 @@ public class MainActivity extends ActionBarActivity
         .setNegativeButton("Cancel", null)
         .create();
     }
+    
+    @Override
+    protected void onResume() {
+
+    	if (DiscoveryManager.isAirplaneMode()) {
+			new AlertDialog.Builder(this)
+				.setTitle("No Connection")
+				.setMessage("There is no connection the device is in airplane mode")
+				.setNegativeButton("Close Application", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						finish();
+					}
+				})
+				.create().show();
+    	}
+
+    	super.onResume();
+    }
 
     void registerSuccess(ConnectableDevice device) {
         Log.d("2ndScreenAPP", "successful register");
 
-        runOnUiThread(new Runnable() {
-			
-			@Override
-			public void run() {
-		        mActiveFragment.setTv(mTV);
-			}
-		});
+	    mActiveFragment.setTv(mTV);
     }
 
     void connectFailed(ConnectableDevice device) {
-        Log.d("2ndScreenAPP", "Failed to connect to " + device.getIpAddress());
-        mTV.disconnect();
-        mTV = null;
+    	Log.d("2ndScreenAPP", "Failed to connect to " + device.getIpAddress());
+
+        if (mTV != null) {
+        	mTV.disconnect();
+        	mTV = null;
+        }
     }
 
     void connectEnded(ConnectableDevice device) {
         if ( pairingAlertDialog.isShowing() ) {
-        	runOnUiThread(new Runnable() {
-				
-				@Override
-				public void run() {
-		        	pairingAlertDialog.dismiss();
-				}
-			});
+        	pairingAlertDialog.dismiss();
         }
         mTV = null;
     }
@@ -307,6 +299,9 @@ public class MainActivity extends ActionBarActivity
             case 5:
                 mTitle = getString(R.string.title_section5);
                 break;
+            case 6:
+            	mTitle = getString(R.string.title_section6);
+                break;
         }
     }
 
@@ -319,16 +314,33 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
+        if (!DiscoveryManager.isAirplaneMode() && !mNavigationDrawerFragment.isDrawerOpen()) {
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.main, menu);
+            connectItem = menu.getItem(0);
 
             restoreActionBar();
             return true;
         }
         return super.onCreateOptionsMenu(menu);
+    }
+    
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    	if (mActiveFragment != null && mActiveFragment.onKeyDown(keyCode, event))
+    		return true;
+
+    	return super.onKeyDown(keyCode, event);
+    }
+    
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+    	if (mActiveFragment != null && mActiveFragment.onKeyUp(keyCode, event))
+    		return true;
+
+    	return super.onKeyUp(keyCode, event);
     }
 
     @Override
