@@ -8,61 +8,58 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:layout_marginTop="20dp" >
+        android:layout_margin="10dp" 
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/launchWebAppButton"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Launch Web App" />
-
-    </LinearLayout>
     
-     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:layout_marginTop="20dp" >
-
-        <Button
-            android:id="@+id/sendMessageButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Send Message" />
-
-        <Button
-            android:id="@+id/sendJSONButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Send JSON" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:layout_marginTop="20dp" >
-
-        <Button
-            android:id="@+id/closeWebAppButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Close WebApp" />
+	     <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="center_horizontal" >
+	
+	        <Button
+	            android:id="@+id/sendMessageButton"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:text="Send Message" />
+	
+	        <Button
+	            android:id="@+id/sendJSONButton"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:text="Send JSON" />
+	
+	    </LinearLayout>
+	
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="center_horizontal" >
+	
+	        <Button
+	            android:id="@+id/closeWebAppButton"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:text="Close WebApp" />
+	
+	    </LinearLayout>
 
     </LinearLayout>
     
          
-     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:layout_marginTop="20dp" >
-
-   	 	<TextView android:id="@+id/responseMessageTextView"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content" />
-
-    </LinearLayout>
+	<TextView android:id="@+id/responseMessageTextView"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Messages Received" 
+		android:layout_gravity="center_horizontal"
+		android:gravity="center_horizontal"
+		android:layout_marginTop="20dp"/>
 
 </LinearLayout>
