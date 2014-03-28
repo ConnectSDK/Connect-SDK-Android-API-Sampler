@@ -30,9 +30,9 @@ public class InputsFragment extends BaseFragment {
     
     public LaunchSession inputPickerSession;
     
-    public InputsFragment(ConnectableDevice tv, Context context)
+    public InputsFragment(Context context)
     {
-        super(tv, context);
+        super(context);
     }
 
 	@Override

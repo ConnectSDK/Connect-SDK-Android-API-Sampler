@@ -2,12 +2,25 @@
 <resources>
 
     <string name="app_name">Connect SDK Sampler</string>
-    <string name="title_section1">Media</string>
-    <string name="title_section2">TV</string>
-    <string name="title_section3">Apps</string>
-    <string name="title_section4">Control</string>
-    <string name="title_section5">Inputs</string>
-    <string name="title_section6">Web App</string>
+
+    <string-array name="tab_titles">
+        <item>Media</item>
+    	<item>Web App</item>
+    	<item>Control</item>
+    	<item>Apps</item>
+    	<item>TV</item>
+    	<item>System</item>
+    </string-array>
+
+    <string-array name="tab_icons">
+        <item>@drawable/icon_15307</item>
+        <item>@drawable/icon_12676</item>
+        <item>@drawable/icon_3330</item>
+        <item>@drawable/icon_17114</item>
+        <item>@drawable/icon_15111</item>
+        <item>@drawable/icon_17183</item>
+    </string-array>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_connect">Connect</string>

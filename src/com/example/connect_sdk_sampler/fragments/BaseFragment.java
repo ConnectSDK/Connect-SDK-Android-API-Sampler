@@ -38,9 +38,8 @@ public class BaseFragment extends Fragment {
     public Button[] buttons;
     Context mContext;
 
-    public BaseFragment(ConnectableDevice tv, Context context)
+    public BaseFragment(Context context)
     {
-        mTv = tv;
         mContext = context;
     }
 

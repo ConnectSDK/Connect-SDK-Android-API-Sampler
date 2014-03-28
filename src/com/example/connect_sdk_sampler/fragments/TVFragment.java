@@ -61,9 +61,9 @@ public class TVFragment extends BaseFragment {
     private ServiceSubscription<VolumeListener> mVolumeSubscription;
     private ServiceSubscription<MuteListener> mMuteSubscription;
 
-    public TVFragment(ConnectableDevice tv, Context context)
+    public TVFragment(Context context)
     {
-        super(tv, context);
+        super(context);
     }
 
 	@Override

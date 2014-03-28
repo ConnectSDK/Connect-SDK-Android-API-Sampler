@@ -35,9 +35,9 @@ public class WebAppFragment extends BaseFragment {
     
     WebAppSession mWebAppSession;
 
-	public WebAppFragment(ConnectableDevice tv, Context context) 
+	public WebAppFragment(Context context) 
 	{
-		super(tv, context);
+		super(context);
 	}
 
 	@Override

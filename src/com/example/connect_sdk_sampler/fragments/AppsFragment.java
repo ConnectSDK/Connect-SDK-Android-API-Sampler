@@ -38,9 +38,9 @@ public class AppsFragment extends BaseFragment {
     
     ServiceSubscription<AppInfoListener> runningAppSubs;
 
-    public AppsFragment(ConnectableDevice tv, Context context)
+    public AppsFragment(Context context)
     {
-        super(tv, context);
+        super(context);
     }
 
 	@Override

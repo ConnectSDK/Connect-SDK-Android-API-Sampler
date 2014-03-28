@@ -25,7 +25,6 @@ import android.widget.TextView.OnEditorActionListener;
 
 import com.connectsdk.core.TextInputStatusInfo;
 import com.connectsdk.core.TextInputStatusInfo.TextInputType;
-import com.connectsdk.device.ConnectableDevice;
 import com.connectsdk.service.capability.KeyControl;
 import com.connectsdk.service.capability.TextInputControl;
 import com.connectsdk.service.capability.TextInputControl.TextInputStatusListener;
@@ -63,9 +62,9 @@ public class FivewayFragment extends BaseFragment {
     EditText editText;
     TextWatcher filterTextWatcher;
 
-    public FivewayFragment(ConnectableDevice tv, Context context)
+    public FivewayFragment(Context context)
     {
-        super(tv, context);
+        super(context);
     }
 
 	@Override

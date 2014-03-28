@@ -5,12 +5,11 @@ import java.util.List;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.DrawerLayout;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,34 +24,19 @@ import com.connectsdk.discovery.DiscoveryManager;
 import com.connectsdk.discovery.DiscoveryManager.PairingLevel;
 import com.connectsdk.service.DeviceService.PairingType;
 import com.connectsdk.service.command.ServiceCommandError;
-import com.example.connect_sdk_sampler.fragments.AppsFragment;
 import com.example.connect_sdk_sampler.fragments.BaseFragment;
-import com.example.connect_sdk_sampler.fragments.FivewayFragment;
-import com.example.connect_sdk_sampler.fragments.InputsFragment;
-import com.example.connect_sdk_sampler.fragments.MediaPlayerFragment;
-import com.example.connect_sdk_sampler.fragments.TVFragment;
-import com.example.connect_sdk_sampler.fragments.WebAppFragment;
 
-public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-
-    /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-     */
-    private NavigationDrawerFragment mNavigationDrawerFragment;
-
-    /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-     */
-    private CharSequence mTitle;
-
-    private BaseFragment mActiveFragment;
+public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
 
     private ConnectableDevice mTV;
     private AlertDialog dialog;
     private AlertDialog pairingAlertDialog;
     
     private MenuItem connectItem;
+
+	SectionsPagerAdapter mSectionsPagerAdapter;
+
+	ViewPager mViewPager;
 
     private ConnectableDeviceListener deviceListener = new ConnectableDeviceListener() {
 		
@@ -100,9 +84,10 @@ public class MainActivity extends ActionBarActivity
 			Log.d("2ndScreenAPP", "Device Disconnected");
 			connectEnded(mTV);
 			
-			if ( mActiveFragment != null ) {
+			BaseFragment frag = mSectionsPagerAdapter.getFragment(mViewPager.getCurrentItem());
+			if ( frag != null ) {
 				Toast.makeText(getApplicationContext(), "Device Disconnected", Toast.LENGTH_SHORT).show();
-				mActiveFragment.disableButtons();
+				frag.disableButtons();
 			}
 		}
 
@@ -122,16 +107,28 @@ public class MainActivity extends ActionBarActivity
 			return;
 		}
 
+		final ActionBar actionBar = getSupportActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+		mSectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
+
+		mViewPager = (ViewPager) findViewById(R.id.pager);
+		mViewPager.setAdapter(mSectionsPagerAdapter);
+
+		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+					@Override
+					public void onPageSelected(int position) {
+						actionBar.setSelectedNavigationItem(position);
+					}
+				});
+
+		for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
+			actionBar.addTab(actionBar.newTab()
+					.setIcon(mSectionsPagerAdapter.getIcon(i))
+					.setTabListener(this));
+		}
+
         setupPicker();
-
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
-
-        // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
 
     	DiscoveryManager.getInstance().setPairingLevel(PairingLevel.ON);
 		DiscoveryManager.getInstance().start();
@@ -150,52 +147,6 @@ public class MainActivity extends ActionBarActivity
 		}
 	}
 
-	@Override
-    public void onNavigationDrawerItemSelected(int position) {
-        BaseFragment newFragment;
-
-        switch (position)
-        {
-            case 1:
-                newFragment = new TVFragment(mTV, this);
-                break;
-
-            case 2:
-                newFragment = new AppsFragment(mTV, this);
-                break;
-
-            case 3:
-                newFragment = new FivewayFragment(mTV, this);
-                break;
-
-            case 4:
-                newFragment = new InputsFragment(mTV, this);
-                break;
-           
-            case 5:
-            	newFragment = new WebAppFragment(mTV, this);
-            	break;
-
-            case 0:
-            default:
-                newFragment = new MediaPlayerFragment(mTV, this);
-        }
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-
-        if (mActiveFragment != null)
-        {
-		    mActiveFragment.setTv(null);
-            fragmentManager.beginTransaction().remove(mActiveFragment).commit();
-        }
-
-        fragmentManager.beginTransaction()
-                .add(R.id.container, newFragment)
-                .commit();
-
-        mActiveFragment = newFragment;
-    }
-
     public void hConnectToggle()
     {
     	if ( !this.isFinishing() ) {
@@ -206,7 +157,7 @@ public class MainActivity extends ActionBarActivity
                 
                 connectItem.setTitle("Connect");
                 mTV = null;
-    			mActiveFragment.setTv(null);
+    			mSectionsPagerAdapter.getFragment(mViewPager.getCurrentItem()).setTv(null);
             } else
             {
                 dialog.show();
@@ -263,7 +214,7 @@ public class MainActivity extends ActionBarActivity
     void registerSuccess(ConnectableDevice device) {
         Log.d("2ndScreenAPP", "successful register");
 
-	    mActiveFragment.setTv(mTV);
+	    mSectionsPagerAdapter.getFragment(mViewPager.getCurrentItem()).setTv(mTV);
     }
 
     void connectFailed(ConnectableDevice device) {
@@ -282,72 +233,36 @@ public class MainActivity extends ActionBarActivity
         mTV = null;
     }
 
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section1);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
-                break;
-            case 4:
-                mTitle = getString(R.string.title_section4);
-                break;
-            case 5:
-                mTitle = getString(R.string.title_section5);
-                break;
-            case 6:
-            	mTitle = getString(R.string.title_section6);
-                break;
-        }
-    }
-
-    public void restoreActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!DiscoveryManager.isAirplaneMode() && !mNavigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
+        if (!DiscoveryManager.isAirplaneMode()) {
             getMenuInflater().inflate(R.menu.main, menu);
             connectItem = menu.getItem(0);
 
-            restoreActionBar();
             return true;
         }
         return super.onCreateOptionsMenu(menu);
     }
-    
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-    	if (mActiveFragment != null && mActiveFragment.onKeyDown(keyCode, event))
-    		return true;
-
-    	return super.onKeyDown(keyCode, event);
-    }
-    
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-    	if (mActiveFragment != null && mActiveFragment.onKeyUp(keyCode, event))
-    		return true;
-
-    	return super.onKeyUp(keyCode, event);
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+    	switch (item.getItemId()) {
+    	case R.id.action_connect:
+    		hConnectToggle();
+    		return true;
+    	}
         return super.onOptionsItemSelected(item);
     }
+    
+	@Override
+	public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+		mViewPager.setCurrentItem(tab.getPosition());
+		getSupportActionBar().setTitle(mSectionsPagerAdapter.getTitle(tab.getPosition()));
+		BaseFragment frag = mSectionsPagerAdapter.getFragment(tab.getPosition());
+		if (frag != null)
+			frag.setTv(mTV);
+	}
+
+	@Override public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) { }
+	@Override public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) { }
 }

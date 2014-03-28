@@ -64,9 +64,9 @@ public class MediaPlayerFragment extends BaseFragment {
     
     private Timer refreshTimer;
     
-    public MediaPlayerFragment(ConnectableDevice tv, Context context)
+    public MediaPlayerFragment(Context context)
     {
-        super(tv, context);
+        super(context);
         
         mIsUserSeeking = false;
         mSeeking = false;
