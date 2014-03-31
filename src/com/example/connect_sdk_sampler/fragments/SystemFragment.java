@@ -197,6 +197,7 @@ public class SystemFragment extends BaseFragment {
 		
 		@Override
 		public void onSuccess(List<ExternalInputInfo> externalInputList) {
+			adapter.clear();
 			for (int i = 0; i < externalInputList.size(); i++) {
 				ExternalInputInfo input = externalInputList.get(i);
 				final String deviceId = input.getId();
