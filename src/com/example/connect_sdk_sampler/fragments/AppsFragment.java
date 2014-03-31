@@ -206,6 +206,7 @@ public class AppsFragment extends BaseFragment {
 				
 				@Override
 				public void onSuccess(List<AppInfo> appList) {
+					adapter.clear();
 					for (int i = 0; i < appList.size(); i++) {
 						final AppInfo app = appList.get(i);
 
