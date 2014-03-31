@@ -31,7 +31,7 @@ import com.connectsdk.service.capability.TextInputControl.TextInputStatusListene
 import com.connectsdk.service.command.ServiceCommandError;
 import com.example.connect_sdk_sampler.R;
 
-public class FivewayFragment extends BaseFragment {
+public class KeyControlFragment extends BaseFragment {
     public Button upButton;
     public Button leftButton;
     public Button clickButton;
@@ -62,7 +62,7 @@ public class FivewayFragment extends BaseFragment {
     EditText editText;
     TextWatcher filterTextWatcher;
 
-    public FivewayFragment(Context context)
+    public KeyControlFragment(Context context)
     {
         super(context);
     }

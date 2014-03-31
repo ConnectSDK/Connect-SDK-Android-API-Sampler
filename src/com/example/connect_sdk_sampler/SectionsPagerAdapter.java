@@ -8,7 +8,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import com.example.connect_sdk_sampler.fragments.AppsFragment;
 import com.example.connect_sdk_sampler.fragments.BaseFragment;
-import com.example.connect_sdk_sampler.fragments.FivewayFragment;
+import com.example.connect_sdk_sampler.fragments.KeyControlFragment;
 import com.example.connect_sdk_sampler.fragments.SystemFragment;
 import com.example.connect_sdk_sampler.fragments.MediaPlayerFragment;
 import com.example.connect_sdk_sampler.fragments.TVFragment;
@@ -52,7 +52,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
                 break;
 
             case 2:
-                newFragment = new FivewayFragment(mContext);
+                newFragment = new KeyControlFragment(mContext);
                 break;
 
             case 3:

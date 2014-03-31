@@ -218,7 +218,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     }
 
     void connectFailed(ConnectableDevice device) {
-    	Log.d("2ndScreenAPP", "Failed to connect to " + device.getIpAddress());
+    	if (device != null)
+    		Log.d("2ndScreenAPP", "Failed to connect to " + device.getIpAddress());
 
         if (mTV != null) {
         	mTV.disconnect();
