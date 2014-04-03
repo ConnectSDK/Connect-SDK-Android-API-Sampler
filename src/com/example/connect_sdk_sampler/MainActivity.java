@@ -22,6 +22,7 @@ import com.connectsdk.device.DevicePicker;
 import com.connectsdk.device.PairingDialog;
 import com.connectsdk.discovery.DiscoveryManager;
 import com.connectsdk.discovery.DiscoveryManager.PairingLevel;
+import com.connectsdk.service.DeviceService;
 import com.connectsdk.service.DeviceService.PairingType;
 import com.connectsdk.service.command.ServiceCommandError;
 import com.example.connect_sdk_sampler.fragments.BaseFragment;
@@ -41,7 +42,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     private ConnectableDeviceListener deviceListener = new ConnectableDeviceListener() {
 		
 		@Override
-		public void onPairingRequired(ConnectableDevice device, PairingType pairingType) {
+		public void onPairingRequired(ConnectableDevice device, DeviceService service, PairingType pairingType) {
 	        Log.d("2ndScreenAPP", "Connected to " + mTV.getIpAddress());
 
 			switch (pairingType) { 
@@ -96,7 +97,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 			
 		}
 	};
-    
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
