@@ -211,7 +211,7 @@ public class TVFragment extends BaseFragment {
             getTVControl().getChannelList(new ChannelListListener() {
     			
     			@Override
-    			public void onSuccess(ArrayList<ChannelInfo> channelList) {
+    			public void onSuccess(List<ChannelInfo> channelList) {
     				adapter.clear();
     				for (ChannelInfo channel : channelList)
     					adapter.add(channel);
