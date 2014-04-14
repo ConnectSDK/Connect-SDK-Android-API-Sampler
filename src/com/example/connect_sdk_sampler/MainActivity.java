@@ -104,6 +104,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 		public void onDeviceDisconnected(ConnectableDevice device) {
 			Log.d("2ndScreenAPP", "Device Disconnected");
 			connectEnded(mTV);
+            connectItem.setTitle("Connect");
 			
 			BaseFragment frag = mSectionsPagerAdapter.getFragment(mViewPager.getCurrentItem());
 			if ( frag != null ) {
