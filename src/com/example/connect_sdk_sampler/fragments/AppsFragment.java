@@ -160,7 +160,8 @@ public class AppsFragment extends BaseFragment {
     		disableButton(netflixButton);
     	}
 
-    	if ( getTv().hasCapability(Launcher.YouTube_Params) ) {
+    	if ( getTv().hasCapability(Launcher.YouTube) ||
+    			getTv().hasCapability(Launcher.YouTube_Params) ) {
             youtubeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
