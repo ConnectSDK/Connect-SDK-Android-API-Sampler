@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,11 +15,12 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.connectsdk.core.AppInfo;
-import com.connectsdk.device.ConnectableDevice;
 import com.connectsdk.service.capability.Launcher;
 import com.connectsdk.service.capability.Launcher.AppInfoListener;
+import com.connectsdk.service.capability.Launcher.AppLaunchListener;
 import com.connectsdk.service.capability.Launcher.AppListListener;
 import com.connectsdk.service.capability.ToastControl;
+import com.connectsdk.service.capability.listeners.ResponseListener;
 import com.connectsdk.service.command.ServiceCommandError;
 import com.connectsdk.service.command.ServiceSubscription;
 import com.connectsdk.service.sessions.LaunchSession;
@@ -28,13 +30,16 @@ import com.example.connect_sdk_sampler.widget.AppAdapter;
 public class AppsFragment extends BaseFragment {
 //	public Button smartWorldButton;
     public Button browserButton;
+    public Button myAppButton;
     public Button netflixButton;
+    public Button appStoreButton;
     public Button youtubeButton;
     public Button toastButton;
 
     public ListView appListView;
     public AppAdapter adapter;
     LaunchSession runningAppSession;
+    LaunchSession appStoreSession;
     
     ServiceSubscription<AppInfoListener> runningAppSubs;
 
@@ -50,7 +55,9 @@ public class AppsFragment extends BaseFragment {
 				R.layout.fragment_apps, container, false);
 
         browserButton = (Button) rootView.findViewById(R.id.browserButton);
+        myAppButton = (Button) rootView.findViewById(R.id.myApp); 
         netflixButton = (Button) rootView.findViewById(R.id.deepLinkButton);
+        appStoreButton = (Button) rootView.findViewById(R.id.appStoreButton);
         youtubeButton = (Button) rootView.findViewById(R.id.youtubeButton);
         toastButton = (Button) rootView.findViewById(R.id.toastButton);
 
@@ -58,11 +65,14 @@ public class AppsFragment extends BaseFragment {
         adapter = new AppAdapter(getContext(), R.layout.app_item);
         appListView.setAdapter(adapter);
 
-        buttons = new Button[4];
-        buttons[0] = browserButton;
-        buttons[1] = netflixButton;
-        buttons[2] = youtubeButton;
-        buttons[3] = toastButton;
+        buttons = new Button[] {
+        			browserButton, 
+        			netflixButton, 
+        			youtubeButton, 
+        			toastButton, 
+        			myAppButton, 
+        			appStoreButton
+        };
         
 		return rootView;
 	}
@@ -248,7 +258,71 @@ public class AppsFragment extends BaseFragment {
 				browserButton.setText("Open Browser");
 			}
 		}
+		
+		myAppButton.setEnabled(false);
+		myAppButton.setOnClickListener(myAppLaunch);
+		
+		appStoreButton.setEnabled(getTv().hasCapability(Launcher.AppStore));
+		appStoreButton.setOnClickListener(launchAppStore);
     }
+    
+    public View.OnClickListener myAppLaunch = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			//  TODO: Implement this.
+			Log.d("LG", "Implement this");
+		}
+	};
+    
+    public View.OnClickListener launchAppStore = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			if (appStoreSession != null) {
+				appStoreSession.close(new ResponseListener<Object>() {
+					
+					@Override
+					public void onError(ServiceCommandError error) {
+						Log.d("LG", "App Store close error: " + error);
+					}
+					
+					@Override
+					public void onSuccess(Object object) {
+						Log.d("LG", "AppStore close success");
+					}
+				});
+				
+				appStoreSession = null;
+				appStoreButton.setSelected(false);
+			} else {
+				String appId = null;
+				
+				if (getTv().getServiceByName("Netcast TV") != null)
+					appId = "4168";
+				else if (getTv().getServiceByName("webOS TV") != null)
+					appId = "youtube.leanback.v4";
+				else if (getTv().getServiceByName("Roku") != null)
+					appId = "13535";
+				
+				getLauncher().launchAppStore(appId, new AppLaunchListener() {
+					
+					@Override
+					public void onError(ServiceCommandError error) {
+						Log.d("LG", "App Store failed: " + error);
+					}
+					
+					@Override
+					public void onSuccess(LaunchSession object) {
+						Log.d("LG", "App Store launched!");
+						
+						appStoreSession = object;
+						appStoreButton.setSelected(true);
+					}
+				});
+			}
+		}
+	};
     
     @Override
 	public void disableButtons() {

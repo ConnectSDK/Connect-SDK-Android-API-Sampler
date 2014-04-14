@@ -38,7 +38,6 @@ public class TVFragment extends BaseFragment {
     public Button channelUpButton;
     public Button channelDownButton;
     public Button powerOffButton;
-    public Button incomingCallButton;
     public Button mode3DButton;
 
     public ListView channelListView;
@@ -63,7 +62,6 @@ public class TVFragment extends BaseFragment {
         channelUpButton = (Button) rootView.findViewById(R.id.channelUpButton);
         channelDownButton = (Button) rootView.findViewById(R.id.channelDownButton);
         powerOffButton = (Button) rootView.findViewById(R.id.powerOffButton);
-        incomingCallButton = (Button) rootView.findViewById(R.id.incomingCallButton);
         mode3DButton = (Button) rootView.findViewById(R.id.mode3DButton);
 
         channelListView = (ListView) rootView.findViewById(R.id.channelListView);
@@ -75,7 +73,6 @@ public class TVFragment extends BaseFragment {
                 channelUpButton, 
                 channelDownButton, 
                 powerOffButton, 
-                incomingCallButton, 
                 mode3DButton
         };
         
@@ -134,42 +131,6 @@ public class TVFragment extends BaseFragment {
     	}
     	else {
     		disableButton(powerOffButton);
-    	}
-        
-    	if ( getTv().hasCapability(VolumeControl.Mute_Set) ) {
-            incomingCallButton.setOnClickListener(new View.OnClickListener() {
-    			
-    			@Override
-    			public void onClick(View v) {
-    				incomingCallToggle = !incomingCallToggle;
-    				
-    				if ( incomingCallToggle == true ) {
-    					getVolumeControl().setMute(true, null);
-
-    					if ( getTv().hasCapability(MediaControl.Pause) ) {
-    			    		getMediaControl().pause(null);
-    			    	}
-    					
-    					if ( getTv().hasCapability(ToastControl.Show_Toast) ) {
-    						getToastControl().showToast("Incoming Call, Paused", null);
-    					}
-    				}
-    				else {
-    					getVolumeControl().setMute(false, null);
-
-    					if ( getTv().hasCapability(MediaControl.Play) ) {
-    			    		getMediaControl().play(null);
-    			    	}
-
-    					if ( getTv().hasCapability(ToastControl.Show_Toast) ) {
-    						getToastControl().showToast("Resume Play", null);
-    					}
-    				}
-    			}
-    		});
-    	}
-    	else {
-    		disableButton(incomingCallButton);
     	}
         
 		if ( getTv().hasCapability(TVControl.Set_3D) ) {

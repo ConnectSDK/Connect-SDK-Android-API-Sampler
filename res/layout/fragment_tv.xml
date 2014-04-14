@@ -11,13 +11,6 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="20dp" >
-
-       <Button
-            android:id="@+id/incomingCallButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Incoming Call" />
         
          <Button
             android:id="@+id/powerOffButton"
@@ -25,6 +18,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Power Off" />
+       
+       <Button
+            android:id="@+id/mode3DButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+			android:layout_weight="1"
+            android:text="3D Mode" />
 
     </LinearLayout>
     
@@ -51,12 +51,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="+" />
-       
-       <Button
-            android:id="@+id/mode3DButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="3D Mode" />
 
     </LinearLayout>
 
