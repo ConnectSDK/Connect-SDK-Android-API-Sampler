@@ -34,6 +34,13 @@
             android:text="Browser" />
 
         <Button
+            android:id="@+id/myApp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="My App" />
+
+        <Button
             android:id="@+id/toastButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -56,6 +63,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Netflix" />
+
+        <Button
+            android:id="@+id/appStoreButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="App Store" />
 
         <Button
             android:id="@+id/youtubeButton"
