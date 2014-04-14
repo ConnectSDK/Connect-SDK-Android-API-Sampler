@@ -124,10 +124,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-		
-		if (DiscoveryManager.isAirplaneMode()) {
-			return;
-		}
 
 		final ActionBar actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -155,18 +151,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     	DiscoveryManager.getInstance().setPairingLevel(PairingLevel.ON);
 		DiscoveryManager.getInstance().start();
     }
-//    - (NSArray *) getImageDevices
-//    {
-//        NSMutableArray *imageDevices = [NSMutableArray new];
-//
-//        for (ConnectableDevice *device in [DiscoveryManager sharedManager].compatibleDevices)
-//        {
-//            if ([device hasCapability:kMediaPlayerDisplayImage])
-//                [imageDevices addObject:device];
-//        }
-//
-//        return imageDevices;
-//    }
+
     public List<ConnectableDevice> getImageDevices() {
     	List<ConnectableDevice> imageDevices = new ArrayList<ConnectableDevice>();
     	
@@ -238,20 +223,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     @Override
     protected void onResume() {
 
-    	if (DiscoveryManager.isAirplaneMode()) {
-			new AlertDialog.Builder(this)
-				.setTitle("No Connection")
-				.setMessage("There is no connection the device is in airplane mode")
-				.setNegativeButton("Close Application", new DialogInterface.OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						finish();
-					}
-				})
-				.create().show();
-    	}
-
     	super.onResume();
     }
 
@@ -280,12 +251,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!DiscoveryManager.isAirplaneMode()) {
-            getMenuInflater().inflate(R.menu.main, menu);
-            connectItem = menu.getItem(0);
+        getMenuInflater().inflate(R.menu.main, menu);
+        connectItem = menu.getItem(0);
 
-            return true;
-        }
         return super.onCreateOptionsMenu(menu);
     }
 
