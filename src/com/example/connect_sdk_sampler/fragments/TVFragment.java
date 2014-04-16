@@ -1,34 +1,22 @@
 package com.example.connect_sdk_sampler.fragments;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.SeekBar;
-import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.connectsdk.core.ChannelInfo;
-import com.connectsdk.device.ConnectableDevice;
-import com.connectsdk.service.capability.MediaControl;
 import com.connectsdk.service.capability.PowerControl;
 import com.connectsdk.service.capability.TVControl;
 import com.connectsdk.service.capability.TVControl.ChannelListListener;
 import com.connectsdk.service.capability.TVControl.ChannelListener;
-import com.connectsdk.service.capability.ToastControl;
-import com.connectsdk.service.capability.VolumeControl;
-import com.connectsdk.service.capability.VolumeControl.MuteListener;
-import com.connectsdk.service.capability.VolumeControl.VolumeListener;
 import com.connectsdk.service.command.ServiceCommandError;
 import com.connectsdk.service.command.ServiceSubscription;
 import com.example.connect_sdk_sampler.R;
