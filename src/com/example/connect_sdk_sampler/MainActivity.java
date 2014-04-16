@@ -229,7 +229,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     void registerSuccess(ConnectableDevice device) {
         Log.d("2ndScreenAPP", "successful register");
 
-	    mSectionsPagerAdapter.getFragment(mViewPager.getCurrentItem()).setTv(mTV);
+        BaseFragment frag = mSectionsPagerAdapter.getFragment(mViewPager.getCurrentItem());
+        if (frag != null)
+        	frag.setTv(mTV);
     }
 
     void connectFailed(ConnectableDevice device) {
