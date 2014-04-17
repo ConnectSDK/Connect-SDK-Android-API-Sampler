@@ -359,6 +359,8 @@ public class MediaPlayerFragment extends BaseFragment {
        	mSeekBar.setOnSeekBarChangeListener(null);
        	closeButton.setEnabled(false);
        	closeButton.setOnClickListener(null);
+       	
+       	totalTimeDuration = -1;
 	}
 	
 	public View.OnClickListener playListener = new View.OnClickListener() {
@@ -567,6 +569,7 @@ public class MediaPlayerFragment extends BaseFragment {
 		
 		@Override
 		public void onSuccess(Long duration) {
+			totalTimeDuration = duration;
 			mSeekBar.setMax(duration.intValue());
 			durationTextView.setText(formatTime(duration.intValue()));
 		}
