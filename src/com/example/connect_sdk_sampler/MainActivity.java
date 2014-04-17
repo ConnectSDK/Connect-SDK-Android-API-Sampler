@@ -3,12 +3,7 @@ package com.example.connect_sdk_sampler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
@@ -21,30 +16,16 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
-import com.connectsdk.core.AppInfo;
 import com.connectsdk.device.ConnectableDevice;
 import com.connectsdk.device.ConnectableDeviceListener;
 import com.connectsdk.device.DevicePicker;
 import com.connectsdk.device.PairingDialog;
-import com.connectsdk.discovery.CapabilityFilter;
 import com.connectsdk.discovery.DiscoveryManager;
 import com.connectsdk.discovery.DiscoveryManager.PairingLevel;
-import com.connectsdk.discovery.provider.CastDiscoveryProvider;
-import com.connectsdk.discovery.provider.SSDPDiscoveryProvider;
-import com.connectsdk.service.CastService;
-import com.connectsdk.service.DIALService;
-import com.connectsdk.service.DLNAService;
 import com.connectsdk.service.DeviceService;
 import com.connectsdk.service.DeviceService.PairingType;
-import com.connectsdk.service.RokuService;
-import com.connectsdk.service.WebOSTVService;
-import com.connectsdk.service.capability.Launcher;
-import com.connectsdk.service.capability.MediaControl;
 import com.connectsdk.service.capability.MediaPlayer;
-import com.connectsdk.service.capability.VolumeControl;
 import com.connectsdk.service.command.ServiceCommandError;
-import com.connectsdk.service.sessions.LaunchSession;
-import com.connectsdk.service.sessions.WebAppSession;
 import com.example.connect_sdk_sampler.fragments.BaseFragment;
 
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {

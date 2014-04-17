@@ -40,6 +40,7 @@ public class AppsFragment extends BaseFragment {
     public AppAdapter adapter;
     LaunchSession runningAppSession;
     LaunchSession appStoreSession;
+    LaunchSession myAppSession;
     
     ServiceSubscription<AppInfoListener> runningAppSubs;
 
@@ -260,7 +261,7 @@ public class AppsFragment extends BaseFragment {
 			}
 		}
 		
-		myAppButton.setEnabled(false);
+		myAppButton.setEnabled(getTv().hasCapability("Launcher.Levak"));
 		myAppButton.setOnClickListener(myAppLaunch);
 		
 		appStoreButton.setEnabled(getTv().hasCapability(Launcher.AppStore));
@@ -271,8 +272,26 @@ public class AppsFragment extends BaseFragment {
 		
 		@Override
 		public void onClick(View v) {
-			//  TODO: Implement this.
-			Log.d("LG", "Implement this");
+			if (myAppSession != null) {
+				myAppSession.close(null);
+				
+				myAppSession = null;
+				myAppButton.setSelected(false);
+			} else {
+				getLauncher().launchApp("Levak", new AppLaunchListener() {
+					
+					@Override
+					public void onError(ServiceCommandError error) {
+						Log.d("LG", "My app failed: " + error);
+					}
+					
+					@Override
+					public void onSuccess(LaunchSession object) {
+						myAppSession = object;
+						myAppButton.setSelected(true);
+					}
+				});
+			}
 		}
 	};
     

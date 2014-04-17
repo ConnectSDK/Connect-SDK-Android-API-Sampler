@@ -147,11 +147,11 @@ public class MediaPlayerFragment extends BaseFragment {
 					
 					disableMedia();
 					
-	         		String imagePath = "http://demo.idean.com/jeremy-white/cast/media/photo.jpg";
+	         		String imagePath = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/photo.jpg";
 	         		String mimeType = "image/jpeg";
 	         		String title = "Sintel Character Design";
 	         		String description = "Blender Open Movie Project";
-	         		String icon = "http://demo.idean.com/jeremy-white/cast/media/photoIcon.jpg";
+	         		String icon = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/photoIcon.jpg";
 	         		
 	         		getMediaPlayer().displayImage(imagePath, mimeType, title, description, icon, new MediaPlayer.LaunchListener() {
 						
@@ -190,11 +190,11 @@ public class MediaPlayerFragment extends BaseFragment {
              			return;
              		}
 
-             		String videoPath = "http://demo.idean.com/jeremy-white/cast/media/video.mp4";
+             		String videoPath = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/video.mp4";
              		String mimeType = "video/mp4";
              		String title = "Sintel Trailer";
              		String description = "Blender Open Movie Project";
-             		String icon = "http://demo.idean.com/jeremy-white/cast/media/videoIcon.jpg";
+             		String icon = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/videoIcon.jpg";
              		
              		getMediaPlayer().playMedia(videoPath, mimeType, title, description, icon, false, new MediaPlayer.LaunchListener() {
 						
@@ -230,8 +230,8 @@ public class MediaPlayerFragment extends BaseFragment {
 						return;
 					}
 					
-					String mediaURL = "http://demo.idean.com/jeremy-white/cast/media/audio.mp3";
-					String iconURL = "http://demo.idean.com/jeremy-white/cast/media/audioIcon.jpg";
+					String mediaURL = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/audio.mp3";
+					String iconURL = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/audioIcon.jpg";
 					String title = "The Song that Doesn't End";
 					String description = "Lamb Chop's Play Along";
 					String mimeType = "audio/mp3";
