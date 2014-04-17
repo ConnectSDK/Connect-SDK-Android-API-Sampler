@@ -1,7 +1,12 @@
-#Connect SDK Sampler App
+#Connect SDK Sampler App for Android
 
-##About
-For information on Connect SDK, visit [connectsdk.com/about](http://www.connectsdk.com/about/).
+Connect SDK is an open source framework that connects your mobile apps with multiple TV platforms. Because most TV platforms support a variety of protocols, Connect SDK integrates and abstracts the discovery and connectivity between all supported protocols.
+
+For more information, visit our [website](http://www.connectsdk.com/).
+
+* [General information about Connect SDK](http://www.connectsdk.com/discover/)
+* [Platform documentation & FAQs](http://www.connectsdk.com/docs/android/)
+* [API documentation](http://www.connectsdk.com/apis/android/)
 
 ##Dependencies
 - [Android v7 appcompat library](http://developer.android.com/tools/support-library/features.html#v7-appcompat)
@@ -18,16 +23,22 @@ For information on Connect SDK, visit [connectsdk.com/about](http://www.connects
 5. In the Library pane, click the Add button
 6. Select the android-support-v7-appcompat libary, android-support-v7-mediarouter library, and google-play-services_lib library and click OK
 7. Click Apply and then click OK to close the Properties window
-8. Download & unzip the Connect SDK framework ZIP file from the [Connect SDK Android Framework](http://github.com/ConnectSDK/Connect-SDK-Android-Framework) repository
-9. Copy the connect-sdk-framework.jar file into the Sampler project's libs folder
-10. Build/run the Sampler app
+8. See https://github.com/ConnectSDK/Connect-SDK-Android for the remainder of the setup
 
-##See also
-For more information on using Connect SDK, we recommend you review the following material.
-
-- [Connect SDK Android Framework](http://github.com/ConnectSDK/Connect-SDK-Android-Framework)
-- [My First Connect SDK App](http://connectsdk.com/getting-started/my-first-android-app/)
-- [API Documentation](http://connectsdk.com/docs/adapi/)
+##Contact
+* Twitter: [@ConnectSDK](https://www.twitter.com/ConnectSDK)
+* Ask a question with the "tv" tag on [Stack Overflow](http://stackoverflow.com/tags/tv)
+* General Inquiries: info@connectsdk.com
+* Developer Support: support@connectsdk.com
+* Partnerships: partners@connectsdk.com
 
 ##License
-Licensing information coming soon.
+
+Connect SDK Sample App by LG Electronics
+
+To the extent possible under law, the person who associated CC0 with
+this sample app has waived all copyright and related or neighboring rights
+to the sample app.
+
+You should have received a copy of the CC0 legalcode along with this
+work. If not, see http://creativecommons.org/publicdomain/zero/1.0/.
