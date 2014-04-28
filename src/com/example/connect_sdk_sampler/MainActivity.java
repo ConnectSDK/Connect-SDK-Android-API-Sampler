@@ -198,7 +198,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 //            	DiscoveryManager.getInstance().stop();
 
                 mTV = (ConnectableDevice)arg0.getItemAtPosition(arg2);
-                mTV.addListener(deviceListener);
+                mTV.setListener(deviceListener);
                 mTV.connect();
                 connectItem.setTitle("Connected");
             }
@@ -206,7 +206,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         
         pairingAlertDialog = new AlertDialog.Builder(this)
         .setTitle("Pairing with TV")
-        .setMessage("Please confirm the connect on your TV")
+        .setMessage("Please confirm the connection on your TV")
         .setPositiveButton("Okay", null)
         .setNegativeButton("Cancel", null)
         .create();

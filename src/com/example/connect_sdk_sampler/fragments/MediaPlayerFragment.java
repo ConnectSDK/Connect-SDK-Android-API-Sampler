@@ -530,11 +530,12 @@ public class MediaPlayerFragment extends BaseFragment {
 			@Override
 			public void run() {
 				Log.d("LG", "Updating information");
-				if (mMediaControl != null && getTv().hasCapability(MediaControl.Position)) {
+				if (mMediaControl != null && getTv() != null && getTv().hasCapability(MediaControl.Position)) {
 					mMediaControl.getPosition(positionListener);
 				}
 				
 				if (mMediaControl != null
+						&& getTv() != null
 						&& getTv().hasCapability(MediaControl.Duration)
 						&& !getTv().hasCapability(MediaControl.PlayState_Subscribe)
 						&& totalTimeDuration <= 0) {

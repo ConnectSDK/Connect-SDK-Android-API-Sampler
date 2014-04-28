@@ -38,6 +38,7 @@ import com.example.connect_sdk_sampler.R;
 public class WebAppFragment extends BaseFragment {
 	public final static String TAG = "Connect SDK";
 	public Button launchWebAppButton;
+	public Button joinWebAppButton;
 	public Button closeWebAppButton;
 	public Button sendMessageButton;
 	public Button sendJSONButton;
@@ -59,6 +60,7 @@ public class WebAppFragment extends BaseFragment {
 				R.layout.fragment_webapp, container, false);
 		
 		launchWebAppButton = (Button) rootView.findViewById(R.id.launchWebAppButton);
+		joinWebAppButton = (Button) rootView.findViewById(R.id.joinWebAppButton);
 		closeWebAppButton = (Button) rootView.findViewById(R.id.closeWebAppButton);
 		sendMessageButton = (Button) rootView.findViewById(R.id.sendMessageButton);
 		sendJSONButton = (Button) rootView.findViewById(R.id.sendJSONButton);
@@ -66,6 +68,7 @@ public class WebAppFragment extends BaseFragment {
 		
 		buttons = new Button[]{
 				launchWebAppButton, 
+				joinWebAppButton, 
 				closeWebAppButton, 
 				sendMessageButton, 
 				sendJSONButton
@@ -84,6 +87,9 @@ public class WebAppFragment extends BaseFragment {
 		else {
 			disableButton(launchWebAppButton);
 		}
+		
+		joinWebAppButton.setEnabled(getTv().hasCapability(WebAppLauncher.Launch));
+		joinWebAppButton.setOnClickListener(launchWebApp);
 		
 		if (getTv().hasCapability(WebAppLauncher.Close)) {
 			closeWebAppButton.setOnClickListener(closeWebApp);
@@ -106,6 +112,7 @@ public class WebAppFragment extends BaseFragment {
 		@Override
 		public void onClick(View v) {
 			String webAppId = "4F6217BC";
+			final boolean join = v.getId() == R.id.joinWebAppButton;
 			
 			launchWebAppButton.setEnabled(false);
 			
@@ -114,13 +121,18 @@ public class WebAppFragment extends BaseFragment {
 				@Override
 				public void onError(ServiceCommandError error) {
 					Log.e("LG", "Error connecting to web app | error = " + error);
+					launchWebAppButton.setEnabled(true);
 				}
 				
 				@Override
 				public void onSuccess(WebAppSession launchSession) {
 					mWebAppSession = launchSession;
 					
-					mWebAppSession.connect(connectionListener);
+					if (join)
+						mWebAppSession.join(connectionListener);
+					else
+						mWebAppSession.connect(connectionListener);
+
 					mWebAppSession.setWebAppSessionListener(webAppListener);
 				}
 			});
