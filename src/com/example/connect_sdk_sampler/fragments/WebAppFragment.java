@@ -23,14 +23,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.connectsdk.device.ConnectableDevice;
+import com.connectsdk.service.DeviceService;
 import com.connectsdk.service.capability.WebAppLauncher;
 import com.connectsdk.service.capability.listeners.ResponseListener;
 import com.connectsdk.service.command.ServiceCommandError;
 import com.connectsdk.service.sessions.LaunchSession;
 import com.connectsdk.service.sessions.WebAppSession;
 import com.connectsdk.service.sessions.WebAppSessionListener;
+import com.connectsdk.service.sessions.LaunchSession.LaunchSessionType;
 import com.connectsdk.service.sessions.WebAppSession.LaunchListener;
 import com.connectsdk.service.sessions.WebAppSession.MessageListener;
 import com.example.connect_sdk_sampler.R;
@@ -116,26 +119,43 @@ public class WebAppFragment extends BaseFragment {
 			
 			launchWebAppButton.setEnabled(false);
 			
-			getTv().getWebAppLauncher().launchWebApp(webAppId, new LaunchListener() {
-				
-				@Override
-				public void onError(ServiceCommandError error) {
-					Log.e("LG", "Error connecting to web app | error = " + error);
-					launchWebAppButton.setEnabled(true);
-				}
-				
-				@Override
-				public void onSuccess(WebAppSession launchSession) {
-					mWebAppSession = launchSession;
+			if (!join) {
+				getTv().getWebAppLauncher().launchWebApp(webAppId, new LaunchListener() {
 					
-					if (join)
-						mWebAppSession.join(connectionListener);
-					else
+					@Override
+					public void onError(ServiceCommandError error) {
+						Log.e("LG", "Error connecting to web app | error = " + error);
+						launchWebAppButton.setEnabled(true);
+					}
+					
+					@Override
+					public void onSuccess(WebAppSession launchSession) {
+						mWebAppSession = launchSession;
+						
 						mWebAppSession.connect(connectionListener);
-
-					mWebAppSession.setWebAppSessionListener(webAppListener);
-				}
-			});
+						mWebAppSession.setWebAppSessionListener(webAppListener);
+					}
+				});
+			} else {
+				getTv().getWebAppLauncher().joinWebApp(webAppId, new LaunchListener() {
+					
+					@Override
+					public void onError(ServiceCommandError error) {
+						Log.e("LG", "Error joining web app | error = " + error);
+						launchWebAppButton.setEnabled(true);
+						
+						Toast.makeText(getContext(), "Web app is not running", Toast.LENGTH_LONG).show();
+					}
+					
+					@Override
+					public void onSuccess(WebAppSession object) {
+						mWebAppSession = object;
+						
+						mWebAppSession.join(connectionListener);
+						mWebAppSession.setWebAppSessionListener(webAppListener);
+					}
+				});
+			}
 		}
 	};
 	
@@ -246,7 +266,7 @@ public class WebAppFragment extends BaseFragment {
 				}
 			});
 		}
-	}; 
+	};
 	
 	public View.OnClickListener closeWebApp = new View.OnClickListener() {
 		
