@@ -1,3 +1,14 @@
+//
+//  Connect SDK Sample App by LG Electronics
+//
+//  To the extent possible under law, the person who associated CC0 with
+//  this sample app has waived all copyright and related or neighboring rights
+//  to the sample app.
+//
+//  You should have received a copy of the CC0 legalcode along with this
+//  work. If not, see http://creativecommons.org/publicdomain/zero/1.0/.
+//
+
 package com.example.connect_sdk_sampler.fragments;
 
 import java.util.Locale;
@@ -348,6 +359,8 @@ public class MediaPlayerFragment extends BaseFragment {
        	mSeekBar.setOnSeekBarChangeListener(null);
        	closeButton.setEnabled(false);
        	closeButton.setOnClickListener(null);
+       	
+       	totalTimeDuration = -1;
 	}
 	
 	public View.OnClickListener playListener = new View.OnClickListener() {
@@ -517,11 +530,12 @@ public class MediaPlayerFragment extends BaseFragment {
 			@Override
 			public void run() {
 				Log.d("LG", "Updating information");
-				if (mMediaControl != null && getTv().hasCapability(MediaControl.Position)) {
+				if (mMediaControl != null && getTv() != null && getTv().hasCapability(MediaControl.Position)) {
 					mMediaControl.getPosition(positionListener);
 				}
 				
 				if (mMediaControl != null
+						&& getTv() != null
 						&& getTv().hasCapability(MediaControl.Duration)
 						&& !getTv().hasCapability(MediaControl.PlayState_Subscribe)
 						&& totalTimeDuration <= 0) {
@@ -556,6 +570,7 @@ public class MediaPlayerFragment extends BaseFragment {
 		
 		@Override
 		public void onSuccess(Long duration) {
+			totalTimeDuration = duration;
 			mSeekBar.setMax(duration.intValue());
 			durationTextView.setText(formatTime(duration.intValue()));
 		}

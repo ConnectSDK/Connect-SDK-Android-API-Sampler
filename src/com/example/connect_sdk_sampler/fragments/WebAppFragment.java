@@ -1,3 +1,14 @@
+//
+//  Connect SDK Sample App by LG Electronics
+//
+//  To the extent possible under law, the person who associated CC0 with
+//  this sample app has waived all copyright and related or neighboring rights
+//  to the sample app.
+//
+//  You should have received a copy of the CC0 legalcode along with this
+//  work. If not, see http://creativecommons.org/publicdomain/zero/1.0/.
+//
+
 package com.example.connect_sdk_sampler.fragments;
 
 import org.json.JSONArray;
@@ -12,14 +23,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.connectsdk.device.ConnectableDevice;
+import com.connectsdk.service.DeviceService;
 import com.connectsdk.service.capability.WebAppLauncher;
 import com.connectsdk.service.capability.listeners.ResponseListener;
 import com.connectsdk.service.command.ServiceCommandError;
 import com.connectsdk.service.sessions.LaunchSession;
 import com.connectsdk.service.sessions.WebAppSession;
 import com.connectsdk.service.sessions.WebAppSessionListener;
+import com.connectsdk.service.sessions.LaunchSession.LaunchSessionType;
 import com.connectsdk.service.sessions.WebAppSession.LaunchListener;
 import com.connectsdk.service.sessions.WebAppSession.MessageListener;
 import com.example.connect_sdk_sampler.R;
@@ -27,6 +41,7 @@ import com.example.connect_sdk_sampler.R;
 public class WebAppFragment extends BaseFragment {
 	public final static String TAG = "Connect SDK";
 	public Button launchWebAppButton;
+	public Button joinWebAppButton;
 	public Button closeWebAppButton;
 	public Button sendMessageButton;
 	public Button sendJSONButton;
@@ -48,6 +63,7 @@ public class WebAppFragment extends BaseFragment {
 				R.layout.fragment_webapp, container, false);
 		
 		launchWebAppButton = (Button) rootView.findViewById(R.id.launchWebAppButton);
+		joinWebAppButton = (Button) rootView.findViewById(R.id.joinWebAppButton);
 		closeWebAppButton = (Button) rootView.findViewById(R.id.closeWebAppButton);
 		sendMessageButton = (Button) rootView.findViewById(R.id.sendMessageButton);
 		sendJSONButton = (Button) rootView.findViewById(R.id.sendJSONButton);
@@ -55,6 +71,7 @@ public class WebAppFragment extends BaseFragment {
 		
 		buttons = new Button[]{
 				launchWebAppButton, 
+				joinWebAppButton, 
 				closeWebAppButton, 
 				sendMessageButton, 
 				sendJSONButton
@@ -73,6 +90,9 @@ public class WebAppFragment extends BaseFragment {
 		else {
 			disableButton(launchWebAppButton);
 		}
+		
+		joinWebAppButton.setEnabled(getTv().hasCapability(WebAppLauncher.Launch));
+		joinWebAppButton.setOnClickListener(launchWebApp);
 		
 		if (getTv().hasCapability(WebAppLauncher.Close)) {
 			closeWebAppButton.setOnClickListener(closeWebApp);
@@ -95,24 +115,47 @@ public class WebAppFragment extends BaseFragment {
 		@Override
 		public void onClick(View v) {
 			String webAppId = "4F6217BC";
+			final boolean join = v.getId() == R.id.joinWebAppButton;
 			
 			launchWebAppButton.setEnabled(false);
 			
-			getTv().getWebAppLauncher().launchWebApp(webAppId, new LaunchListener() {
-				
-				@Override
-				public void onError(ServiceCommandError error) {
-					Log.e("LG", "Error connecting to web app | error = " + error);
-				}
-				
-				@Override
-				public void onSuccess(WebAppSession launchSession) {
-					mWebAppSession = launchSession;
+			if (!join) {
+				getTv().getWebAppLauncher().launchWebApp(webAppId, new LaunchListener() {
 					
-					mWebAppSession.connect(connectionListener);
-					mWebAppSession.setWebAppSessionListener(webAppListener);
-				}
-			});
+					@Override
+					public void onError(ServiceCommandError error) {
+						Log.e("LG", "Error connecting to web app | error = " + error);
+						launchWebAppButton.setEnabled(true);
+					}
+					
+					@Override
+					public void onSuccess(WebAppSession launchSession) {
+						mWebAppSession = launchSession;
+						
+						mWebAppSession.connect(connectionListener);
+						mWebAppSession.setWebAppSessionListener(webAppListener);
+					}
+				});
+			} else {
+				getTv().getWebAppLauncher().joinWebApp(webAppId, new LaunchListener() {
+					
+					@Override
+					public void onError(ServiceCommandError error) {
+						Log.e("LG", "Error joining web app | error = " + error);
+						launchWebAppButton.setEnabled(true);
+						
+						Toast.makeText(getContext(), "Web app is not running", Toast.LENGTH_LONG).show();
+					}
+					
+					@Override
+					public void onSuccess(WebAppSession object) {
+						mWebAppSession = object;
+						
+						mWebAppSession.join(connectionListener);
+						mWebAppSession.setWebAppSessionListener(webAppListener);
+					}
+				});
+			}
 		}
 	};
 	
@@ -223,7 +266,7 @@ public class WebAppFragment extends BaseFragment {
 				}
 			});
 		}
-	}; 
+	};
 	
 	public View.OnClickListener closeWebApp = new View.OnClickListener() {
 		

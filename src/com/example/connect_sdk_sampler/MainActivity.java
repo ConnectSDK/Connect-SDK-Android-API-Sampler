@@ -1,3 +1,14 @@
+//
+//  Connect SDK Sample App by LG Electronics
+//
+//  To the extent possible under law, the person who associated CC0 with
+//  this sample app has waived all copyright and related or neighboring rights
+//  to the sample app.
+//
+//  You should have received a copy of the CC0 legalcode along with this
+//  work. If not, see http://creativecommons.org/publicdomain/zero/1.0/.
+//
+
 package com.example.connect_sdk_sampler;
 
 import java.util.ArrayList;
@@ -187,7 +198,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 //            	DiscoveryManager.getInstance().stop();
 
                 mTV = (ConnectableDevice)arg0.getItemAtPosition(arg2);
-                mTV.addListener(deviceListener);
+                mTV.setListener(deviceListener);
                 mTV.connect();
                 connectItem.setTitle("Connected");
             }
@@ -195,7 +206,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         
         pairingAlertDialog = new AlertDialog.Builder(this)
         .setTitle("Pairing with TV")
-        .setMessage("Please confirm the connect on your TV")
+        .setMessage("Please confirm the connection on your TV")
         .setPositiveButton("Okay", null)
         .setNegativeButton("Cancel", null)
         .create();

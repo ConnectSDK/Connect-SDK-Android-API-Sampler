@@ -11,11 +11,24 @@
         android:layout_margin="10dp" 
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/launchWebAppButton"
+        <LinearLayout 
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Launch Web App" />
+            android:layout_gravity="center_horizontal">
+            <Button
+                android:id="@+id/launchWebAppButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Launch" />
+            
+            <Button 
+                android:id="@+id/joinWebAppButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Join"/>
+        </LinearLayout>
     
 	     <LinearLayout
 	        android:layout_width="match_parent"
