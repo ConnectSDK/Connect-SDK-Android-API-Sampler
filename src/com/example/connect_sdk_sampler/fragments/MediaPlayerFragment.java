@@ -385,17 +385,18 @@ public class MediaPlayerFragment extends BaseFragment {
 		public void onClick(View view) {
 			if (getMediaPlayer() != null) {
 				if (photoLaunchSession != null)
-					getMediaPlayer().closeMedia(photoLaunchSession, null);
+					photoLaunchSession.close(null);
 				if (videoLaunchSession != null)
-					getMediaPlayer().closeMedia(videoLaunchSession, null);
+					videoLaunchSession.close(null);
 				if (audioLaunchSession != null)
-					getMediaPlayer().closeMedia(audioLaunchSession, null);
+					audioLaunchSession.close(null);
 				
 				photoLaunchSession = null;
 				videoLaunchSession = null;
 				audioLaunchSession = null;
 
 				disableMedia();
+				stopUpdating();
 			}
 		}
 	};

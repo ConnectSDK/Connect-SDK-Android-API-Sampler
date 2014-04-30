@@ -288,6 +288,8 @@ public class WebAppFragment extends BaseFragment {
 				@Override
 				public void onError(ServiceCommandError error) {
 					Log.e(TAG, "Error closing web app | error = " + error);
+					
+					launchWebAppButton.setEnabled(true);
 				}
 			});
 		}
