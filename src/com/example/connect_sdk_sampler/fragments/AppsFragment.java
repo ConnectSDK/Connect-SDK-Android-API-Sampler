@@ -247,6 +247,9 @@ public class AppsFragment extends BaseFragment {
 
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+				if (runningAppSession != null) {
+					runningAppSession.close(null);
+				}
 				AppInfo appInfo = (AppInfo) arg0.getItemAtPosition(arg2);
 				
 				getLauncher().launchAppWithInfo(appInfo, null, new Launcher.AppLaunchListener() {
