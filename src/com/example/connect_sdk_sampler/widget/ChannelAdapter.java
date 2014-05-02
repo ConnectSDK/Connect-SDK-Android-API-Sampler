@@ -14,18 +14,14 @@ package com.example.connect_sdk_sampler.widget;
 import java.util.Comparator;
 import java.util.List;
 
-import com.connectsdk.core.AppInfo;
-import com.connectsdk.core.ChannelInfo;
-import com.example.connect_sdk_sampler.R;
-
 import android.content.Context;
-import android.graphics.Color;
-import android.test.suitebuilder.annotation.Smoke;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.connectsdk.core.ChannelInfo;
+import com.example.connect_sdk_sampler.R;
 
 public class ChannelAdapter extends ArrayAdapter<ChannelInfo> {
 	private int resourceId;
