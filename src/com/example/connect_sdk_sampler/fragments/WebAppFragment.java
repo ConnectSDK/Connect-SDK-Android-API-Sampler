@@ -25,17 +25,15 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.connectsdk.device.ConnectableDevice;
-import com.connectsdk.service.DeviceService;
+import com.connectsdk.service.CastService;
+import com.connectsdk.service.WebOSTVService;
 import com.connectsdk.service.capability.WebAppLauncher;
 import com.connectsdk.service.capability.listeners.ResponseListener;
 import com.connectsdk.service.command.ServiceCommandError;
 import com.connectsdk.service.sessions.LaunchSession;
 import com.connectsdk.service.sessions.WebAppSession;
-import com.connectsdk.service.sessions.WebAppSessionListener;
-import com.connectsdk.service.sessions.LaunchSession.LaunchSessionType;
 import com.connectsdk.service.sessions.WebAppSession.LaunchListener;
-import com.connectsdk.service.sessions.WebAppSession.MessageListener;
+import com.connectsdk.service.sessions.WebAppSessionListener;
 import com.example.connect_sdk_sampler.R;
 
 public class WebAppFragment extends BaseFragment {
@@ -114,7 +112,14 @@ public class WebAppFragment extends BaseFragment {
 		
 		@Override
 		public void onClick(View v) {
-			String webAppId = "4F6217BC";
+			String webAppId = "";
+			if (getTv().getServiceByName(WebOSTVService.ID) != null)
+				webAppId = "SampleWebApp";
+			else if (getTv().getServiceByName(CastService.ID) != null)
+				webAppId = "DDCEDE96";
+			else
+				return;
+
 			final boolean join = v.getId() == R.id.joinWebAppButton;
 			
 			launchWebAppButton.setEnabled(false);
