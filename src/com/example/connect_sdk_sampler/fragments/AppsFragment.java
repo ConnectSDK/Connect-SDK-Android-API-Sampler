@@ -333,7 +333,7 @@ public class AppsFragment extends BaseFragment {
 				String appId = null;
 				
 				if (getTv().getServiceByName("Netcast TV") != null)
-					appId = "4168";
+					appId = "125071";
 				else if (getTv().getServiceByName("webOS TV") != null)
 					appId = "youtube.leanback.v4";
 				else if (getTv().getServiceByName("Roku") != null)
