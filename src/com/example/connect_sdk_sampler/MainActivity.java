@@ -177,6 +177,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     mTV.disconnect();
                 
                 connectItem.setTitle("Connect");
+                mTV.removeListener(deviceListener);
                 mTV = null;
     			mSectionsPagerAdapter.getFragment(mViewPager.getCurrentItem()).setTv(null);
             } else
@@ -198,7 +199,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 //            	DiscoveryManager.getInstance().stop();
 
                 mTV = (ConnectableDevice)arg0.getItemAtPosition(arg2);
-                mTV.setListener(deviceListener);
+                mTV.addListener(deviceListener);
                 mTV.connect();
                 connectItem.setTitle("Connected");
             }
@@ -231,6 +232,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     		Log.d("2ndScreenAPP", "Failed to connect to " + device.getIpAddress());
 
         if (mTV != null) {
+        	mTV.removeListener(deviceListener);
         	mTV.disconnect();
         	mTV = null;
         }
@@ -240,6 +242,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         if ( pairingAlertDialog.isShowing() ) {
         	pairingAlertDialog.dismiss();
         }
+        mTV.removeListener(deviceListener);
         mTV = null;
     }
 
