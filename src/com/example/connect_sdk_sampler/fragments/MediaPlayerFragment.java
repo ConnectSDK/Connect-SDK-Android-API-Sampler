@@ -156,6 +156,9 @@ public class MediaPlayerFragment extends BaseFragment {
              			return;
              		}
 					
+					videoLaunchSession = null;
+					audioLaunchSession = null;
+					
 					disableMedia();
 					
 	         		String imagePath = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/photo.jpg";
@@ -200,6 +203,9 @@ public class MediaPlayerFragment extends BaseFragment {
              			disableMedia();
              			return;
              		}
+             		
+             		audioLaunchSession = null;
+					photoLaunchSession = null;
 
              		String videoPath = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/video.mp4";
              		String mimeType = "video/mp4";
@@ -241,6 +247,9 @@ public class MediaPlayerFragment extends BaseFragment {
 						return;
 					}
 					
+					videoLaunchSession = null;
+					photoLaunchSession = null;
+					
 					String mediaURL = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/audio.mp3";
 					String iconURL = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/audioIcon.jpg";
 					String title = "The Song that Doesn't End";
@@ -262,6 +271,7 @@ public class MediaPlayerFragment extends BaseFragment {
 							audioLaunchSession = object.launchSession;
 							mMediaControl = object.mediaControl;
 							
+							stopUpdating();
 							enableMedia();
 						}
 					});
@@ -340,12 +350,14 @@ public class MediaPlayerFragment extends BaseFragment {
         if (getTv().hasCapability(MediaControl.PlayState_Subscribe)) {
         	mMediaControl.subscribePlayState(playStateListener);
         } else {
+        	mMediaControl.getDuration(durationListener);
+        	
         	startUpdating();
         }
 	}
 	
 	public void disableMedia() {
-    	playButton.setEnabled(false);
+		playButton.setEnabled(false);
     	playButton.setOnClickListener(null);
     	pauseButton.setEnabled(false);
     	pauseButton.setOnClickListener(null);
@@ -357,8 +369,12 @@ public class MediaPlayerFragment extends BaseFragment {
     	fastForwardButton.setOnClickListener(null);
        	mSeekBar.setEnabled(false);
        	mSeekBar.setOnSeekBarChangeListener(null);
+       	mSeekBar.setProgress(0);
        	closeButton.setEnabled(false);
        	closeButton.setOnClickListener(null);
+       	
+       	positionTextView.setText("--:--:--");
+       	durationTextView.setText("--:--:--");
        	
        	totalTimeDuration = -1;
 	}
