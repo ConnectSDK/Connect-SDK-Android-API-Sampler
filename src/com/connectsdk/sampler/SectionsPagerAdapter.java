@@ -9,7 +9,7 @@
 //  work. If not, see http://creativecommons.org/publicdomain/zero/1.0/.
 //
 
-package com.example.connect_sdk_sampler;
+package com.connectsdk.sampler;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -17,13 +17,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.example.connect_sdk_sampler.fragments.AppsFragment;
-import com.example.connect_sdk_sampler.fragments.BaseFragment;
-import com.example.connect_sdk_sampler.fragments.KeyControlFragment;
-import com.example.connect_sdk_sampler.fragments.SystemFragment;
-import com.example.connect_sdk_sampler.fragments.MediaPlayerFragment;
-import com.example.connect_sdk_sampler.fragments.TVFragment;
-import com.example.connect_sdk_sampler.fragments.WebAppFragment;
+import com.connectsdk.sampler.fragments.AppsFragment;
+import com.connectsdk.sampler.fragments.BaseFragment;
+import com.connectsdk.sampler.fragments.KeyControlFragment;
+import com.connectsdk.sampler.fragments.MediaPlayerFragment;
+import com.connectsdk.sampler.fragments.SystemFragment;
+import com.connectsdk.sampler.fragments.TVFragment;
+import com.connectsdk.sampler.fragments.WebAppFragment;
 
 /**
  * A {@link FragmentPagerAdapter} that returns a fragment corresponding to

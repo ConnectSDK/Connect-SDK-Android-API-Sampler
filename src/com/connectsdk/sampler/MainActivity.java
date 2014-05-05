@@ -9,7 +9,7 @@
 //  work. If not, see http://creativecommons.org/publicdomain/zero/1.0/.
 //
 
-package com.example.connect_sdk_sampler;
+package com.connectsdk.sampler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,11 +33,11 @@ import com.connectsdk.device.DevicePicker;
 import com.connectsdk.device.PairingDialog;
 import com.connectsdk.discovery.DiscoveryManager;
 import com.connectsdk.discovery.DiscoveryManager.PairingLevel;
+import com.connectsdk.sampler.fragments.BaseFragment;
 import com.connectsdk.service.DeviceService;
 import com.connectsdk.service.DeviceService.PairingType;
 import com.connectsdk.service.capability.MediaPlayer;
 import com.connectsdk.service.command.ServiceCommandError;
-import com.example.connect_sdk_sampler.fragments.BaseFragment;
 
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
 

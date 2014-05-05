@@ -9,7 +9,7 @@
 //  work. If not, see http://creativecommons.org/publicdomain/zero/1.0/.
 //
 
-package com.example.connect_sdk_sampler.fragments;
+package com.connectsdk.sampler.fragments;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.connectsdk.sampler.R;
 import com.connectsdk.service.CastService;
 import com.connectsdk.service.WebOSTVService;
 import com.connectsdk.service.capability.WebAppLauncher;
@@ -34,7 +35,6 @@ import com.connectsdk.service.sessions.LaunchSession;
 import com.connectsdk.service.sessions.WebAppSession;
 import com.connectsdk.service.sessions.WebAppSession.LaunchListener;
 import com.connectsdk.service.sessions.WebAppSessionListener;
-import com.example.connect_sdk_sampler.R;
 
 public class WebAppFragment extends BaseFragment {
 	public final static String TAG = "Connect SDK";

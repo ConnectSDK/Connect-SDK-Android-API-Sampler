@@ -9,7 +9,7 @@
 //  work. If not, see http://creativecommons.org/publicdomain/zero/1.0/.
 //
 
-package com.example.connect_sdk_sampler.fragments;
+package com.connectsdk.sampler.fragments;
 
 import java.util.List;
 
@@ -26,6 +26,8 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.connectsdk.core.AppInfo;
+import com.connectsdk.sampler.R;
+import com.connectsdk.sampler.widget.AppAdapter;
 import com.connectsdk.service.capability.Launcher;
 import com.connectsdk.service.capability.Launcher.AppInfoListener;
 import com.connectsdk.service.capability.Launcher.AppLaunchListener;
@@ -35,8 +37,6 @@ import com.connectsdk.service.capability.listeners.ResponseListener;
 import com.connectsdk.service.command.ServiceCommandError;
 import com.connectsdk.service.command.ServiceSubscription;
 import com.connectsdk.service.sessions.LaunchSession;
-import com.example.connect_sdk_sampler.R;
-import com.example.connect_sdk_sampler.widget.AppAdapter;
 
 public class AppsFragment extends BaseFragment {
 //	public Button smartWorldButton;

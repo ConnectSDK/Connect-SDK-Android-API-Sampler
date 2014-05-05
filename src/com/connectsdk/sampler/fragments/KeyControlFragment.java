@@ -9,7 +9,7 @@
 //  work. If not, see http://creativecommons.org/publicdomain/zero/1.0/.
 //
 
-package com.example.connect_sdk_sampler.fragments;
+package com.connectsdk.sampler.fragments;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -36,11 +36,11 @@ import android.widget.TextView.OnEditorActionListener;
 
 import com.connectsdk.core.TextInputStatusInfo;
 import com.connectsdk.core.TextInputStatusInfo.TextInputType;
+import com.connectsdk.sampler.R;
 import com.connectsdk.service.capability.KeyControl;
 import com.connectsdk.service.capability.TextInputControl;
 import com.connectsdk.service.capability.TextInputControl.TextInputStatusListener;
 import com.connectsdk.service.command.ServiceCommandError;
-import com.example.connect_sdk_sampler.R;
 
 public class KeyControlFragment extends BaseFragment {
     public Button upButton;

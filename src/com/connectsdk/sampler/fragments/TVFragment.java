@@ -9,7 +9,7 @@
 //  work. If not, see http://creativecommons.org/publicdomain/zero/1.0/.
 //
 
-package com.example.connect_sdk_sampler.fragments;
+package com.connectsdk.sampler.fragments;
 
 import java.util.List;
 
@@ -24,14 +24,14 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.connectsdk.core.ChannelInfo;
+import com.connectsdk.sampler.R;
+import com.connectsdk.sampler.widget.ChannelAdapter;
 import com.connectsdk.service.capability.PowerControl;
 import com.connectsdk.service.capability.TVControl;
 import com.connectsdk.service.capability.TVControl.ChannelListListener;
 import com.connectsdk.service.capability.TVControl.ChannelListener;
 import com.connectsdk.service.command.ServiceCommandError;
 import com.connectsdk.service.command.ServiceSubscription;
-import com.example.connect_sdk_sampler.R;
-import com.example.connect_sdk_sampler.widget.ChannelAdapter;
 
 public class TVFragment extends BaseFragment {
     public Button channelUpButton;

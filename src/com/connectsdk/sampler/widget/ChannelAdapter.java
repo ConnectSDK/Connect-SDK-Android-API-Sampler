@@ -9,7 +9,7 @@
 //  work. If not, see http://creativecommons.org/publicdomain/zero/1.0/.
 //
 
-package com.example.connect_sdk_sampler.widget;
+package com.connectsdk.sampler.widget;
 
 import java.util.Comparator;
 import java.util.List;
@@ -21,7 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.connectsdk.core.ChannelInfo;
-import com.example.connect_sdk_sampler.R;
+import com.connectsdk.sampler.R;
 
 public class ChannelAdapter extends ArrayAdapter<ChannelInfo> {
 	private int resourceId;
