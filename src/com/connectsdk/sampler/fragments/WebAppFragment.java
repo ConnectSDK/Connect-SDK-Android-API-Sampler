@@ -205,6 +205,7 @@ public class WebAppFragment extends BaseFragment {
 			launchWebAppButton.setEnabled(true);
 			
 			if (mWebAppSession != null) {
+				mWebAppSession.setWebAppSessionListener(null);
 				mWebAppSession.close(null);
 			}
 		}
@@ -283,6 +284,7 @@ public class WebAppFragment extends BaseFragment {
 			sendMessageButton.setEnabled(false);
 			sendJSONButton.setEnabled(false);
 			
+			mWebAppSession.setWebAppSessionListener(null);
 			mWebAppSession.close(new ResponseListener<Object>() {
 				
 				@Override
