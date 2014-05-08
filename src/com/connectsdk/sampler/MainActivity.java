@@ -201,7 +201,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 mTV = (ConnectableDevice)arg0.getItemAtPosition(arg2);
                 mTV.addListener(deviceListener);
                 mTV.connect();
-                connectItem.setTitle("Connected");
+                connectItem.setTitle(mTV.getFriendlyName());
             }
         });
         
