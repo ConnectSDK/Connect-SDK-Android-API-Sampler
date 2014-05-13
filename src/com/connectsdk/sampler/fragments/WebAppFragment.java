@@ -194,6 +194,7 @@ public class WebAppFragment extends BaseFragment {
 		public void onWebAppSessionDisconnect(WebAppSession webAppSession) {
 			Log.d("LG", "Device was disconnected");
 			
+			launchWebAppButton.setEnabled(true);
 			sendMessageButton.setEnabled(false);
 			sendJSONButton.setEnabled(false);
 			closeWebAppButton.setEnabled(false);
