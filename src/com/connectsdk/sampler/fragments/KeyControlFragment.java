@@ -325,81 +325,7 @@ public class KeyControlFragment extends BaseFragment {
         	if ( getTv().hasCapability(TextInputControl.Subscribe) ) {
         		disableButton(openKeyboardButton);
 						
-            	getTextInputControl().subscribeTextInputStatus(new TextInputStatusListener() {
-    				
-    				@Override
-    				public void onSuccess(TextInputStatusInfo keyboard) {
-    					boolean focused = keyboard.isFocused();
-    					TextInputType textInputType = keyboard.getTextInputType();
-    					boolean predictionEnabled = keyboard.isPredictionEnabled();
-    					boolean correctionEnabled = keyboard.isCorrectionEnabled();
-    					boolean autoCapitalization = keyboard.isAutoCapitalization();
-    					boolean hiddenText = keyboard.isHiddenText();
-    					boolean focusChanged = keyboard.isFocusChanged();
-    					int type; 
-    					
-    					if (textInputType != TextInputType.DEFAULT) {
-    						if (textInputType == TextInputType.NUMBER) {
-    							type = InputType.TYPE_CLASS_NUMBER;
-    						} 
-    						else if (textInputType == TextInputType.PHONE_NUMBER ) {
-    							type = InputType.TYPE_CLASS_PHONE;
-    						} 
-    						else {
-    							type = InputType.TYPE_CLASS_TEXT;
-    							
-    							if (textInputType == TextInputType.URL ) {
-    								type |= InputType.TYPE_TEXT_VARIATION_URI;
-    							} else if (textInputType == TextInputType.EMAIL) {
-    								type |= InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
-    							}
-    							
-    							if ( predictionEnabled ) {
-    								type |= InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE;
-    							}
-    							
-    							if ( correctionEnabled ) {
-    								type |= InputType.TYPE_TEXT_FLAG_AUTO_CORRECT;
-    							}
-    							
-    							if ( autoCapitalization ) {
-    								type |= InputType.TYPE_TEXT_FLAG_CAP_SENTENCES;
-    							}
-    							
-    							if ( hiddenText ) {
-    								type |= InputType.TYPE_TEXT_VARIATION_PASSWORD;
-    							}
-    							
-    							if (!canReplaceText) {
-    								type |= InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
-    							}
-    						}
-    	
-    						final int fType = type;
-    						if (editText.getInputType() != type) {
-    							editText.setInputType(fType);
-    						}
-    					}
-    					
-    					if (focused) {
-    						if ( focusChanged ) {
-    							clearLocalText();
-    						}
-    						editText.requestFocus();
-    						InputMethodManager mgr = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-    						mgr.showSoftInput(((Activity)mContext).getCurrentFocus(), InputMethodManager.SHOW_FORCED);
-    					} else {
-    						canReplaceText = false;
-    						InputMethodManager mgr = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-    						mgr.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-    						clearLocalText();
-    					}					
-    				}
-    				
-    				@Override
-    				public void onError(ServiceCommandError arg0) {
-    				}
-    			});
+            	getTextInputControl().subscribeTextInputStatus(mTextStatusInputListener);
         	}
         	else {
         		openKeyboardButton.setOnClickListener(new View.OnClickListener() {
@@ -531,4 +457,80 @@ public class KeyControlFragment extends BaseFragment {
             }
         });
     }
+    
+    private TextInputStatusListener mTextStatusInputListener = new TextInputStatusListener() {
+		
+		@Override
+		public void onSuccess(TextInputStatusInfo keyboard) {
+			boolean focused = keyboard.isFocused();
+			TextInputType textInputType = keyboard.getTextInputType();
+			boolean predictionEnabled = keyboard.isPredictionEnabled();
+			boolean correctionEnabled = keyboard.isCorrectionEnabled();
+			boolean autoCapitalization = keyboard.isAutoCapitalization();
+			boolean hiddenText = keyboard.isHiddenText();
+			boolean focusChanged = keyboard.isFocusChanged();
+			int type; 
+			
+			if (textInputType != TextInputType.DEFAULT) {
+				if (textInputType == TextInputType.NUMBER) {
+					type = InputType.TYPE_CLASS_NUMBER;
+				} 
+				else if (textInputType == TextInputType.PHONE_NUMBER ) {
+					type = InputType.TYPE_CLASS_PHONE;
+				} 
+				else {
+					type = InputType.TYPE_CLASS_TEXT;
+					
+					if (textInputType == TextInputType.URL ) {
+						type |= InputType.TYPE_TEXT_VARIATION_URI;
+					} else if (textInputType == TextInputType.EMAIL) {
+						type |= InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
+					}
+					
+					if ( predictionEnabled ) {
+						type |= InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE;
+					}
+					
+					if ( correctionEnabled ) {
+						type |= InputType.TYPE_TEXT_FLAG_AUTO_CORRECT;
+					}
+					
+					if ( autoCapitalization ) {
+						type |= InputType.TYPE_TEXT_FLAG_CAP_SENTENCES;
+					}
+					
+					if ( hiddenText ) {
+						type |= InputType.TYPE_TEXT_VARIATION_PASSWORD;
+					}
+					
+					if (!canReplaceText) {
+						type |= InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
+					}
+				}
+
+				final int fType = type;
+				if (editText.getInputType() != type) {
+					editText.setInputType(fType);
+				}
+			}
+			
+			if (focused) {
+				if ( focusChanged ) {
+					clearLocalText();
+				}
+				editText.requestFocus();
+				InputMethodManager mgr = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+				mgr.showSoftInput(((Activity)mContext).getCurrentFocus(), InputMethodManager.SHOW_FORCED);
+			} else {
+				canReplaceText = false;
+				InputMethodManager mgr = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+				mgr.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+				clearLocalText();
+			}					
+		}
+		
+		@Override
+		public void onError(ServiceCommandError arg0) {
+		}
+	};
 }
