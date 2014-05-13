@@ -90,7 +90,7 @@ public class WebAppFragment extends BaseFragment {
 		}
 		
 		joinWebAppButton.setEnabled(getTv().hasCapability(WebAppLauncher.Launch));
-		joinWebAppButton.setOnClickListener(launchWebApp);
+		joinWebAppButton.setOnClickListener(joinWebApp);
 		
 		if (getTv().hasCapability(WebAppLauncher.Close)) {
 			closeWebAppButton.setOnClickListener(closeWebApp);
@@ -120,47 +120,57 @@ public class WebAppFragment extends BaseFragment {
 			else
 				return;
 
-			final boolean join = v.getId() == R.id.joinWebAppButton;
-			
 			launchWebAppButton.setEnabled(false);
 			
-			if (!join) {
-				getTv().getWebAppLauncher().launchWebApp(webAppId, new LaunchListener() {
+			getTv().getWebAppLauncher().launchWebApp(webAppId, new LaunchListener() {
+				
+				@Override
+				public void onError(ServiceCommandError error) {
+					Log.e("LG", "Error connecting to web app | error = " + error);
+					launchWebAppButton.setEnabled(true);
+				}
+				
+				@Override
+				public void onSuccess(WebAppSession launchSession) {
+					mWebAppSession = launchSession;
 					
-					@Override
-					public void onError(ServiceCommandError error) {
-						Log.e("LG", "Error connecting to web app | error = " + error);
-						launchWebAppButton.setEnabled(true);
-					}
+					mWebAppSession.connect(connectionListener);
+					mWebAppSession.setWebAppSessionListener(webAppListener);
+				}
+			});
+		}
+	};
+	
+	public View.OnClickListener joinWebApp = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			String webAppId = "";
+			
+			if (getTv().getServiceByName(WebOSTVService.ID) != null)
+				webAppId = "SampleWebApp";
+			else if (getTv().getServiceByName(CastService.ID) != null)
+				webAppId = "DDCEDE96";
+			else
+				return;
+			
+			getTv().getWebAppLauncher().joinWebApp(webAppId, new LaunchListener() {
+				
+				@Override
+				public void onError(ServiceCommandError error) {
+					Log.d("LG", "Could not join");
+				}
+				
+				@Override
+				public void onSuccess(WebAppSession object) {
+					mWebAppSession = object;
+					mWebAppSession.setWebAppSessionListener(webAppListener);
 					
-					@Override
-					public void onSuccess(WebAppSession launchSession) {
-						mWebAppSession = launchSession;
-						
-						mWebAppSession.connect(connectionListener);
-						mWebAppSession.setWebAppSessionListener(webAppListener);
-					}
-				});
-			} else {
-				getTv().getWebAppLauncher().joinWebApp(webAppId, new LaunchListener() {
-					
-					@Override
-					public void onError(ServiceCommandError error) {
-						Log.e("LG", "Error joining web app | error = " + error);
-						launchWebAppButton.setEnabled(true);
-						
-						Toast.makeText(getContext(), "Web app is not running", Toast.LENGTH_LONG).show();
-					}
-					
-					@Override
-					public void onSuccess(WebAppSession object) {
-						mWebAppSession = object;
-						
-						mWebAppSession.join(connectionListener);
-						mWebAppSession.setWebAppSessionListener(webAppListener);
-					}
-				});
-			}
+					sendMessageButton.setEnabled(true);
+					if (getTv().hasCapabilities(WebAppLauncher.Message_Send_JSON)) sendJSONButton.setEnabled(true);
+					if (getTv().hasCapabilities(WebAppLauncher.Close)) closeWebAppButton.setEnabled(true);
+				}
+			});
 		}
 	};
 	
@@ -184,6 +194,10 @@ public class WebAppFragment extends BaseFragment {
 		@Override
 		public void onWebAppSessionDisconnect(WebAppSession webAppSession) {
 			Log.d("LG", "Device was disconnected");
+			
+			sendMessageButton.setEnabled(false);
+			sendJSONButton.setEnabled(false);
+			closeWebAppButton.setEnabled(false);
 		}
 	};
 	
