@@ -9,7 +9,7 @@
 //  work. If not, see http://creativecommons.org/publicdomain/zero/1.0/.
 //
 
-package com.example.connect_sdk_sampler.fragments;
+package com.connectsdk.sampler.fragments;
 
 import java.util.Locale;
 import java.util.Timer;
@@ -29,6 +29,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 import com.connectsdk.device.ConnectableDevice;
+import com.connectsdk.sampler.R;
 import com.connectsdk.service.capability.MediaControl;
 import com.connectsdk.service.capability.MediaControl.DurationListener;
 import com.connectsdk.service.capability.MediaControl.PlayStateListener;
@@ -41,7 +42,6 @@ import com.connectsdk.service.capability.VolumeControl.VolumeListener;
 import com.connectsdk.service.capability.listeners.ResponseListener;
 import com.connectsdk.service.command.ServiceCommandError;
 import com.connectsdk.service.sessions.LaunchSession;
-import com.example.connect_sdk_sampler.R;
 
 public class MediaPlayerFragment extends BaseFragment {
 	public Button photoButton;
@@ -156,6 +156,9 @@ public class MediaPlayerFragment extends BaseFragment {
              			return;
              		}
 					
+					videoLaunchSession = null;
+					audioLaunchSession = null;
+					
 					disableMedia();
 					
 	         		String imagePath = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/photo.jpg";
@@ -200,6 +203,9 @@ public class MediaPlayerFragment extends BaseFragment {
              			disableMedia();
              			return;
              		}
+             		
+             		audioLaunchSession = null;
+					photoLaunchSession = null;
 
              		String videoPath = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/video.mp4";
              		String mimeType = "video/mp4";
@@ -241,6 +247,9 @@ public class MediaPlayerFragment extends BaseFragment {
 						return;
 					}
 					
+					videoLaunchSession = null;
+					photoLaunchSession = null;
+					
 					String mediaURL = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/audio.mp3";
 					String iconURL = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/audioIcon.jpg";
 					String title = "The Song that Doesn't End";
@@ -262,6 +271,7 @@ public class MediaPlayerFragment extends BaseFragment {
 							audioLaunchSession = object.launchSession;
 							mMediaControl = object.mediaControl;
 							
+							stopUpdating();
 							enableMedia();
 						}
 					});
@@ -340,12 +350,14 @@ public class MediaPlayerFragment extends BaseFragment {
         if (getTv().hasCapability(MediaControl.PlayState_Subscribe)) {
         	mMediaControl.subscribePlayState(playStateListener);
         } else {
+        	mMediaControl.getDuration(durationListener);
+        	
         	startUpdating();
         }
 	}
 	
 	public void disableMedia() {
-    	playButton.setEnabled(false);
+		playButton.setEnabled(false);
     	playButton.setOnClickListener(null);
     	pauseButton.setEnabled(false);
     	pauseButton.setOnClickListener(null);
@@ -357,8 +369,14 @@ public class MediaPlayerFragment extends BaseFragment {
     	fastForwardButton.setOnClickListener(null);
        	mSeekBar.setEnabled(false);
        	mSeekBar.setOnSeekBarChangeListener(null);
+       	mSeekBar.setProgress(0);
        	closeButton.setEnabled(false);
        	closeButton.setOnClickListener(null);
+       	
+       	positionTextView.setText("--:--:--");
+       	durationTextView.setText("--:--:--");
+       	
+       	totalTimeDuration = -1;
 	}
 	
 	public View.OnClickListener playListener = new View.OnClickListener() {
@@ -383,17 +401,18 @@ public class MediaPlayerFragment extends BaseFragment {
 		public void onClick(View view) {
 			if (getMediaPlayer() != null) {
 				if (photoLaunchSession != null)
-					getMediaPlayer().closeMedia(photoLaunchSession, null);
+					photoLaunchSession.close(null);
 				if (videoLaunchSession != null)
-					getMediaPlayer().closeMedia(videoLaunchSession, null);
+					videoLaunchSession.close(null);
 				if (audioLaunchSession != null)
-					getMediaPlayer().closeMedia(audioLaunchSession, null);
+					audioLaunchSession.close(null);
 				
 				photoLaunchSession = null;
 				videoLaunchSession = null;
 				audioLaunchSession = null;
 
 				disableMedia();
+				stopUpdating();
 			}
 		}
 	};
@@ -528,11 +547,12 @@ public class MediaPlayerFragment extends BaseFragment {
 			@Override
 			public void run() {
 				Log.d("LG", "Updating information");
-				if (mMediaControl != null && getTv().hasCapability(MediaControl.Position)) {
+				if (mMediaControl != null && getTv() != null && getTv().hasCapability(MediaControl.Position)) {
 					mMediaControl.getPosition(positionListener);
 				}
 				
 				if (mMediaControl != null
+						&& getTv() != null
 						&& getTv().hasCapability(MediaControl.Duration)
 						&& !getTv().hasCapability(MediaControl.PlayState_Subscribe)
 						&& totalTimeDuration <= 0) {
@@ -567,6 +587,7 @@ public class MediaPlayerFragment extends BaseFragment {
 		
 		@Override
 		public void onSuccess(Long duration) {
+			totalTimeDuration = duration;
 			mSeekBar.setMax(duration.intValue());
 			durationTextView.setText(formatTime(duration.intValue()));
 		}

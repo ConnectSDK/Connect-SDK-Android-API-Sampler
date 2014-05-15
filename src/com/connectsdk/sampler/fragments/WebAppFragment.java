@@ -9,7 +9,7 @@
 //  work. If not, see http://creativecommons.org/publicdomain/zero/1.0/.
 //
 
-package com.example.connect_sdk_sampler.fragments;
+package com.connectsdk.sampler.fragments;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,20 +24,21 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.connectsdk.device.ConnectableDevice;
+import com.connectsdk.sampler.R;
+import com.connectsdk.service.CastService;
+import com.connectsdk.service.WebOSTVService;
 import com.connectsdk.service.capability.WebAppLauncher;
 import com.connectsdk.service.capability.listeners.ResponseListener;
 import com.connectsdk.service.command.ServiceCommandError;
 import com.connectsdk.service.sessions.LaunchSession;
 import com.connectsdk.service.sessions.WebAppSession;
-import com.connectsdk.service.sessions.WebAppSessionListener;
 import com.connectsdk.service.sessions.WebAppSession.LaunchListener;
-import com.connectsdk.service.sessions.WebAppSession.MessageListener;
-import com.example.connect_sdk_sampler.R;
+import com.connectsdk.service.sessions.WebAppSessionListener;
 
 public class WebAppFragment extends BaseFragment {
 	public final static String TAG = "Connect SDK";
 	public Button launchWebAppButton;
+	public Button joinWebAppButton;
 	public Button closeWebAppButton;
 	public Button sendMessageButton;
 	public Button sendJSONButton;
@@ -59,6 +60,7 @@ public class WebAppFragment extends BaseFragment {
 				R.layout.fragment_webapp, container, false);
 		
 		launchWebAppButton = (Button) rootView.findViewById(R.id.launchWebAppButton);
+		joinWebAppButton = (Button) rootView.findViewById(R.id.joinWebAppButton);
 		closeWebAppButton = (Button) rootView.findViewById(R.id.closeWebAppButton);
 		sendMessageButton = (Button) rootView.findViewById(R.id.sendMessageButton);
 		sendJSONButton = (Button) rootView.findViewById(R.id.sendJSONButton);
@@ -66,6 +68,7 @@ public class WebAppFragment extends BaseFragment {
 		
 		buttons = new Button[]{
 				launchWebAppButton, 
+				joinWebAppButton, 
 				closeWebAppButton, 
 				sendMessageButton, 
 				sendJSONButton
@@ -84,6 +87,9 @@ public class WebAppFragment extends BaseFragment {
 		else {
 			disableButton(launchWebAppButton);
 		}
+		
+		joinWebAppButton.setEnabled(getTv().hasCapability(WebAppLauncher.Launch));
+		joinWebAppButton.setOnClickListener(joinWebApp);
 		
 		if (getTv().hasCapability(WebAppLauncher.Close)) {
 			closeWebAppButton.setOnClickListener(closeWebApp);
@@ -105,8 +111,14 @@ public class WebAppFragment extends BaseFragment {
 		
 		@Override
 		public void onClick(View v) {
-			String webAppId = "4F6217BC";
-			
+			String webAppId = "";
+			if (getTv().getServiceByName(WebOSTVService.ID) != null)
+				webAppId = "SampleWebApp";
+			else if (getTv().getServiceByName(CastService.ID) != null)
+				webAppId = "DDCEDE96";
+			else
+				return;
+
 			launchWebAppButton.setEnabled(false);
 			
 			getTv().getWebAppLauncher().launchWebApp(webAppId, new LaunchListener() {
@@ -114,6 +126,7 @@ public class WebAppFragment extends BaseFragment {
 				@Override
 				public void onError(ServiceCommandError error) {
 					Log.e("LG", "Error connecting to web app | error = " + error);
+					launchWebAppButton.setEnabled(true);
 				}
 				
 				@Override
@@ -122,6 +135,39 @@ public class WebAppFragment extends BaseFragment {
 					
 					mWebAppSession.connect(connectionListener);
 					mWebAppSession.setWebAppSessionListener(webAppListener);
+				}
+			});
+		}
+	};
+	
+	public View.OnClickListener joinWebApp = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			String webAppId = "";
+			
+			if (getTv().getServiceByName(WebOSTVService.ID) != null)
+				webAppId = "SampleWebApp";
+			else if (getTv().getServiceByName(CastService.ID) != null)
+				webAppId = "DDCEDE96";
+			else
+				return;
+			
+			getTv().getWebAppLauncher().joinWebApp(webAppId, new LaunchListener() {
+				
+				@Override
+				public void onError(ServiceCommandError error) {
+					Log.d("LG", "Could not join");
+				}
+				
+				@Override
+				public void onSuccess(WebAppSession object) {
+					mWebAppSession = object;
+					mWebAppSession.setWebAppSessionListener(webAppListener);
+					
+					sendMessageButton.setEnabled(true);
+					if (getTv().hasCapabilities(WebAppLauncher.Message_Send_JSON)) sendJSONButton.setEnabled(true);
+					if (getTv().hasCapabilities(WebAppLauncher.Close)) closeWebAppButton.setEnabled(true);
 				}
 			});
 		}
@@ -147,6 +193,11 @@ public class WebAppFragment extends BaseFragment {
 		@Override
 		public void onWebAppSessionDisconnect(WebAppSession webAppSession) {
 			Log.d("LG", "Device was disconnected");
+			
+			launchWebAppButton.setEnabled(true);
+			sendMessageButton.setEnabled(false);
+			sendJSONButton.setEnabled(false);
+			closeWebAppButton.setEnabled(false);
 		}
 	};
 	
@@ -168,6 +219,7 @@ public class WebAppFragment extends BaseFragment {
 			launchWebAppButton.setEnabled(true);
 			
 			if (mWebAppSession != null) {
+				mWebAppSession.setWebAppSessionListener(null);
 				mWebAppSession.close(null);
 			}
 		}
@@ -234,7 +286,7 @@ public class WebAppFragment extends BaseFragment {
 				}
 			});
 		}
-	}; 
+	};
 	
 	public View.OnClickListener closeWebApp = new View.OnClickListener() {
 		
@@ -246,6 +298,7 @@ public class WebAppFragment extends BaseFragment {
 			sendMessageButton.setEnabled(false);
 			sendJSONButton.setEnabled(false);
 			
+			mWebAppSession.setWebAppSessionListener(null);
 			mWebAppSession.close(new ResponseListener<Object>() {
 				
 				@Override
@@ -256,6 +309,8 @@ public class WebAppFragment extends BaseFragment {
 				@Override
 				public void onError(ServiceCommandError error) {
 					Log.e(TAG, "Error closing web app | error = " + error);
+					
+					launchWebAppButton.setEnabled(true);
 				}
 			});
 		}

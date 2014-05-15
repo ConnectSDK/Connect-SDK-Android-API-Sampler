@@ -9,7 +9,7 @@
 //  work. If not, see http://creativecommons.org/publicdomain/zero/1.0/.
 //
 
-package com.example.connect_sdk_sampler.fragments;
+package com.connectsdk.sampler.fragments;
 
 import java.util.List;
 
@@ -18,8 +18,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -29,6 +29,7 @@ import android.widget.ListView;
 import android.widget.SeekBar;
 
 import com.connectsdk.core.ExternalInputInfo;
+import com.connectsdk.sampler.R;
 import com.connectsdk.service.capability.ExternalInputControl;
 import com.connectsdk.service.capability.ExternalInputControl.ExternalInputListListener;
 import com.connectsdk.service.capability.Launcher;
@@ -39,7 +40,6 @@ import com.connectsdk.service.capability.VolumeControl.VolumeListener;
 import com.connectsdk.service.command.ServiceCommandError;
 import com.connectsdk.service.command.ServiceSubscription;
 import com.connectsdk.service.sessions.LaunchSession;
-import com.example.connect_sdk_sampler.R;
 
 public class SystemFragment extends BaseFragment {
     public CheckBox muteToggleButton;

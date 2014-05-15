@@ -9,21 +9,16 @@
 //  work. If not, see http://creativecommons.org/publicdomain/zero/1.0/.
 //
 
-package com.example.connect_sdk_sampler;
-
-import org.apache.http.impl.client.DefaultHttpClient;
+package com.connectsdk.sampler;
 
 import android.app.Application;
 
 import com.connectsdk.discovery.DiscoveryManager;
 import com.connectsdk.service.DIALService;
-import com.crittercism.app.Crittercism;
 
 public class MainApplication extends Application {
 	@Override
 	public void onCreate() {
-//		Crittercism.initialize(getApplicationContext(), "53305ec78633a426d7000005");
-
 		DIALService.registerApp("Levak");
 		DiscoveryManager.init(getApplicationContext());
 

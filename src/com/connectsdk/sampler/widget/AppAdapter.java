@@ -9,7 +9,7 @@
 //  work. If not, see http://creativecommons.org/publicdomain/zero/1.0/.
 //
 
-package com.example.connect_sdk_sampler.widget;
+package com.connectsdk.sampler.widget;
 
 import java.util.Comparator;
 
@@ -22,7 +22,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.connectsdk.core.AppInfo;
-import com.example.connect_sdk_sampler.R;
+import com.connectsdk.sampler.R;
 
 public class AppAdapter extends ArrayAdapter<AppInfo> {
     Context context; 

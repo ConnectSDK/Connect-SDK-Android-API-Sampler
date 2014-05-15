@@ -9,7 +9,7 @@
 //  work. If not, see http://creativecommons.org/publicdomain/zero/1.0/.
 //
 
-package com.example.connect_sdk_sampler.fragments;
+package com.connectsdk.sampler.fragments;
 
 import android.content.Context;
 import android.os.Bundle;

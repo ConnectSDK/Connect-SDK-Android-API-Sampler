@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.connect_sdk_sampler"
+    package="com.connectsdk.sampler"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -16,14 +16,14 @@
     <uses-permission android:name="android.permission.GET_TASKS" />
     
     <application
-        android:name="com.example.connect_sdk_sampler.MainApplication"
+        android:name="com.connectsdk.sampler.MainApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         
         <activity
-            android:name="com.example.connect_sdk_sampler.MainActivity"
+            android:name="com.connectsdk.sampler.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
             <intent-filter>

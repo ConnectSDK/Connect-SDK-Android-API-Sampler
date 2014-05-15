@@ -9,7 +9,7 @@
 //  work. If not, see http://creativecommons.org/publicdomain/zero/1.0/.
 //
 
-package com.example.connect_sdk_sampler;
+package com.connectsdk.sampler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,11 +33,11 @@ import com.connectsdk.device.DevicePicker;
 import com.connectsdk.device.PairingDialog;
 import com.connectsdk.discovery.DiscoveryManager;
 import com.connectsdk.discovery.DiscoveryManager.PairingLevel;
+import com.connectsdk.sampler.fragments.BaseFragment;
 import com.connectsdk.service.DeviceService;
 import com.connectsdk.service.DeviceService.PairingType;
 import com.connectsdk.service.capability.MediaPlayer;
 import com.connectsdk.service.command.ServiceCommandError;
-import com.example.connect_sdk_sampler.fragments.BaseFragment;
 
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
 
@@ -177,6 +177,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     mTV.disconnect();
                 
                 connectItem.setTitle("Connect");
+                mTV.removeListener(deviceListener);
                 mTV = null;
     			mSectionsPagerAdapter.getFragment(mViewPager.getCurrentItem()).setTv(null);
             } else
@@ -200,13 +201,13 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 mTV = (ConnectableDevice)arg0.getItemAtPosition(arg2);
                 mTV.addListener(deviceListener);
                 mTV.connect();
-                connectItem.setTitle("Connected");
+                connectItem.setTitle(mTV.getFriendlyName());
             }
         });
         
         pairingAlertDialog = new AlertDialog.Builder(this)
         .setTitle("Pairing with TV")
-        .setMessage("Please confirm the connect on your TV")
+        .setMessage("Please confirm the connection on your TV")
         .setPositiveButton("Okay", null)
         .setNegativeButton("Cancel", null)
         .create();
@@ -231,6 +232,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     		Log.d("2ndScreenAPP", "Failed to connect to " + device.getIpAddress());
 
         if (mTV != null) {
+        	mTV.removeListener(deviceListener);
         	mTV.disconnect();
         	mTV = null;
         }
@@ -240,6 +242,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         if ( pairingAlertDialog.isShowing() ) {
         	pairingAlertDialog.dismiss();
         }
+        mTV.removeListener(deviceListener);
         mTV = null;
     }
 
