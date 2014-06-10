@@ -130,11 +130,17 @@ public class WebAppFragment extends BaseFragment {
 				}
 				
 				@Override
-				public void onSuccess(WebAppSession launchSession) {
-					mWebAppSession = launchSession;
+				public void onSuccess(WebAppSession webAppSession) {
+					mWebAppSession = webAppSession;
 					
-					mWebAppSession.connect(connectionListener);
-					mWebAppSession.setWebAppSessionListener(webAppListener);
+					if (getTv().hasAnyCapability(WebAppLauncher.Message_Send, WebAppLauncher.Message_Receive, WebAppLauncher.Message_Receive_JSON, WebAppLauncher.Message_Send_JSON))
+					{
+						mWebAppSession.connect(connectionListener);
+						mWebAppSession.setWebAppSessionListener(webAppListener);
+					} else
+					{
+						connectionListener.onSuccess(webAppSession.launchSession);
+					}
 				}
 			});
 		}
@@ -205,8 +211,12 @@ public class WebAppFragment extends BaseFragment {
 		
 		@Override
 		public void onSuccess(Object response) {
-			sendJSONButton.setEnabled(true);
-			sendMessageButton.setEnabled(true);
+			if (getTv().hasCapability(WebAppLauncher.Message_Send_JSON))
+				sendJSONButton.setEnabled(true);
+			
+			if (getTv().hasCapability(WebAppLauncher.Message_Send))
+				sendMessageButton.setEnabled(true);
+			
 			closeWebAppButton.setEnabled(true);
 			launchWebAppButton.setEnabled(false);
 		}
