@@ -131,16 +131,14 @@ public class WebAppFragment extends BaseFragment {
 				
 				@Override
 				public void onSuccess(WebAppSession webAppSession) {
-					mWebAppSession = webAppSession;
+					webAppSession.setWebAppSessionListener(webAppListener);
 					
 					if (getTv().hasAnyCapability(WebAppLauncher.Message_Send, WebAppLauncher.Message_Receive, WebAppLauncher.Message_Receive_JSON, WebAppLauncher.Message_Send_JSON))
-					{
-						mWebAppSession.connect(connectionListener);
-						mWebAppSession.setWebAppSessionListener(webAppListener);
-					} else
-					{
+						webAppSession.connect(connectionListener);
+					else
 						connectionListener.onSuccess(webAppSession.launchSession);
-					}
+					
+					mWebAppSession = webAppSession;
 				}
 			});
 		}
@@ -167,9 +165,9 @@ public class WebAppFragment extends BaseFragment {
 				}
 				
 				@Override
-				public void onSuccess(WebAppSession object) {
-					mWebAppSession = object;
-					mWebAppSession.setWebAppSessionListener(webAppListener);
+				public void onSuccess(WebAppSession webAppSession) {
+					webAppSession.setWebAppSessionListener(webAppListener);
+					mWebAppSession = webAppSession;
 					
 					sendMessageButton.setEnabled(true);
 					if (getTv().hasCapabilities(WebAppLauncher.Message_Send_JSON)) sendJSONButton.setEnabled(true);
@@ -200,10 +198,18 @@ public class WebAppFragment extends BaseFragment {
 		public void onWebAppSessionDisconnect(WebAppSession webAppSession) {
 			Log.d("LG", "Device was disconnected");
 			
+			if (webAppSession != mWebAppSession) {
+				webAppSession.setWebAppSessionListener(null);
+				return;
+			}
+			
 			launchWebAppButton.setEnabled(true);
 			sendMessageButton.setEnabled(false);
 			sendJSONButton.setEnabled(false);
 			closeWebAppButton.setEnabled(false);
+			
+			mWebAppSession.setWebAppSessionListener(null);
+			mWebAppSession = null;
 		}
 	};
 	
