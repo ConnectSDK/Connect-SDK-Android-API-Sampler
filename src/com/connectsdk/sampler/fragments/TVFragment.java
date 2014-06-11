@@ -149,6 +149,24 @@ public class TVFragment extends BaseFragment {
 		else {
 			disableButton(mode3DButton);
 		}
+		
+		if ( getTv().hasCapability(TVControl.Channel_List) ) {
+            getTVControl().getChannelList(new ChannelListListener() {
+    			
+    			@Override
+    			public void onSuccess(List<ChannelInfo> channelList) {
+    				adapter.clear();
+    				for (ChannelInfo channel : channelList)
+    					adapter.add(channel);
+    				adapter.sort();
+    			}
+    			
+    			@Override
+    			public void onError(ServiceCommandError arg0) {
+    				
+    			}
+    		});
+        }
         
         if ( getTv().hasCapability(TVControl.Channel_Subscribe) ) {
         	mCurrentChannelSubscription = getTVControl().subscribeCurrentChannel(new ChannelListener() {
@@ -164,24 +182,6 @@ public class TVFragment extends BaseFragment {
     			
     			@Override
     			public void onError(ServiceCommandError error) {
-    				
-    			}
-    		});
-        }
-        
-        if ( getTv().hasCapability(TVControl.Channel_List) ) {
-            getTVControl().getChannelList(new ChannelListListener() {
-    			
-    			@Override
-    			public void onSuccess(List<ChannelInfo> channelList) {
-    				adapter.clear();
-    				for (ChannelInfo channel : channelList)
-    					adapter.add(channel);
-    				adapter.sort();
-    			}
-    			
-    			@Override
-    			public void onError(ServiceCommandError arg0) {
     				
     			}
     		});
