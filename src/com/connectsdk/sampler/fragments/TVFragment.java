@@ -156,8 +156,10 @@ public class TVFragment extends BaseFragment {
     			@Override
     			public void onSuccess(final ChannelInfo ch) {
     				adapter.setCurrentChannel(ch);
-    				channelListView.smoothScrollToPosition(adapter.getCurrentPosition());
     				adapter.notifyDataSetChanged();
+    				
+    				int position = adapter.getPosition(ch);
+    				channelListView.setSelection(position);
     			}
     			
     			@Override
