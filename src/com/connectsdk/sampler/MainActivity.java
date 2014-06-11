@@ -179,7 +179,11 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 connectItem.setTitle("Connect");
                 mTV.removeListener(deviceListener);
                 mTV = null;
-    			mSectionsPagerAdapter.getFragment(mViewPager.getCurrentItem()).setTv(null);
+                for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
+                	if (mSectionsPagerAdapter.getFragment(i) != null) {
+                		mSectionsPagerAdapter.getFragment(i).setTv(null);
+                	}
+                }
             } else
             {
                 dialog.show();
