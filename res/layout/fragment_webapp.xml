@@ -55,11 +55,19 @@
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:gravity="center_horizontal" >
+	        
+	        <Button
+	            android:id="@+id/leaveWebAppButton"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:text="Leave WebApp" />
 	
 	        <Button
 	            android:id="@+id/closeWebAppButton"
-	            android:layout_width="match_parent"
+	            android:layout_width="0dp"
 	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
 	            android:text="Close WebApp" />
 	
 	    </LinearLayout>
