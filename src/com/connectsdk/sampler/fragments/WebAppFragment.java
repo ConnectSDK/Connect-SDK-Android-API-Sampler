@@ -177,6 +177,7 @@ public class WebAppFragment extends BaseFragment {
 					mWebAppSession = webAppSession;
 					
 					sendMessageButton.setEnabled(true);
+					launchWebAppButton.setEnabled(false);
 					leaveWebAppButton.setEnabled(getTv().hasCapability(WebAppLauncher.Disconnect));
 					if (getTv().hasCapabilities(WebAppLauncher.Message_Send_JSON)) sendJSONButton.setEnabled(true);
 					if (getTv().hasCapabilities(WebAppLauncher.Close)) closeWebAppButton.setEnabled(true);
