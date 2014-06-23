@@ -215,6 +215,9 @@ public class AppsFragment extends BaseFragment {
 				public void onSuccess(AppInfo appInfo) {
 					adapter.setRunningAppId(appInfo.getId());
 					adapter.notifyDataSetChanged();
+					
+					int position = adapter.getPosition(appInfo);
+					appListView.setSelection(position);
 				}
 				
 				@Override

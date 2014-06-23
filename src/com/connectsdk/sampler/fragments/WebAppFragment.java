@@ -39,6 +39,7 @@ public class WebAppFragment extends BaseFragment {
 	public final static String TAG = "Connect SDK";
 	public Button launchWebAppButton;
 	public Button joinWebAppButton;
+	public Button leaveWebAppButton;
 	public Button closeWebAppButton;
 	public Button sendMessageButton;
 	public Button sendJSONButton;
@@ -61,6 +62,7 @@ public class WebAppFragment extends BaseFragment {
 		
 		launchWebAppButton = (Button) rootView.findViewById(R.id.launchWebAppButton);
 		joinWebAppButton = (Button) rootView.findViewById(R.id.joinWebAppButton);
+		leaveWebAppButton = (Button) rootView.findViewById(R.id.leaveWebAppButton);
 		closeWebAppButton = (Button) rootView.findViewById(R.id.closeWebAppButton);
 		sendMessageButton = (Button) rootView.findViewById(R.id.sendMessageButton);
 		sendJSONButton = (Button) rootView.findViewById(R.id.sendJSONButton);
@@ -69,6 +71,7 @@ public class WebAppFragment extends BaseFragment {
 		buttons = new Button[]{
 				launchWebAppButton, 
 				joinWebAppButton, 
+				leaveWebAppButton, 
 				closeWebAppButton, 
 				sendMessageButton, 
 				sendJSONButton
@@ -91,6 +94,9 @@ public class WebAppFragment extends BaseFragment {
 		joinWebAppButton.setEnabled(getTv().hasCapability(WebAppLauncher.Launch));
 		joinWebAppButton.setOnClickListener(joinWebApp);
 		
+		leaveWebAppButton.setEnabled(getTv().hasCapability(WebAppLauncher.Disconnect));
+		leaveWebAppButton.setOnClickListener(leaveWebApp);
+		
 		if (getTv().hasCapability(WebAppLauncher.Close)) {
 			closeWebAppButton.setOnClickListener(closeWebApp);
 		}
@@ -103,6 +109,7 @@ public class WebAppFragment extends BaseFragment {
 		responseMessageTextView.setText("");
 		
 		disableButton(closeWebAppButton);
+		disableButton(leaveWebAppButton);
 		disableButton(sendMessageButton);
 		disableButton(sendJSONButton);
 	}
@@ -130,11 +137,15 @@ public class WebAppFragment extends BaseFragment {
 				}
 				
 				@Override
-				public void onSuccess(WebAppSession launchSession) {
-					mWebAppSession = launchSession;
+				public void onSuccess(WebAppSession webAppSession) {
+					webAppSession.setWebAppSessionListener(webAppListener);
 					
-					mWebAppSession.connect(connectionListener);
-					mWebAppSession.setWebAppSessionListener(webAppListener);
+					if (getTv().hasAnyCapability(WebAppLauncher.Message_Send, WebAppLauncher.Message_Receive, WebAppLauncher.Message_Receive_JSON, WebAppLauncher.Message_Send_JSON))
+						webAppSession.connect(connectionListener);
+					else
+						connectionListener.onSuccess(webAppSession.launchSession);
+					
+					mWebAppSession = webAppSession;
 				}
 			});
 		}
@@ -161,15 +172,39 @@ public class WebAppFragment extends BaseFragment {
 				}
 				
 				@Override
-				public void onSuccess(WebAppSession object) {
-					mWebAppSession = object;
-					mWebAppSession.setWebAppSessionListener(webAppListener);
+				public void onSuccess(WebAppSession webAppSession) {
+					if (getTv() == null)
+						return;
+					
+					webAppSession.setWebAppSessionListener(webAppListener);
+					mWebAppSession = webAppSession;
 					
 					sendMessageButton.setEnabled(true);
+					launchWebAppButton.setEnabled(false);
+					leaveWebAppButton.setEnabled(getTv().hasCapability(WebAppLauncher.Disconnect));
 					if (getTv().hasCapabilities(WebAppLauncher.Message_Send_JSON)) sendJSONButton.setEnabled(true);
 					if (getTv().hasCapabilities(WebAppLauncher.Close)) closeWebAppButton.setEnabled(true);
 				}
 			});
+		}
+	};
+	
+	public View.OnClickListener leaveWebApp = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			if (mWebAppSession != null) {
+				mWebAppSession.setWebAppSessionListener(null);
+				mWebAppSession.disconnectFromWebApp();
+				mWebAppSession = null;
+				
+				launchWebAppButton.setEnabled(true);
+				joinWebAppButton.setEnabled(getTv().hasCapability(WebAppLauncher.Join));
+				sendMessageButton.setEnabled(false);
+				sendJSONButton.setEnabled(false);
+				leaveWebAppButton.setEnabled(false);
+				closeWebAppButton.setEnabled(false);
+			}
 		}
 	};
 	
@@ -194,10 +229,20 @@ public class WebAppFragment extends BaseFragment {
 		public void onWebAppSessionDisconnect(WebAppSession webAppSession) {
 			Log.d("LG", "Device was disconnected");
 			
+			if (webAppSession != mWebAppSession) {
+				webAppSession.setWebAppSessionListener(null);
+				return;
+			}
+			
 			launchWebAppButton.setEnabled(true);
+			if (getTv() != null) joinWebAppButton.setEnabled(getTv().hasCapability(WebAppLauncher.Join));
 			sendMessageButton.setEnabled(false);
 			sendJSONButton.setEnabled(false);
+			leaveWebAppButton.setEnabled(false);
 			closeWebAppButton.setEnabled(false);
+			
+			mWebAppSession.setWebAppSessionListener(null);
+			mWebAppSession = null;
 		}
 	};
 	
@@ -205,8 +250,17 @@ public class WebAppFragment extends BaseFragment {
 		
 		@Override
 		public void onSuccess(Object response) {
-			sendJSONButton.setEnabled(true);
-			sendMessageButton.setEnabled(true);
+			if (getTv() == null)
+				return;
+			
+			if (getTv().hasCapability(WebAppLauncher.Message_Send_JSON))
+				sendJSONButton.setEnabled(true);
+			
+			if (getTv().hasCapability(WebAppLauncher.Message_Send))
+				sendMessageButton.setEnabled(true);
+			
+			leaveWebAppButton.setEnabled(getTv().hasCapability(WebAppLauncher.Disconnect));
+			
 			closeWebAppButton.setEnabled(true);
 			launchWebAppButton.setEnabled(false);
 		}
@@ -297,6 +351,7 @@ public class WebAppFragment extends BaseFragment {
 			closeWebAppButton.setEnabled(false);
 			sendMessageButton.setEnabled(false);
 			sendJSONButton.setEnabled(false);
+			leaveWebAppButton.setEnabled(false);
 			
 			mWebAppSession.setWebAppSessionListener(null);
 			mWebAppSession.close(new ResponseListener<Object>() {

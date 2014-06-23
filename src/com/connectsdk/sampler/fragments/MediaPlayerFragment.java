@@ -54,9 +54,7 @@ public class MediaPlayerFragment extends BaseFragment {
     public Button fastForwardButton;
     public Button closeButton;
     
-    public LaunchSession photoLaunchSession;
-    public LaunchSession videoLaunchSession;
-    public LaunchSession audioLaunchSession;
+    public LaunchSession launchSession;
     
     public TextView positionTextView;
     public TextView durationTextView;
@@ -147,17 +145,13 @@ public class MediaPlayerFragment extends BaseFragment {
 
     			@Override
     			public void onClick(View view) {
-					if (photoLaunchSession != null) {
-						photoLaunchSession.close(null);
-             			photoLaunchSession = null;
+					if (launchSession != null) {
+						launchSession.close(null);
+						launchSession = null;
              			closeButton.setEnabled(false);
              			closeButton.setOnClickListener(null);
              			stopUpdating();
-             			return;
              		}
-					
-					videoLaunchSession = null;
-					audioLaunchSession = null;
 					
 					disableMedia();
 					
@@ -171,7 +165,7 @@ public class MediaPlayerFragment extends BaseFragment {
 						
 	         			@Override
 	         			public void onSuccess(MediaLaunchObject object) {
-	         				photoLaunchSession = object.launchSession;
+	         				launchSession = object.launchSession;
 	         				closeButton.setEnabled(true);
 	         				closeButton.setOnClickListener(closeListener);
 	         				stopUpdating();
@@ -196,17 +190,13 @@ public class MediaPlayerFragment extends BaseFragment {
 
     			@Override
     			public void onClick(View view) {
-             		if (videoLaunchSession != null) {
-             			videoLaunchSession.close(null);
-             			videoLaunchSession = null;
+             		if (launchSession != null) {
+             			launchSession.close(null);
+             			launchSession = null;
              			stopUpdating();
              			disableMedia();
-             			return;
              		}
              		
-             		audioLaunchSession = null;
-					photoLaunchSession = null;
-
              		String videoPath = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/video.mp4";
              		String mimeType = "video/mp4";
              		String title = "Sintel Trailer";
@@ -216,7 +206,7 @@ public class MediaPlayerFragment extends BaseFragment {
              		getMediaPlayer().playMedia(videoPath, mimeType, title, description, icon, false, new MediaPlayer.LaunchListener() {
 						
              			public void onSuccess(MediaLaunchObject object) {
-							videoLaunchSession = object.launchSession;
+             				launchSession = object.launchSession;
 							mMediaControl = object.mediaControl;
 							stopUpdating();
 							enableMedia();
@@ -239,16 +229,12 @@ public class MediaPlayerFragment extends BaseFragment {
 				
 				@Override
 				public void onClick(View view) {
-					if (audioLaunchSession != null) {
-						audioLaunchSession.close(null);
-						audioLaunchSession = null;
+					if (launchSession != null) {
+						launchSession.close(null);
+						launchSession = null;
 						stopUpdating();
 						disableMedia();
-						return;
 					}
-					
-					videoLaunchSession = null;
-					photoLaunchSession = null;
 					
 					String mediaURL = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/audio.mp3";
 					String iconURL = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/audioIcon.jpg";
@@ -268,7 +254,7 @@ public class MediaPlayerFragment extends BaseFragment {
 						public void onSuccess(MediaLaunchObject object) {
 							Log.d("LG", "Started playing audio");
 							
-							audioLaunchSession = object.launchSession;
+							launchSession = object.launchSession;
 							mMediaControl = object.mediaControl;
 							
 							stopUpdating();
@@ -400,16 +386,10 @@ public class MediaPlayerFragment extends BaseFragment {
 		@Override
 		public void onClick(View view) {
 			if (getMediaPlayer() != null) {
-				if (photoLaunchSession != null)
-					photoLaunchSession.close(null);
-				if (videoLaunchSession != null)
-					videoLaunchSession.close(null);
-				if (audioLaunchSession != null)
-					audioLaunchSession.close(null);
+				if (launchSession != null)
+					launchSession.close(null);
 				
-				photoLaunchSession = null;
-				videoLaunchSession = null;
-				audioLaunchSession = null;
+				launchSession = null;
 
 				disableMedia();
 				stopUpdating();
