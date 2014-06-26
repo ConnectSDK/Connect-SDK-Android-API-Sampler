@@ -208,7 +208,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 mTV.connect();
                 connectItem.setTitle(mTV.getFriendlyName());
                 
-                dp.getDevicePickerListener().onPickDevice(mTV);
+                dp.pickDevice(mTV);
             }
         });
         
@@ -220,7 +220,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				dp.getDevicePickerListener().onPickDeviceFailed(true);
+				dp.cancelPicker();
 				
 				hConnectToggle();
 			}
@@ -247,7 +247,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
 	    	@Override
 	    	public void onClick(DialogInterface dialog, int whichButton) {
-				dp.getDevicePickerListener().onPickDeviceFailed(true);
+				dp.cancelPicker();
 				
 				hConnectToggle();
 	        }
