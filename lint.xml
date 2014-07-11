@@ -2,5 +2,6 @@
 <lint>
     <issue id="DefaultLocale" severity="ignore" />
     <issue id="MissingTranslation" severity="ignore" />
+    <issue id="OldTargetApi" severity="ignore" />
     <issue id="ValidFragment" severity="ignore" />
 </lint>
