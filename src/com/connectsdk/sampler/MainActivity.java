@@ -15,22 +15,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.connectsdk.device.ConnectableDevice;
 import com.connectsdk.device.ConnectableDeviceListener;
 import com.connectsdk.device.DevicePicker;
-import com.connectsdk.device.PairingDialog;
 import com.connectsdk.discovery.DiscoveryManager;
 import com.connectsdk.discovery.DiscoveryManager.PairingLevel;
 import com.connectsdk.sampler.fragments.BaseFragment;
@@ -44,6 +46,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     private ConnectableDevice mTV;
     private AlertDialog dialog;
     private AlertDialog pairingAlertDialog;
+    private AlertDialog pairingCodeDialog;
+    private DevicePicker dp; 
     
     private MenuItem connectItem;
 
@@ -65,10 +69,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 					
 				case PIN_CODE:
 					Log.d("2ndScreenAPP", "Pin Code");
-					PairingDialog dialog = new PairingDialog(MainActivity.this, mTV);
-					
-					AlertDialog d = dialog.getPairingDialog("Enter Pairing Code on TV");
-					d.show();
+					pairingCodeDialog.show();
 					break;
 				
 				case NONE:
@@ -195,7 +196,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     {
     	DiscoveryManager.getInstance().registerDefaultDeviceTypes();
 
-        DevicePicker dp = new DevicePicker(this);
+        dp = new DevicePicker(this);
         dialog = dp.getPickerDialog("Device List", new AdapterView.OnItemClickListener() {
 
             @Override
@@ -206,6 +207,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 mTV.addListener(deviceListener);
                 mTV.connect();
                 connectItem.setTitle(mTV.getFriendlyName());
+                
+                dp.pickDevice(mTV);
             }
         });
         
@@ -213,8 +216,43 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         .setTitle("Pairing with TV")
         .setMessage("Please confirm the connection on your TV")
         .setPositiveButton("Okay", null)
-        .setNegativeButton("Cancel", null)
+        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dp.cancelPicker();
+				
+				hConnectToggle();
+			}
+		})
         .create();
+        
+	    final EditText input = new EditText(this);
+	    input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        
+        pairingCodeDialog = new AlertDialog.Builder(this)
+        .setTitle("Enter Pairing Code on TV")
+		.setView(input)
+		.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface arg0, int arg1) {
+				if (mTV != null) {
+		            String value = input.getText().toString().trim();
+					mTV.sendPairingKey(value);
+				}
+			}
+	    })
+	    .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+
+	    	@Override
+	    	public void onClick(DialogInterface dialog, int whichButton) {
+				dp.cancelPicker();
+				
+				hConnectToggle();
+	        }
+	    })
+		.create();
     }
     
     @Override
