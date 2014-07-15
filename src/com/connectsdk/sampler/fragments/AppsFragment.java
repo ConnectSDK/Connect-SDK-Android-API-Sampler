@@ -281,7 +281,7 @@ public class AppsFragment extends BaseFragment {
 		myAppButton.setEnabled(getTv().hasCapability("Launcher.Levak"));
 		myAppButton.setOnClickListener(myAppLaunch);
 		
-		appStoreButton.setEnabled(getTv().hasCapability(Launcher.AppStore));
+		appStoreButton.setEnabled(getTv().hasCapability(Launcher.AppStore_Params));
 		appStoreButton.setOnClickListener(launchAppStore);
     }
     
