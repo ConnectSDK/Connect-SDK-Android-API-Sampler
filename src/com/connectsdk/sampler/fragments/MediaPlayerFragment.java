@@ -407,9 +407,24 @@ public class MediaPlayerFragment extends BaseFragment {
 				public void onSuccess(Object response) {
 					stopUpdating();
 					
-					positionTextView.setText("--:--");
-					durationTextView.setText("--:--");
-					mSeekBar.setProgress(0);
+					playButton.setEnabled(false);
+			    	playButton.setOnClickListener(null);
+			    	pauseButton.setEnabled(false);
+			    	pauseButton.setOnClickListener(null);
+			    	stopButton.setEnabled(false);
+			    	stopButton.setOnClickListener(null);
+			    	rewindButton.setEnabled(false);
+			    	rewindButton.setOnClickListener(null);
+			    	fastForwardButton.setEnabled(false);
+			    	fastForwardButton.setOnClickListener(null);
+			       	mSeekBar.setEnabled(false);
+			       	mSeekBar.setOnSeekBarChangeListener(null);
+			       	mSeekBar.setProgress(0);
+			       	
+			       	positionTextView.setText("--:--:--");
+			       	durationTextView.setText("--:--:--");
+			       	
+			       	totalTimeDuration = -1;
 				}
 				
 				@Override
