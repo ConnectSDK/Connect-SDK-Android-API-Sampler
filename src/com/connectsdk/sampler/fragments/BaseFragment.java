@@ -49,6 +49,8 @@ public class BaseFragment extends Fragment {
     public Button[] buttons;
     Context mContext;
 
+    public BaseFragment() {}
+    
     public BaseFragment(Context context)
     {
         mContext = context;
