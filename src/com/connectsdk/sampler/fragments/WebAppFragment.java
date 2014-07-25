@@ -125,7 +125,7 @@ public class WebAppFragment extends BaseFragment {
 			else if (getTv().getServiceByName(CastService.ID) != null)
 				webAppId = "DDCEDE96";
 			else if (getTv().getServiceByName(MultiScreenService.ID) != null)
-				webAppId = "ConnectSDK";
+				webAppId = "ConnectSDKSampler";
 			else
 				return;
 
@@ -165,7 +165,7 @@ public class WebAppFragment extends BaseFragment {
 			else if (getTv().getServiceByName(CastService.ID) != null)
 				webAppId = "DDCEDE96";
 			else if (getTv().getServiceByName(MultiScreenService.ID) != null)
-				webAppId = "ConnectSDK";
+				webAppId = "ConnectSDKSampler";
 			else
 				return;
 			
