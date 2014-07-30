@@ -507,10 +507,8 @@ public class MediaPlayerFragment extends BaseFragment {
 				durationTextView.setText("--:--");
 				mSeekBar.setProgress(0);
 				
-			case Paused:
-				stopUpdating();
-				break;
 			default:
+				stopUpdating();
 				break;
 			}
 		}
