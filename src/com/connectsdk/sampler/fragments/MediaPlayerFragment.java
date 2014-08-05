@@ -405,11 +405,8 @@ public class MediaPlayerFragment extends BaseFragment {
 				
 				@Override
 				public void onSuccess(Object response) {
+					disableMedia();
 					stopUpdating();
-					
-					positionTextView.setText("--:--");
-					durationTextView.setText("--:--");
-					mSeekBar.setProgress(0);
 				}
 				
 				@Override
