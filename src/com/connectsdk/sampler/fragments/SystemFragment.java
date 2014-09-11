@@ -184,9 +184,11 @@ public class SystemFragment extends BaseFragment {
 		
 		@Override
 		public void onClick(View v) {
-			if ( inputPickerButton.isSelected() ) { 
-				inputPickerButton.setSelected(false);
-				getExternalInputControl().closeInputPicker(inputPickerSession, null);
+			if (inputPickerButton.isSelected()) {
+				if (inputPickerSession != null) {
+					inputPickerButton.setSelected(false);
+					getExternalInputControl().closeInputPicker(inputPickerSession, null);
+				}
 			}
 			else {
 				inputPickerButton.setSelected(true);
