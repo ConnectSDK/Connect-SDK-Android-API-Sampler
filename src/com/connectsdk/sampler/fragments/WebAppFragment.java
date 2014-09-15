@@ -25,8 +25,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.connectsdk.sampler.R;
-import com.connectsdk.service.CastService;
-import com.connectsdk.service.MultiScreenService;
+import com.connectsdk.androidgooglecast.CastService;
+import com.connectsdk.samsungmultiscreen.MultiScreenService;
 import com.connectsdk.service.WebOSTVService;
 import com.connectsdk.service.capability.WebAppLauncher;
 import com.connectsdk.service.capability.listeners.ResponseListener;
