@@ -11,23 +11,30 @@
 
 package com.connectsdk.sampler.fragments;
 
+import java.io.InputStream;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
+import com.connectsdk.core.MediaInfo;
 import com.connectsdk.device.ConnectableDevice;
 import com.connectsdk.sampler.R;
 import com.connectsdk.service.capability.MediaControl;
@@ -36,6 +43,7 @@ import com.connectsdk.service.capability.MediaControl.PlayStateListener;
 import com.connectsdk.service.capability.MediaControl.PlayStateStatus;
 import com.connectsdk.service.capability.MediaControl.PositionListener;
 import com.connectsdk.service.capability.MediaPlayer;
+import com.connectsdk.service.capability.MediaPlayer.MediaInfoListener;
 import com.connectsdk.service.capability.MediaPlayer.MediaLaunchObject;
 import com.connectsdk.service.capability.VolumeControl;
 import com.connectsdk.service.capability.VolumeControl.VolumeListener;
@@ -53,14 +61,18 @@ public class MediaPlayerFragment extends BaseFragment {
     public Button rewindButton;
     public Button fastForwardButton;
     public Button closeButton;
+    public Button mediaInfoButton;
     
     public LaunchSession launchSession;
     
     public TextView positionTextView;
     public TextView durationTextView;
+    public TextView mediaInfoTextView;
     public SeekBar mSeekBar;
     public boolean mIsUserSeeking;
     public SeekBar mVolumeBar;
+    
+    public ImageView mediaInfoImageView;
 
     public boolean mSeeking;
     public Runnable mRefreshRunnable;
@@ -97,11 +109,15 @@ public class MediaPlayerFragment extends BaseFragment {
         rewindButton = (Button) rootView.findViewById(R.id.rewindButton);
         fastForwardButton = (Button) rootView.findViewById(R.id.fastForwardButton);
         closeButton = (Button) rootView.findViewById(R.id.closeButton);
+        mediaInfoButton = (Button) rootView.findViewById(R.id.mediaInfo_button);
         
         positionTextView = (TextView) rootView.findViewById(R.id.stream_position);
         durationTextView = (TextView) rootView.findViewById(R.id.stream_duration);
+        mediaInfoTextView = (TextView) rootView.findViewById(R.id.mediaInfo_textView);
         mSeekBar = (SeekBar) rootView.findViewById(R.id.stream_seek_bar);
         mVolumeBar = (SeekBar) rootView.findViewById(R.id.volume_seek_bar);
+        
+        mediaInfoImageView = (ImageView) rootView.findViewById(R.id.mediaInfo_imageView);
         
         buttons = new Button[] {
         	photoButton, 
@@ -112,7 +128,8 @@ public class MediaPlayerFragment extends BaseFragment {
         	stopButton, 
         	rewindButton, 
         	fastForwardButton, 
-        	closeButton
+        	closeButton,
+        	mediaInfoButton
         };
 
         mHandler = new Handler();
@@ -277,7 +294,20 @@ public class MediaPlayerFragment extends BaseFragment {
     	if (getTv().hasCapability(VolumeControl.Volume_Subscribe)) {
     		getVolumeControl().subscribeVolume(getVolumeListener);
     	}
-
+    	
+    	if (getTv().hasCapability(MediaPlayer.MediaInfo)) {
+    		mediaInfoButton.setEnabled(true);
+    		mediaInfoButton.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					getMediaPlayer().getMediaInfo(mediaInfoListener);
+				}
+			});
+    		getMediaPlayer().subscribeMediaInfo(mediaInfoListener);
+    	}
+    	else mediaInfoButton.setEnabled(false);
+    	
     	disableMedia();
     }
 
@@ -288,6 +318,9 @@ public class MediaPlayerFragment extends BaseFragment {
 		mVolumeBar.setOnSeekBarChangeListener(null);
 		positionTextView.setEnabled(false);
 		durationTextView.setEnabled(false);
+		
+		mediaInfoTextView.setText("");
+		mediaInfoImageView.setImageBitmap(null);
 		
 		super.disableButtons();
 	}
@@ -405,26 +438,8 @@ public class MediaPlayerFragment extends BaseFragment {
 				
 				@Override
 				public void onSuccess(Object response) {
+					disableMedia();
 					stopUpdating();
-					
-					playButton.setEnabled(false);
-			    	playButton.setOnClickListener(null);
-			    	pauseButton.setEnabled(false);
-			    	pauseButton.setOnClickListener(null);
-			    	stopButton.setEnabled(false);
-			    	stopButton.setOnClickListener(null);
-			    	rewindButton.setEnabled(false);
-			    	rewindButton.setOnClickListener(null);
-			    	fastForwardButton.setEnabled(false);
-			    	fastForwardButton.setOnClickListener(null);
-			       	mSeekBar.setEnabled(false);
-			       	mSeekBar.setOnSeekBarChangeListener(null);
-			       	mSeekBar.setProgress(0);
-			       	
-			       	positionTextView.setText("--:--:--");
-			       	durationTextView.setText("--:--:--");
-			       	
-			       	totalTimeDuration = -1;
 				}
 				
 				@Override
@@ -522,10 +537,8 @@ public class MediaPlayerFragment extends BaseFragment {
 				durationTextView.setText("--:--");
 				mSeekBar.setProgress(0);
 				
-			case Paused:
-				stopUpdating();
-				break;
 			default:
+				stopUpdating();
 				break;
 			}
 		}
@@ -588,6 +601,26 @@ public class MediaPlayerFragment extends BaseFragment {
 		}
 	};
 	
+	private MediaInfoListener mediaInfoListener = new MediaInfoListener() {
+
+		@Override
+		public void onSuccess(MediaInfo mediaInfo) {
+			String text = mediaInfo.getTitle();
+			text += "\n";
+			text += mediaInfo.getDescription();
+			mediaInfoTextView.setText(text);
+			final String stringUrl = mediaInfo.getImages().get(0).getUrl();
+			
+			if (stringUrl!=null) new DownloadImageTask(mediaInfoImageView).execute(stringUrl);
+		}
+
+		@Override
+		public void onError(ServiceCommandError error) {
+			
+		}
+		
+	};
+	
 	private String formatTime(long millisec) {
 		int seconds = (int) (millisec / 1000);
 		int hours = seconds / (60 * 60);
@@ -604,5 +637,30 @@ public class MediaPlayerFragment extends BaseFragment {
 		}
 
 		return time;
+	}
+	
+	private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+		ImageView bmImage;
+
+		public DownloadImageTask(ImageView bmImage) {
+		    this.bmImage = bmImage;
+		}
+
+		protected Bitmap doInBackground(String... urls) {
+		    String urldisplay = urls[0];
+		    Bitmap mIcon11 = null;
+		    try {
+		        InputStream in = new java.net.URL(urldisplay).openStream();
+		        mIcon11 = BitmapFactory.decodeStream(in);
+		    } catch (Exception e) {
+		        Log.e("Error", e.getMessage());
+		        e.printStackTrace();
+		    }
+		    return mIcon11;
+		}
+
+		protected void onPostExecute(Bitmap result) {
+		    bmImage.setImageBitmap(result);
+		}
 	}
 }
