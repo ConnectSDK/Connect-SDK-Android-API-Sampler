@@ -343,6 +343,13 @@ public class MediaPlayerFragment extends BaseFragment {
 	}
 	
 	public void disableMedia() {
+       	closeButton.setEnabled(false);
+       	closeButton.setOnClickListener(null);
+       	
+       	stopMedia();
+	}
+	
+	public void stopMedia() {
 		playButton.setEnabled(false);
     	playButton.setOnClickListener(null);
     	pauseButton.setEnabled(false);
@@ -356,8 +363,6 @@ public class MediaPlayerFragment extends BaseFragment {
        	mSeekBar.setEnabled(false);
        	mSeekBar.setOnSeekBarChangeListener(null);
        	mSeekBar.setProgress(0);
-       	closeButton.setEnabled(false);
-       	closeButton.setOnClickListener(null);
        	
        	positionTextView.setText("--:--:--");
        	durationTextView.setText("--:--:--");
@@ -405,7 +410,7 @@ public class MediaPlayerFragment extends BaseFragment {
 				
 				@Override
 				public void onSuccess(Object response) {
-					disableMedia();
+					stopMedia();
 					stopUpdating();
 				}
 				
