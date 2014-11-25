@@ -26,7 +26,6 @@ import android.widget.TextView;
 
 import com.connectsdk.sampler.R;
 import com.connectsdk.service.CastService;
-import com.connectsdk.service.MultiScreenService;
 import com.connectsdk.service.WebOSTVService;
 import com.connectsdk.service.capability.WebAppLauncher;
 import com.connectsdk.service.capability.listeners.ResponseListener;
@@ -124,8 +123,6 @@ public class WebAppFragment extends BaseFragment {
 				webAppId = "SampleWebApp";
 			else if (getTv().getServiceByName(CastService.ID) != null)
 				webAppId = "DDCEDE96";
-			else if (getTv().getServiceByName(MultiScreenService.ID) != null)
-				webAppId = "ConnectSDKSampler";
 			else
 				return;
 
@@ -164,8 +161,6 @@ public class WebAppFragment extends BaseFragment {
 				webAppId = "SampleWebApp";
 			else if (getTv().getServiceByName(CastService.ID) != null)
 				webAppId = "DDCEDE96";
-			else if (getTv().getServiceByName(MultiScreenService.ID) != null)
-				webAppId = "ConnectSDKSampler";
 			else
 				return;
 			
