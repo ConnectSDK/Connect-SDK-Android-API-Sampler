@@ -295,7 +295,8 @@ public class MediaPlayerFragment extends BaseFragment {
     		getVolumeControl().subscribeVolume(getVolumeListener);
     	}
     	
-    	if (getTv().hasCapability(MediaPlayer.MediaInfo)) {
+
+    	if (getTv().hasCapability(MediaPlayer.MediaInfo_Get)) {
     		mediaInfoButton.setEnabled(true);
     		mediaInfoButton.setOnClickListener(new OnClickListener() {
 				
@@ -304,9 +305,13 @@ public class MediaPlayerFragment extends BaseFragment {
 					getMediaPlayer().getMediaInfo(mediaInfoListener);
 				}
 			});
+    	}
+    	else 
+    		mediaInfoButton.setEnabled(false);
+    	
+    	if (getTv().hasCapability(MediaPlayer.MediaInfo_Subscribe)) {
     		getMediaPlayer().subscribeMediaInfo(mediaInfoListener);
     	}
-    	else mediaInfoButton.setEnabled(false);
     	
     	disableMedia();
     }
