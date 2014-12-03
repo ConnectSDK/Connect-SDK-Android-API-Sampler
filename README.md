@@ -10,20 +10,21 @@ For more information, visit our [website](http://www.connectsdk.com/).
 
 ##Dependencies
 - [Android v7 appcompat library](http://developer.android.com/tools/support-library/features.html#v7-appcompat)
-- Android SDK v19 (the Sampler app targets v19, but works on v9 and greater)
-- [Android v7 mediarouter library](http://developer.android.com/tools/support-library/features.html#v7-mediarouter)
-- [Google google-play-services library](http://developer.android.com/google/play-services/setup.html#Install)
+- Android SDK v21 (the Sampler app targets v21, but works on v9 and greater)
+- [Connect-SDK-Android-Core](https://github.com/ConnectSDK/Connect-SDK-Android-Core)
+- [Connect-SDK-Android-Google-Cast](https://github.com/ConnectSDK/Connect-SDK-Android-Google-Cast) for full version of Connect-SDK
 
 ##Setup
-0. Import the Android v7 appcompat libary and media router library into your Eclipse workspace
-1. Import the Google google-play-services library into your Eclipse workspace
-2. Download & unzip the Connect SDK Sampler App ZIP file
-3. Import the Sampler project into Eclipse
-4. In the Sampler project's Properties window, click the Android tab
-5. In the Library pane, click the Add button
-6. Select the android-support-v7-appcompat libary, android-support-v7-mediarouter library, and google-play-services_lib library and click OK
-7. Click Apply and then click OK to close the Properties window
-8. See https://github.com/ConnectSDK/Connect-SDK-Android for the remainder of the setup
+1. Setup Connect-SDK-Android [full](https://github.com/ConnectSDK/Connect-SDK-Android) or [lite](https://github.com/ConnectSDK/Connect-SDK-Android-Lite) version
+2. Import the Android v7 appcompat libary into your Eclipse workspace
+3. Import the Google google-play-services library into your Eclipse workspace (for full version of Connect-SDK)
+4. [Clone project](https://github.com/ConnectSDK/Connect-SDK-Android-API-Sampler) or [Download & unzip](https://github.com/ConnectSDK/Connect-SDK-Android-API-Sampler/archive/master.zip) the Connect SDK Sampler App ZIP file
+5. Import the Sampler project into Eclipse
+6. Right-click the `Connect-SDK-Android-API-Sampler` project and select `Properties`, in the `Library` pane of the `Android` tab add following libraries
+   - android-support-v7-appcompat
+   - Connect-SDK-Android-Core
+   - Connect-SDK-Android-Google-Cast (for full version)
+8. See [https://github.com/ConnectSDK/Connect-SDK-Android](https://github.com/ConnectSDK/Connect-SDK-Android) for the remainder of the setup
 
 ##Contact
 * Twitter: [@ConnectSDK](https://www.twitter.com/ConnectSDK)
