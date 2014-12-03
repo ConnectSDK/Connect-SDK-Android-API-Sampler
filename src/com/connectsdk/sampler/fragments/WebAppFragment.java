@@ -25,8 +25,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.connectsdk.sampler.R;
-import com.connectsdk.service.CastService;
-import com.connectsdk.service.WebOSTVService;
 import com.connectsdk.service.capability.WebAppLauncher;
 import com.connectsdk.service.capability.listeners.ResponseListener;
 import com.connectsdk.service.command.ServiceCommandError;
@@ -43,6 +41,9 @@ public class WebAppFragment extends BaseFragment {
 	public Button closeWebAppButton;
 	public Button sendMessageButton;
 	public Button sendJSONButton;
+	public final static String WEBOSID = "webOS TV";
+	public final static String GOOGLECASTID = "Chromecast";
+	
 	TextView responseMessageTextView;
     LaunchSession runningAppSession;
     
@@ -119,9 +120,9 @@ public class WebAppFragment extends BaseFragment {
 		@Override
 		public void onClick(View v) {
 			String webAppId = "";
-			if (getTv().getServiceByName(WebOSTVService.ID) != null)
+			if (getTv().getServiceByName(WEBOSID) != null)
 				webAppId = "SampleWebApp";
-			else if (getTv().getServiceByName(CastService.ID) != null)
+			else if (getTv().getServiceByName(GOOGLECASTID) != null)
 				webAppId = "DDCEDE96";
 			else
 				return;
@@ -157,9 +158,9 @@ public class WebAppFragment extends BaseFragment {
 		public void onClick(View v) {
 			String webAppId = "";
 			
-			if (getTv().getServiceByName(WebOSTVService.ID) != null)
+			if (getTv().getServiceByName(WEBOSID) != null)
 				webAppId = "SampleWebApp";
-			else if (getTv().getServiceByName(CastService.ID) != null)
+			else if (getTv().getServiceByName(GOOGLECASTID) != null)
 				webAppId = "DDCEDE96";
 			else
 				return;
