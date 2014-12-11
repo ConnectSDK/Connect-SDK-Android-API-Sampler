@@ -81,6 +81,9 @@ public class MediaPlayerFragment extends BaseFragment {
     public long totalTimeDuration;
     public boolean mIsGettingPlayPosition;
     
+    private boolean isPlayingImage = false;
+    private boolean isPlaying = false;
+    
     private MediaControl mMediaControl = null;
     
     private Timer refreshTimer;
@@ -97,6 +100,8 @@ public class MediaPlayerFragment extends BaseFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		
+		setRetainInstance(true);
 		View rootView = inflater.inflate(
 				R.layout.fragment_media_player, container, false);
 
@@ -155,7 +160,7 @@ public class MediaPlayerFragment extends BaseFragment {
 
 	@Override
     public void enableButtons()
-    {
+    { 
     	if ( getTv().hasCapability(MediaPlayer.Display_Image) ) {
     		photoButton.setEnabled(true);
     		photoButton.setOnClickListener(new View.OnClickListener() {
@@ -168,6 +173,7 @@ public class MediaPlayerFragment extends BaseFragment {
              			closeButton.setEnabled(false);
              			closeButton.setOnClickListener(null);
              			stopUpdating();
+             			isPlaying = isPlayingImage = false;
              		}
 					
 					disableMedia();
@@ -186,6 +192,7 @@ public class MediaPlayerFragment extends BaseFragment {
 	         				closeButton.setEnabled(true);
 	         				closeButton.setOnClickListener(closeListener);
 	         				stopUpdating();
+	         				isPlayingImage = true;
 						}
 						
 						@Override
@@ -212,6 +219,7 @@ public class MediaPlayerFragment extends BaseFragment {
              			launchSession = null;
              			stopUpdating();
              			disableMedia();
+             			isPlaying = isPlayingImage = false;
              		}
              		
              		String videoPath = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/video.mp4";
@@ -227,6 +235,7 @@ public class MediaPlayerFragment extends BaseFragment {
 							mMediaControl = object.mediaControl;
 							stopUpdating();
 							enableMedia();
+							isPlaying = true;
 						}
 						
 						@Override
@@ -251,6 +260,7 @@ public class MediaPlayerFragment extends BaseFragment {
 						launchSession = null;
 						stopUpdating();
 						disableMedia();
+						isPlaying = isPlayingImage = false;
 					}
 					
 					String mediaURL = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/audio.mp3";
@@ -276,6 +286,7 @@ public class MediaPlayerFragment extends BaseFragment {
 							
 							stopUpdating();
 							enableMedia();
+							isPlaying = true;
 						}
 					});
 				}
@@ -283,6 +294,8 @@ public class MediaPlayerFragment extends BaseFragment {
     	} else {
     		disableButton(audioButton);
     	}
+    	
+    
     	
     	mVolumeBar.setEnabled(getTv().hasCapability(VolumeControl.Volume_Set));
     	mVolumeBar.setOnSeekBarChangeListener(volumeListener);
@@ -311,8 +324,14 @@ public class MediaPlayerFragment extends BaseFragment {
     	if (getTv().hasCapability(MediaPlayer.MediaInfo_Subscribe)) {
     		getMediaPlayer().subscribeMediaInfo(mediaInfoListener);
     	}
-    	
+    	if (!isPlaying && !isPlayingImage)
     	disableMedia();
+    	else if (isPlaying) enableMedia();
+    	else {
+    		closeButton.setEnabled(true);
+			closeButton.setOnClickListener(closeListener);
+			stopUpdating();
+			}
     }
 
 	@Override
@@ -370,7 +389,7 @@ public class MediaPlayerFragment extends BaseFragment {
         pauseButton.setOnClickListener(pauseListener);
         closeButton.setOnClickListener(closeListener);
         
-        if (getTv().hasCapability(MediaControl.PlayState_Subscribe)) {
+        if (getTv().hasCapability(MediaControl.PlayState_Subscribe) && !isPlaying) {
         	mMediaControl.subscribePlayState(playStateListener);
         } else {
         	mMediaControl.getDuration(durationListener);
@@ -435,6 +454,7 @@ public class MediaPlayerFragment extends BaseFragment {
 
 				disableMedia();
 				stopUpdating();
+				isPlaying = isPlayingImage = false;
 			}
 		}
 	};
@@ -449,6 +469,7 @@ public class MediaPlayerFragment extends BaseFragment {
 				public void onSuccess(Object response) {
 					stopMedia();
 					stopUpdating();
+					isPlaying = false;
 				}
 				
 				@Override

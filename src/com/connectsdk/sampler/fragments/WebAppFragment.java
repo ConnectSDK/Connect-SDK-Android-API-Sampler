@@ -46,6 +46,8 @@ public class WebAppFragment extends BaseFragment {
 	private final static String CASTID = "Chromecast";
 	private final static String MULTISCREENID = "MultiScreen";
 	
+	private boolean isLaunched = false;
+	
 	TextView responseMessageTextView;
     LaunchSession runningAppSession;
     
@@ -59,7 +61,7 @@ public class WebAppFragment extends BaseFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		
+		setRetainInstance(true);
 		View rootView = inflater.inflate(
 				R.layout.fragment_webapp, container, false);
 		
@@ -111,10 +113,14 @@ public class WebAppFragment extends BaseFragment {
 		
 		responseMessageTextView.setText("");
 		
+		if (!isLaunched) {
 		disableButton(closeWebAppButton);
 		disableButton(leaveWebAppButton);
 		disableButton(sendMessageButton);
-		disableButton(sendJSONButton);
+		disableButton(sendJSONButton);}
+		else {
+			disableButton(launchWebAppButton);
+		}
 	}
 	
 	public View.OnClickListener launchWebApp = new View.OnClickListener() {
@@ -144,6 +150,7 @@ public class WebAppFragment extends BaseFragment {
 				@Override
 				public void onSuccess(WebAppSession webAppSession) {
 					webAppSession.setWebAppSessionListener(webAppListener);
+					isLaunched = true;
 					
 					if (getTv().hasAnyCapability(WebAppLauncher.Message_Send, WebAppLauncher.Message_Receive, WebAppLauncher.Message_Receive_JSON, WebAppLauncher.Message_Send_JSON))
 						webAppSession.connect(connectionListener);
@@ -191,6 +198,7 @@ public class WebAppFragment extends BaseFragment {
 					leaveWebAppButton.setEnabled(getTv().hasCapability(WebAppLauncher.Disconnect));
 					if (getTv().hasCapabilities(WebAppLauncher.Message_Send_JSON)) sendJSONButton.setEnabled(true);
 					if (getTv().hasCapabilities(WebAppLauncher.Close)) closeWebAppButton.setEnabled(true);
+					isLaunched = true;
 				}
 			});
 		}
@@ -211,6 +219,7 @@ public class WebAppFragment extends BaseFragment {
 				sendJSONButton.setEnabled(false);
 				leaveWebAppButton.setEnabled(false);
 				closeWebAppButton.setEnabled(false);
+				isLaunched = false;
 			}
 		}
 	};
@@ -250,6 +259,7 @@ public class WebAppFragment extends BaseFragment {
 			
 			mWebAppSession.setWebAppSessionListener(null);
 			mWebAppSession = null;
+			isLaunched = false;
 		}
 	};
 	
@@ -270,6 +280,7 @@ public class WebAppFragment extends BaseFragment {
 			
 			closeWebAppButton.setEnabled(true);
 			launchWebAppButton.setEnabled(false);
+			isLaunched = true;
 		}
 		
 		@Override
@@ -278,6 +289,7 @@ public class WebAppFragment extends BaseFragment {
 			sendMessageButton.setEnabled(false);
 			closeWebAppButton.setEnabled(false);
 			launchWebAppButton.setEnabled(true);
+			isLaunched = false;
 			
 			if (mWebAppSession != null) {
 				mWebAppSession.setWebAppSessionListener(null);
@@ -359,6 +371,7 @@ public class WebAppFragment extends BaseFragment {
 			sendMessageButton.setEnabled(false);
 			sendJSONButton.setEnabled(false);
 			leaveWebAppButton.setEnabled(false);
+			isLaunched = false;
 			
 			mWebAppSession.setWebAppSessionListener(null);
 			mWebAppSession.close(new ResponseListener<Object>() {
@@ -381,6 +394,7 @@ public class WebAppFragment extends BaseFragment {
 	@Override
 	public void disableButtons() {
 		super.disableButtons();
+		isLaunched = false;
 		
 		responseMessageTextView.setText("");
 	}
