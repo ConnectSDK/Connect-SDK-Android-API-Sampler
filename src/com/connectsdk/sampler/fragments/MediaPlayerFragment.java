@@ -63,7 +63,7 @@ public class MediaPlayerFragment extends BaseFragment {
     public Button closeButton;
     public Button mediaInfoButton;
     
-    public LaunchSession launchSession;
+    public static LaunchSession launchSession;
     
     public TextView positionTextView;
     public TextView durationTextView;
@@ -81,8 +81,8 @@ public class MediaPlayerFragment extends BaseFragment {
     public long totalTimeDuration;
     public boolean mIsGettingPlayPosition;
     
-    private boolean isPlayingImage = false;
-    private boolean isPlaying = false;
+    static boolean isPlayingImage = false;
+    static boolean isPlaying = false;
     
     private MediaControl mMediaControl = null;
     
@@ -193,6 +193,7 @@ public class MediaPlayerFragment extends BaseFragment {
 	         				closeButton.setOnClickListener(closeListener);
 	         				stopUpdating();
 	         				isPlayingImage = true;
+	         				disconnectWebAppSession();
 						}
 						
 						@Override
@@ -236,6 +237,7 @@ public class MediaPlayerFragment extends BaseFragment {
 							stopUpdating();
 							enableMedia();
 							isPlaying = true;
+							disconnectWebAppSession();
 						}
 						
 						@Override
@@ -287,6 +289,8 @@ public class MediaPlayerFragment extends BaseFragment {
 							stopUpdating();
 							enableMedia();
 							isPlaying = true;
+							disconnectWebAppSession();
+							
 						}
 					});
 				}
@@ -324,14 +328,14 @@ public class MediaPlayerFragment extends BaseFragment {
     	if (getTv().hasCapability(MediaPlayer.MediaInfo_Subscribe)) {
     		getMediaPlayer().subscribeMediaInfo(mediaInfoListener);
     	}
-    	if (!isPlaying && !isPlayingImage)
-    	disableMedia();
-    	else if (isPlaying) enableMedia();
-    	else {
-    		closeButton.setEnabled(true);
-			closeButton.setOnClickListener(closeListener);
-			stopUpdating();
-			}
+    	if (!isPlaying || !isPlayingImage)
+    		disableMedia();
+    	if (isPlaying) enableMedia();
+    		else if (isPlayingImage) {
+    			closeButton.setEnabled(true);
+    			closeButton.setOnClickListener(closeListener);
+    			stopUpdating();
+				}
     }
 
 	@Override
@@ -470,6 +474,7 @@ public class MediaPlayerFragment extends BaseFragment {
 					stopMedia();
 					stopUpdating();
 					isPlaying = false;
+					isPlayingImage = true;
 				}
 				
 				@Override
@@ -669,6 +674,14 @@ public class MediaPlayerFragment extends BaseFragment {
 		return time;
 	}
 	
+	private void disconnectWebAppSession() {
+		if (WebAppFragment.mWebAppSession != null) {
+			WebAppFragment.mWebAppSession.setWebAppSessionListener(null);
+			WebAppFragment.mWebAppSession.close(null);
+			WebAppFragment.isLaunched = false;
+		}
+	}
+
 	private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
 		ImageView bmImage;
 

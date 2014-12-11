@@ -46,12 +46,12 @@ public class WebAppFragment extends BaseFragment {
 	private final static String CASTID = "Chromecast";
 	private final static String MULTISCREENID = "MultiScreen";
 	
-	private boolean isLaunched = false;
+	static boolean isLaunched = false;
 	
 	TextView responseMessageTextView;
     LaunchSession runningAppSession;
     
-    WebAppSession mWebAppSession;
+    static WebAppSession mWebAppSession;
 
 	public WebAppFragment(Context context) 
 	{
@@ -151,7 +151,7 @@ public class WebAppFragment extends BaseFragment {
 				public void onSuccess(WebAppSession webAppSession) {
 					webAppSession.setWebAppSessionListener(webAppListener);
 					isLaunched = true;
-					
+					disconnectMediaPlayerSession();					
 					if (getTv().hasAnyCapability(WebAppLauncher.Message_Send, WebAppLauncher.Message_Receive, WebAppLauncher.Message_Receive_JSON, WebAppLauncher.Message_Send_JSON))
 						webAppSession.connect(connectionListener);
 					else
@@ -199,6 +199,7 @@ public class WebAppFragment extends BaseFragment {
 					if (getTv().hasCapabilities(WebAppLauncher.Message_Send_JSON)) sendJSONButton.setEnabled(true);
 					if (getTv().hasCapabilities(WebAppLauncher.Close)) closeWebAppButton.setEnabled(true);
 					isLaunched = true;
+					disconnectMediaPlayerSession();					
 				}
 			});
 		}
@@ -402,4 +403,12 @@ public class WebAppFragment extends BaseFragment {
 	public void setRunningAppInfo(LaunchSession session) {
     	runningAppSession = session;
     }
+
+	private void disconnectMediaPlayerSession() {
+		if (MediaPlayerFragment.launchSession != null) {
+			MediaPlayerFragment.launchSession.close(null);
+			MediaPlayerFragment.launchSession = null;
+			MediaPlayerFragment.isPlaying = MediaPlayerFragment.isPlayingImage = false;
+		}
+	}
 }
