@@ -153,6 +153,14 @@ public class MediaPlayerFragment extends BaseFragment {
 	}
     
     @Override
+    public void onResume() {
+    	super.onResume();
+    	if (isPlaying) {
+    		startUpdating();
+    	}
+    }
+    
+    @Override
     public void onPause() {
     	stopUpdating();
     	super.onPause();
@@ -198,6 +206,7 @@ public class MediaPlayerFragment extends BaseFragment {
 						
 						@Override
 						public void onError(ServiceCommandError error) {
+							Log.e("Error", error.getMessage());
 						}
 					});
 	             }
@@ -560,7 +569,6 @@ public class MediaPlayerFragment extends BaseFragment {
 			
 			switch (playState) {
 			case Playing:
-//				if (!mSeeking)
 					startUpdating();
 
 				if (mMediaControl != null && getTv().hasCapability(MediaControl.Duration)) {
