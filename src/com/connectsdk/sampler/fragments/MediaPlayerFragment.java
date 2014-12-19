@@ -405,8 +405,9 @@ public class MediaPlayerFragment extends BaseFragment {
         if (getTv().hasCapability(MediaControl.PlayState_Subscribe) && !isPlaying) {
         	mMediaControl.subscribePlayState(playStateListener);
         } else {
-        	mMediaControl.getDuration(durationListener);
-        	
+        	if (mMediaControl != null) {
+        		mMediaControl.getDuration(durationListener);
+        	}
         	startUpdating();
         }
 	}
