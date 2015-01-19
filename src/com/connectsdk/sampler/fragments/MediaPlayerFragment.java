@@ -122,7 +122,6 @@ public class MediaPlayerFragment extends BaseFragment {
         durationTextView = (TextView) rootView.findViewById(R.id.stream_duration);
         mediaInfoTextView = (TextView) rootView.findViewById(R.id.mediaInfo_textView);
         mSeekBar = (SeekBar) rootView.findViewById(R.id.stream_seek_bar);
-		System.out.println("[DEBUG] mSeekBar is set");
         mVolumeBar = (SeekBar) rootView.findViewById(R.id.volume_seek_bar);
         
         mediaInfoImageView = (ImageView) rootView.findViewById(R.id.mediaInfo_imageView);
@@ -352,10 +351,7 @@ public class MediaPlayerFragment extends BaseFragment {
 
 	@Override
 	public void disableButtons() {
-		if (mSeekBar != null) 
-			mSeekBar.setEnabled(false);
-		else
-			System.out.println("[DEBUG] mSeekBar is null");
+		mSeekBar.setEnabled(false);
 		mVolumeBar.setEnabled(false);
 		mVolumeBar.setOnSeekBarChangeListener(null);
 		positionTextView.setEnabled(false);
