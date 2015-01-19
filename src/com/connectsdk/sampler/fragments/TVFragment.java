@@ -47,6 +47,8 @@ public class TVFragment extends BaseFragment {
     
     private ServiceSubscription<ChannelListener> mCurrentChannelSubscription;
 
+    public TVFragment() {};
+    
     public TVFragment(Context context)
     {
         super(context);

@@ -63,6 +63,8 @@ public class SystemFragment extends BaseFragment {
     private ServiceSubscription<VolumeListener> mVolumeSubscription;
     private ServiceSubscription<MuteListener> mMuteSubscription;
     
+    public SystemFragment() {};
+    
     public SystemFragment(Context context)
     {
         super(context);

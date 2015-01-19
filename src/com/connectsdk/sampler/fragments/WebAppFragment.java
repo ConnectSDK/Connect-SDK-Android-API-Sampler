@@ -53,6 +53,8 @@ public class WebAppFragment extends BaseFragment {
     
     static WebAppSession mWebAppSession;
 
+    public WebAppFragment() {};
+    
 	public WebAppFragment(Context context) 
 	{
 		super(context);

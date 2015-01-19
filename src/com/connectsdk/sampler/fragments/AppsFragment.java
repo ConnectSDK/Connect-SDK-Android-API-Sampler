@@ -55,6 +55,8 @@ public class AppsFragment extends BaseFragment {
     
     ServiceSubscription<AppInfoListener> runningAppSubs;
 
+    public AppsFragment() {};
+    
     public AppsFragment(Context context)
     {
         super(context);

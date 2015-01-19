@@ -73,6 +73,8 @@ public class KeyControlFragment extends BaseFragment {
     EditText editText;
     TextWatcher filterTextWatcher;
 
+    public KeyControlFragment() {};
+    
     public KeyControlFragment(Context context)
     {
         super(context);
