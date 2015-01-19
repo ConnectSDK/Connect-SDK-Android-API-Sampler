@@ -236,7 +236,7 @@ public class MediaPlayerFragment extends BaseFragment {
     	 
     	totalTimeDuration = -1;
     	
-    	if ( getTv().hasCapability(MediaPlayer.Display_Video) ) {
+    	if ( getTv().hasCapability(MediaPlayer.Play_Video) ) {
     		videoButton.setEnabled(true);
     		videoButton.setOnClickListener(new View.OnClickListener() {
 
@@ -279,7 +279,7 @@ public class MediaPlayerFragment extends BaseFragment {
     		disableButton(videoButton);
     	}
     	
-    	if (getTv().hasCapability(MediaPlayer.Display_Audio)) {
+    	if (getTv().hasCapability(MediaPlayer.Play_Audio)) {
     		audioButton.setEnabled(true);
     		audioButton.setOnClickListener(new View.OnClickListener() {
 				
@@ -328,7 +328,7 @@ public class MediaPlayerFragment extends BaseFragment {
     		disableButton(audioButton);
     	}
 
-		if (getTv().hasCapability(MediaPlayer.Display_Playlist)) {
+		if (getTv().hasCapability(MediaPlayer.Play_Playlist)) {
 			playlistButton.setEnabled(true);
 			playlistButton.setOnClickListener(new View.OnClickListener() {
 
