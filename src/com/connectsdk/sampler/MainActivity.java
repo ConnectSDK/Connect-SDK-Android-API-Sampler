@@ -17,6 +17,7 @@ import java.util.List;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -133,11 +134,18 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 					}
 				});
 
-		for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-			actionBar.addTab(actionBar.newTab()
-					.setIcon(mSectionsPagerAdapter.getIcon(i))
-					.setTabListener(this));
-		}
+		Handler handler = new Handler();
+		handler.post(new Runnable() {
+			
+			@Override
+			public void run() {
+				for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
+					actionBar.addTab(actionBar.newTab()
+							.setIcon(mSectionsPagerAdapter.getIcon(i))
+							.setTabListener(MainActivity.this));
+				}
+			}
+		});
 
         setupPicker();
 
