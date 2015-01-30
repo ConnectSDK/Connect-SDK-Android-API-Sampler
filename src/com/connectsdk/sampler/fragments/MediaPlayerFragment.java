@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -45,6 +46,7 @@ import com.connectsdk.service.capability.MediaControl.PositionListener;
 import com.connectsdk.service.capability.MediaPlayer;
 import com.connectsdk.service.capability.MediaPlayer.MediaInfoListener;
 import com.connectsdk.service.capability.MediaPlayer.MediaLaunchObject;
+import com.connectsdk.service.capability.PlaylistControl;
 import com.connectsdk.service.capability.VolumeControl;
 import com.connectsdk.service.capability.VolumeControl.VolumeListener;
 import com.connectsdk.service.capability.listeners.ResponseListener;
@@ -62,6 +64,10 @@ public class MediaPlayerFragment extends BaseFragment {
     public Button fastForwardButton;
     public Button closeButton;
     public Button mediaInfoButton;
+	public Button playlistButton;
+	public Button previousButton;
+	public Button nextButton;
+	public Button jumpButton;
     
     public static LaunchSession launchSession;
     
@@ -71,6 +77,8 @@ public class MediaPlayerFragment extends BaseFragment {
     public SeekBar mSeekBar;
     public boolean mIsUserSeeking;
     public SeekBar mVolumeBar;
+	
+	public EditText positionTrackView;
     
     public ImageView mediaInfoImageView;
 
@@ -85,6 +93,7 @@ public class MediaPlayerFragment extends BaseFragment {
     static boolean isPlaying = false;
     
     private MediaControl mMediaControl = null;
+	private PlaylistControl mPlaylistControl = null;
     
     private Timer refreshTimer;
     
@@ -117,13 +126,17 @@ public class MediaPlayerFragment extends BaseFragment {
         fastForwardButton = (Button) rootView.findViewById(R.id.fastForwardButton);
         closeButton = (Button) rootView.findViewById(R.id.closeButton);
         mediaInfoButton = (Button) rootView.findViewById(R.id.mediaInfo_button);
+		playlistButton = (Button) rootView.findViewById(R.id.playlistButton);
+		previousButton = (Button) rootView.findViewById(R.id.previousButton);
+		nextButton = (Button) rootView.findViewById(R.id.nextButton);
+		jumpButton = (Button) rootView.findViewById(R.id.jumpButton);
         
         positionTextView = (TextView) rootView.findViewById(R.id.stream_position);
         durationTextView = (TextView) rootView.findViewById(R.id.stream_duration);
         mediaInfoTextView = (TextView) rootView.findViewById(R.id.mediaInfo_textView);
         mSeekBar = (SeekBar) rootView.findViewById(R.id.stream_seek_bar);
         mVolumeBar = (SeekBar) rootView.findViewById(R.id.volume_seek_bar);
-        
+        positionTrackView = (EditText) rootView.findViewById(R.id.positionText);
         mediaInfoImageView = (ImageView) rootView.findViewById(R.id.mediaInfo_imageView);
         
         buttons = new Button[] {
@@ -136,7 +149,11 @@ public class MediaPlayerFragment extends BaseFragment {
         	rewindButton, 
         	fastForwardButton, 
         	closeButton,
-        	mediaInfoButton
+        	mediaInfoButton,
+			playlistButton,
+			previousButton,
+			nextButton,
+			jumpButton
         };
 
         mHandler = new Handler();
@@ -151,6 +168,7 @@ public class MediaPlayerFragment extends BaseFragment {
 		if (tv == null) {
 			stopUpdating();
 			mMediaControl = null;
+			mPlaylistControl = null;
 		}
 	}
     
@@ -220,7 +238,7 @@ public class MediaPlayerFragment extends BaseFragment {
     	 
     	totalTimeDuration = -1;
     	
-    	if ( getTv().hasCapability(MediaPlayer.Display_Video) ) {
+    	if ( getTv().hasCapability(MediaPlayer.Play_Video) ) {
     		videoButton.setEnabled(true);
     		videoButton.setOnClickListener(new View.OnClickListener() {
 
@@ -245,6 +263,7 @@ public class MediaPlayerFragment extends BaseFragment {
              			public void onSuccess(MediaLaunchObject object) {
              				launchSession = object.launchSession;
 							mMediaControl = object.mediaControl;
+							mPlaylistControl = object.playlistControl;
 							stopUpdating();
 							enableMedia();
 							isPlaying = true;
@@ -262,7 +281,7 @@ public class MediaPlayerFragment extends BaseFragment {
     		disableButton(videoButton);
     	}
     	
-    	if (getTv().hasCapability(MediaPlayer.Display_Audio)) {
+    	if (getTv().hasCapability(MediaPlayer.Play_Audio)) {
     		audioButton.setEnabled(true);
     		audioButton.setOnClickListener(new View.OnClickListener() {
 				
@@ -296,6 +315,7 @@ public class MediaPlayerFragment extends BaseFragment {
 							
 							launchSession = object.launchSession;
 							mMediaControl = object.mediaControl;
+							mPlaylistControl = object.playlistControl;
 							
 							stopUpdating();
 							enableMedia();
@@ -309,8 +329,54 @@ public class MediaPlayerFragment extends BaseFragment {
     	} else {
     		disableButton(audioButton);
     	}
-    	
-    
+
+		if (getTv().hasCapability(MediaPlayer.Play_Playlist)) {
+			playlistButton.setEnabled(true);
+			playlistButton.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View view) {
+					if (launchSession != null) {
+						launchSession.close(null);
+						launchSession = null;
+						stopUpdating();
+						disableMedia();
+						isPlaying = isPlayingImage = false;
+					}
+					String mediaURL = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/example-m3u-playlist.m3u";
+					String iconURL = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/audioIcon.jpg";
+					String title = "Playlist";
+					String description = "Playlist description";
+					String mimeType = "application/x-mpegurl";
+
+					boolean shouldLoop = false;
+
+					getMediaPlayer().playMedia(mediaURL, mimeType, title, description, iconURL, shouldLoop, new MediaPlayer.LaunchListener() {
+
+						@Override
+						public void onError(ServiceCommandError error) {
+							Log.d("LG", "Error playing audio");
+						}
+
+						@Override
+						public void onSuccess(MediaLaunchObject object) {
+							Log.d("LG", "Started playing playlist");
+
+							launchSession = object.launchSession;
+							mMediaControl = object.mediaControl;
+							mPlaylistControl = object.playlistControl;
+							
+							stopUpdating();
+							enableMedia();
+							isPlaying = true;
+							disconnectWebAppSession();
+						}
+					});
+				}
+			});
+		} else {
+			disableButton(playlistButton);
+		}
     	
     	mVolumeBar.setEnabled(getTv().hasCapability(VolumeControl.Volume_Set));
     	mVolumeBar.setOnSeekBarChangeListener(volumeListener);
@@ -395,6 +461,10 @@ public class MediaPlayerFragment extends BaseFragment {
     	fastForwardButton.setEnabled(getTv().hasCapability(MediaControl.FastForward));
        	mSeekBar.setEnabled(getTv().hasCapability(MediaControl.Seek));
        	closeButton.setEnabled(getTv().hasCapability(MediaPlayer.Close));
+		previousButton.setEnabled(getTv().hasCapability(PlaylistControl.Previous));
+		nextButton.setEnabled(getTv().hasCapability(PlaylistControl.Next));
+		jumpButton.setEnabled(getTv().hasCapability(PlaylistControl.JumpToTrack));
+		
 
         fastForwardButton.setOnClickListener(fastForwardListener);
     	mSeekBar.setOnSeekBarChangeListener(seekListener);
@@ -402,6 +472,9 @@ public class MediaPlayerFragment extends BaseFragment {
         stopButton.setOnClickListener(stopListener);
         playButton.setOnClickListener(playListener);
         pauseButton.setOnClickListener(pauseListener);
+		previousButton.setOnClickListener(previousListener);
+		nextButton.setOnClickListener(nextListener);
+		jumpButton.setOnClickListener(jumpListener);
         closeButton.setOnClickListener(closeListener);
         
         if (getTv().hasCapability(MediaControl.PlayState_Subscribe) && !isPlaying) {
@@ -432,7 +505,14 @@ public class MediaPlayerFragment extends BaseFragment {
     	rewindButton.setOnClickListener(null);
     	fastForwardButton.setEnabled(false);
     	fastForwardButton.setOnClickListener(null);
-       	mSeekBar.setEnabled(false);
+		previousButton.setEnabled(false);
+		previousButton.setOnClickListener(null);
+		nextButton.setEnabled(false);
+		nextButton.setOnClickListener(null);
+		jumpButton.setEnabled(false);
+		jumpButton.setOnClickListener(null);
+
+		mSeekBar.setEnabled(false);
        	mSeekBar.setOnSeekBarChangeListener(null);
        	mSeekBar.setProgress(0);
        	
@@ -457,8 +537,34 @@ public class MediaPlayerFragment extends BaseFragment {
         		mMediaControl.pause(null);
         }
     };
-    
-    public View.OnClickListener closeListener = new View.OnClickListener() {
+
+	public View.OnClickListener previousListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View view) {
+			if (mPlaylistControl != null)
+				mPlaylistControl.previous(null);
+		}
+	};
+
+	public View.OnClickListener nextListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View view) {
+			if (mPlaylistControl != null)
+				mPlaylistControl.next(null);
+		}
+	};
+
+	public View.OnClickListener jumpListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View view) {
+			if (mPlaylistControl != null) {
+				mPlaylistControl.jumpToTrack(Integer.parseInt(positionTrackView.getText().toString()), null);
+			}
+		}
+	};
+
+
+	public View.OnClickListener closeListener = new View.OnClickListener() {
 		
 		@Override
 		public void onClick(View view) {
@@ -704,6 +810,7 @@ public class MediaPlayerFragment extends BaseFragment {
 		    String urldisplay = urls[0];
 		    Bitmap mIcon11 = null;
 		    try {
+				Log.d("", urldisplay);
 		        InputStream in = new java.net.URL(urldisplay).openStream();
 		        mIcon11 = BitmapFactory.decodeStream(in);
 		    } catch (Exception e) {
