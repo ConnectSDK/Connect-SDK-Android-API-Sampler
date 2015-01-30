@@ -127,18 +127,18 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 
-		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+		Handler handler = new Handler();
+		handler.post(new Runnable() {
+			
+			@Override
+			public void run() {
+				mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 					@Override
 					public void onPageSelected(int position) {
 						actionBar.setSelectedNavigationItem(position);
 					}
 				});
 
-		Handler handler = new Handler();
-		handler.post(new Runnable() {
-			
-			@Override
-			public void run() {
 				for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
 					actionBar.addTab(actionBar.newTab()
 							.setIcon(mSectionsPagerAdapter.getIcon(i))

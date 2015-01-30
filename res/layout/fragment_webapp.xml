@@ -48,7 +48,6 @@
 	            android:layout_height="wrap_content"
 	            android:layout_weight="1"
 	            android:text="Send JSON" />
-	
 	    </LinearLayout>
 	
 	    <LinearLayout
@@ -69,9 +68,27 @@
 	            android:layout_height="wrap_content"
 	            android:layout_weight="1"
 	            android:text="Close WebApp" />
-	
 	    </LinearLayout>
 
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
+            <Button
+                android:id="@+id/pinWebAppButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Pin Web App" />
+            
+            <Button 
+                android:id="@+id/unPinWebAppButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Unpin Web App"/>
+        </LinearLayout>
+	    
     </LinearLayout>
     
          
