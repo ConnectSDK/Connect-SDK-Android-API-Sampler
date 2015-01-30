@@ -195,40 +195,7 @@ public class MediaPlayerFragment extends BaseFragment {
 
     			@Override
     			public void onClick(View view) {
-					if (launchSession != null) {
-						launchSession.close(null);
-						launchSession = null;
-             			closeButton.setEnabled(false);
-             			closeButton.setOnClickListener(null);
-             			stopUpdating();
-             			isPlaying = isPlayingImage = false;
-             		}
-					
-					disableMedia();
-					
-	         		String imagePath = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/photo.jpg";
-	         		String mimeType = "image/jpeg";
-	         		String title = "Sintel Character Design";
-	         		String description = "Blender Open Movie Project";
-	         		String icon = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/photoIcon.jpg";
-	         		
-	         		getMediaPlayer().displayImage(imagePath, mimeType, title, description, icon, new MediaPlayer.LaunchListener() {
-						
-	         			@Override
-	         			public void onSuccess(MediaLaunchObject object) {
-	         				launchSession = object.launchSession;
-	         				closeButton.setEnabled(true);
-	         				closeButton.setOnClickListener(closeListener);
-	         				stopUpdating();
-	         				isPlayingImage = true;
-	         				disconnectWebAppSession();
-						}
-						
-						@Override
-						public void onError(ServiceCommandError error) {
-							Log.e("Error", error.getMessage());
-						}
-					});
+					showImage();
 	             }
 	    	 });
     	}
@@ -244,36 +211,7 @@ public class MediaPlayerFragment extends BaseFragment {
 
     			@Override
     			public void onClick(View view) {
-             		if (launchSession != null) {
-             			launchSession.close(null);
-             			launchSession = null;
-             			stopUpdating();
-             			disableMedia();
-             			isPlaying = isPlayingImage = false;
-             		}
-             		
-             		String videoPath = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/video.mp4";
-             		String mimeType = "video/mp4";
-             		String title = "Sintel Trailer";
-             		String description = "Blender Open Movie Project";
-             		String icon = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/videoIcon.jpg";
-             		
-             		getMediaPlayer().playMedia(videoPath, mimeType, title, description, icon, false, new MediaPlayer.LaunchListener() {
-						
-             			public void onSuccess(MediaLaunchObject object) {
-             				launchSession = object.launchSession;
-							mMediaControl = object.mediaControl;
-							mPlaylistControl = object.playlistControl;
-							stopUpdating();
-							enableMedia();
-							isPlaying = true;
-							disconnectWebAppSession();
-						}
-						
-						@Override
-						public void onError(ServiceCommandError error) {
-						}
-             		});
+             		playVideo();
     			}
     		});
     	}
@@ -287,43 +225,7 @@ public class MediaPlayerFragment extends BaseFragment {
 				
 				@Override
 				public void onClick(View view) {
-					if (launchSession != null) {
-						launchSession.close(null);
-						launchSession = null;
-						stopUpdating();
-						disableMedia();
-						isPlaying = isPlayingImage = false;
-					}
-					
-					String mediaURL = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/audio.mp3";
-					String iconURL = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/audioIcon.jpg";
-					String title = "The Song that Doesn't End";
-					String description = "Lamb Chop's Play Along";
-					String mimeType = "audio/mp3";
-					boolean shouldLoop = false;
-					
-					getMediaPlayer().playMedia(mediaURL, mimeType, title, description, iconURL, shouldLoop, new MediaPlayer.LaunchListener() {
-						
-						@Override
-						public void onError(ServiceCommandError error) {
-							Log.d("LG", "Error playing audio");
-						}
-						
-						@Override
-						public void onSuccess(MediaLaunchObject object) {
-							Log.d("LG", "Started playing audio");
-							
-							launchSession = object.launchSession;
-							mMediaControl = object.mediaControl;
-							mPlaylistControl = object.playlistControl;
-							
-							stopUpdating();
-							enableMedia();
-							isPlaying = true;
-							disconnectWebAppSession();
-							
-						}
-					});
+					playAudio();
 				}
 			});
     	} else {
@@ -336,42 +238,7 @@ public class MediaPlayerFragment extends BaseFragment {
 
 				@Override
 				public void onClick(View view) {
-					if (launchSession != null) {
-						launchSession.close(null);
-						launchSession = null;
-						stopUpdating();
-						disableMedia();
-						isPlaying = isPlayingImage = false;
-					}
-					String mediaURL = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/example-m3u-playlist.m3u";
-					String iconURL = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/audioIcon.jpg";
-					String title = "Playlist";
-					String description = "Playlist description";
-					String mimeType = "application/x-mpegurl";
-
-					boolean shouldLoop = false;
-
-					getMediaPlayer().playMedia(mediaURL, mimeType, title, description, iconURL, shouldLoop, new MediaPlayer.LaunchListener() {
-
-						@Override
-						public void onError(ServiceCommandError error) {
-							Log.d("LG", "Error playing audio");
-						}
-
-						@Override
-						public void onSuccess(MediaLaunchObject object) {
-							Log.d("LG", "Started playing playlist");
-
-							launchSession = object.launchSession;
-							mMediaControl = object.mediaControl;
-							mPlaylistControl = object.playlistControl;
-							
-							stopUpdating();
-							enableMedia();
-							isPlaying = true;
-							disconnectWebAppSession();
-						}
-					});
+					playM3U();
 				}
 			});
 		} else {
@@ -414,6 +281,149 @@ public class MediaPlayerFragment extends BaseFragment {
     			stopUpdating();
 				}
     }
+
+	private void playAudio() {
+		String mediaURL = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/audio.mp3";
+		String iconURL = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/audioIcon.jpg";
+		String title = "The Song that Doesn't End";
+		String description = "Lamb Chop's Play Along";
+		String mimeType = "audio/mp3";
+		boolean shouldLoop = false;
+
+		getMediaPlayer().playMedia(mediaURL, mimeType, title, description, iconURL, shouldLoop, new MediaPlayer.LaunchListener() {
+
+			@Override
+			public void onError(ServiceCommandError error) {
+				Log.d("LG", "Error playing audio");
+				if (launchSession != null) {
+					launchSession.close(null);
+					launchSession = null;
+					stopUpdating();
+					disableMedia();
+					isPlaying = isPlayingImage = false;
+				}
+			}
+
+			@Override
+			public void onSuccess(MediaLaunchObject object) {
+				Log.d("LG", "Started playing audio");
+
+				launchSession = object.launchSession;
+				mMediaControl = object.mediaControl;
+				mPlaylistControl = object.playlistControl;
+
+				stopUpdating();
+				enableMedia();
+				isPlaying = true;
+				disconnectWebAppSession();
+
+			}
+		});
+	}
+
+	private void playM3U() {
+		String mediaURL = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/example-m3u-playlist.m3u";
+		String iconURL = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/audioIcon.jpg";
+		String title = "Playlist";
+		String description = "Playlist description";
+		String mimeType = "application/x-mpegurl";
+
+		boolean shouldLoop = false;
+
+		getMediaPlayer().playMedia(mediaURL, mimeType, title, description, iconURL, shouldLoop, new MediaPlayer.LaunchListener() {
+
+			@Override
+			public void onError(ServiceCommandError error) {
+				Log.d("LG", "Error playing audio");
+				if (launchSession != null) {
+					launchSession.close(null);
+					launchSession = null;
+					stopUpdating();
+					disableMedia();
+					isPlaying = isPlayingImage = false;
+				}
+			}
+
+			@Override
+			public void onSuccess(MediaLaunchObject object) {
+				Log.d("LG", "Started playing playlist");
+				launchSession = object.launchSession;
+				mMediaControl = object.mediaControl;
+				mPlaylistControl = object.playlistControl;
+				stopUpdating();
+				enableMedia();
+				isPlaying = true;
+				disconnectWebAppSession();
+			}
+		});
+	}
+
+	private void showImage() {
+		disableMedia();
+
+		String imagePath = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/photo.jpg";
+		String mimeType = "image/jpeg";
+		String title = "Sintel Character Design";
+		String description = "Blender Open Movie Project";
+		String icon = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/photoIcon.jpg";
+
+		getMediaPlayer().displayImage(imagePath, mimeType, title, description, icon, new MediaPlayer.LaunchListener() {
+
+			@Override
+			public void onSuccess(MediaLaunchObject object) {
+				launchSession = object.launchSession;
+				closeButton.setEnabled(true);
+				closeButton.setOnClickListener(closeListener);
+				stopUpdating();
+				isPlayingImage = true;
+				disconnectWebAppSession();
+		   }
+
+			@Override
+			public void onError(ServiceCommandError error) {
+				Log.e("Error", error.getMessage());
+				if (launchSession != null) {
+					launchSession.close(null);
+					launchSession = null;
+					stopUpdating();
+					disableMedia();
+					isPlaying = isPlayingImage = false;
+			   }
+		   }
+	   });
+	}
+
+	private void playVideo() {
+		String videoPath = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/video.mp4";
+		String mimeType = "video/mp4";
+		String title = "Sintel Trailer";
+		String description = "Blender Open Movie Project";
+		String icon = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/videoIcon.jpg";
+
+		getMediaPlayer().playMedia(videoPath, mimeType, title, description, icon, false, new MediaPlayer.LaunchListener() {
+
+			public void onSuccess(MediaLaunchObject object) {
+				launchSession = object.launchSession;
+				mMediaControl = object.mediaControl;
+				mPlaylistControl = object.playlistControl;
+				stopUpdating();
+				enableMedia();
+				isPlaying = true;
+				disconnectWebAppSession();
+		   }
+
+			@Override
+			public void onError(ServiceCommandError error) {
+			   if (launchSession != null) {
+					launchSession.close(null);
+					launchSession = null;
+					stopUpdating();
+					disableMedia();
+					isPlaying = isPlayingImage = false;
+			   }
+		   }
+		});
+	}
 
 	@Override
 	public void disableButtons() {
