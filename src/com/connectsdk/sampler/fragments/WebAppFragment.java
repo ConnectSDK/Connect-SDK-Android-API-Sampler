@@ -85,7 +85,7 @@ public class WebAppFragment extends BaseFragment {
 		
 		pinWebAppButton = (Button) rootView.findViewById(R.id.pinWebAppButton);
 		unPinWebAppButton = (Button) rootView.findViewById(R.id.unPinWebAppButton);
-		
+
 		buttons = new Button[]{
 				launchWebAppButton, 
 				joinWebAppButton, 
@@ -138,8 +138,6 @@ public class WebAppFragment extends BaseFragment {
 			disableButton(leaveWebAppButton);
 			disableButton(sendMessageButton);
 			disableButton(sendJSONButton);
-			disableButton(pinWebAppButton);
-			disableButton(unPinWebAppButton);
 		}
 		else {
 			disableButton(launchWebAppButton);
@@ -151,6 +149,15 @@ public class WebAppFragment extends BaseFragment {
 			webAppId = "DDCEDE96";
 		else if (getTv().getServiceByName(MULTISCREENID) != null)
 			webAppId = "ConnectSDKSampler";
+
+
+		if (!isLaunched) {
+			disableButton(pinWebAppButton);
+			disableButton(unPinWebAppButton);
+		}
+		else if (getTv().hasCapability(WebAppLauncher.Pin)) {
+			checkIfWebAppIsPinned();
+		}
 	}
 	
 	public View.OnClickListener launchWebApp = new View.OnClickListener() {
@@ -181,6 +188,9 @@ public class WebAppFragment extends BaseFragment {
 						connectionListener.onSuccess(webAppSession.launchSession);
 					
 					mWebAppSession = webAppSession;
+					if (getTv().hasCapability(WebAppLauncher.Pin)) {
+						checkIfWebAppIsPinned();
+					}
 				}
 			});
 		}
@@ -213,9 +223,9 @@ public class WebAppFragment extends BaseFragment {
 					leaveWebAppButton.setEnabled(getTv().hasCapability(WebAppLauncher.Disconnect));
 					if (getTv().hasCapabilities(WebAppLauncher.Message_Send_JSON)) sendJSONButton.setEnabled(true);
 					if (getTv().hasCapabilities(WebAppLauncher.Close)) closeWebAppButton.setEnabled(true);
-					if (getTv().hasCapabilities(WebAppLauncher.Pin)) pinWebAppButton.setEnabled(true);
+					if (getTv().hasCapability(WebAppLauncher.Pin)) checkIfWebAppIsPinned();
 					isLaunched = true;
-					disconnectMediaPlayerSession();					
+					disconnectMediaPlayerSession();
 				}
 			});
 		}
@@ -326,14 +336,14 @@ public class WebAppFragment extends BaseFragment {
 	
 	public void updatePinButton(boolean status) {
 		if (status) {
-			pinWebAppButton.setEnabled(!status);
-			unPinWebAppButton.setEnabled(status);
+			pinWebAppButton.setEnabled(false);
+			unPinWebAppButton.setEnabled(true);
 		}
 		else {
 			if (mWebAppSession != null) {
-				pinWebAppButton.setEnabled(!status);
+				pinWebAppButton.setEnabled(true);
 			}
-			unPinWebAppButton.setEnabled(status);
+			unPinWebAppButton.setEnabled(false);
 		}
 	}
 
@@ -393,7 +403,6 @@ public class WebAppFragment extends BaseFragment {
 			
 			closeWebAppButton.setEnabled(true);
 			launchWebAppButton.setEnabled(false);
-			pinWebAppButton.setEnabled(getTv().hasCapability(WebAppLauncher.Pin));
 			isLaunched = true;
 		}
 		
