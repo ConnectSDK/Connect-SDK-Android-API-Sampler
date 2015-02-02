@@ -17,11 +17,11 @@ import com.connectsdk.discovery.DiscoveryManager;
 import com.connectsdk.service.DIALService;
 
 public class MainApplication extends Application {
-	@Override
-	public void onCreate() {
-		DIALService.registerApp("Levak");
-		DiscoveryManager.init(getApplicationContext());
+    @Override
+    public void onCreate() {
+        DIALService.registerApp("Levak");
+        DiscoveryManager.init(getApplicationContext());
 
-		super.onCreate();
-	}
+        super.onCreate();
+    }
 }

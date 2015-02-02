@@ -49,224 +49,224 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     private AlertDialog pairingAlertDialog;
     private AlertDialog pairingCodeDialog;
     private DevicePicker dp; 
-    
+
     private MenuItem connectItem;
 
-	SectionsPagerAdapter mSectionsPagerAdapter;
+    SectionsPagerAdapter mSectionsPagerAdapter;
 
-	ViewPager mViewPager;
+    ViewPager mViewPager;
 
     private ConnectableDeviceListener deviceListener = new ConnectableDeviceListener() {
-		
-		@Override
-		public void onPairingRequired(ConnectableDevice device, DeviceService service, PairingType pairingType) {
-	        Log.d("2ndScreenAPP", "Connected to " + mTV.getIpAddress());
 
-			switch (pairingType) { 
-				case FIRST_SCREEN:
-					Log.d("2ndScreenAPP", "First Screen");
-		    		pairingAlertDialog.show();
-					break;
-					
-				case PIN_CODE:
-					Log.d("2ndScreenAPP", "Pin Code");
-					pairingCodeDialog.show();
-					break;
-				
-				case NONE:
-				default:
-					break;
-			}
-		}
-		
-		@Override
-		public void onConnectionFailed(ConnectableDevice device, ServiceCommandError error) {
-			Log.d("2ndScreenAPP", "onConnectFailed");
-			connectFailed(mTV);
-		}
+        @Override
+        public void onPairingRequired(ConnectableDevice device, DeviceService service, PairingType pairingType) {
+            Log.d("2ndScreenAPP", "Connected to " + mTV.getIpAddress());
 
-		@Override
-		public void onDeviceReady(ConnectableDevice device) {
-            if ( pairingAlertDialog.isShowing() ) {
-            	Log.d("2ndScreenAPP", "onPairingSuccess");
-    		    pairingAlertDialog.dismiss();
+            switch (pairingType) { 
+                case FIRST_SCREEN:
+                    Log.d("2ndScreenAPP", "First Screen");
+                    pairingAlertDialog.show();
+                    break;
+
+                case PIN_CODE:
+                    Log.d("2ndScreenAPP", "Pin Code");
+                    pairingCodeDialog.show();
+                    break;
+
+                case NONE:
+                default:
+                    break;
             }
-        	registerSuccess(mTV);			
-		}
+        }
 
-		@Override
-		public void onDeviceDisconnected(ConnectableDevice device) {
-			Log.d("2ndScreenAPP", "Device Disconnected");
-			connectEnded(mTV);
+        @Override
+        public void onConnectionFailed(ConnectableDevice device, ServiceCommandError error) {
+            Log.d("2ndScreenAPP", "onConnectFailed");
+            connectFailed(mTV);
+        }
+
+        @Override
+        public void onDeviceReady(ConnectableDevice device) {
+            if (pairingAlertDialog.isShowing()) {
+                Log.d("2ndScreenAPP", "onPairingSuccess");
+                pairingAlertDialog.dismiss();
+            }
+            registerSuccess(mTV);
+        }
+
+        @Override
+        public void onDeviceDisconnected(ConnectableDevice device) {
+            Log.d("2ndScreenAPP", "Device Disconnected");
+            connectEnded(mTV);
             connectItem.setTitle("Connect");
-			
-			BaseFragment frag = mSectionsPagerAdapter.getFragment(mViewPager.getCurrentItem());
-			if ( frag != null ) {
-				Toast.makeText(getApplicationContext(), "Device Disconnected", Toast.LENGTH_SHORT).show();
-				frag.disableButtons();
-			}
-		}
 
-		@Override
-		public void onCapabilityUpdated(ConnectableDevice device, List<String> added, List<String> removed) {
-			
-		}
-	};
-	
+            BaseFragment frag = mSectionsPagerAdapter.getFragment(mViewPager.getCurrentItem());
+            if (frag != null) {
+                Toast.makeText(getApplicationContext(), "Device Disconnected", Toast.LENGTH_SHORT).show();
+                frag.disableButtons();
+            }
+        }
+
+        @Override
+        public void onCapabilityUpdated(ConnectableDevice device, List<String> added, List<String> removed) {
+
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
 
-		final ActionBar actionBar = getSupportActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-		mSectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
+        mSectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
 
-		mViewPager = (ViewPager) findViewById(R.id.pager);
-		mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
 
-		Handler handler = new Handler();
-		handler.post(new Runnable() {
-			
-			@Override
-			public void run() {
-				mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-					@Override
-					public void onPageSelected(int position) {
-						actionBar.setSelectedNavigationItem(position);
-					}
-				});
+        Handler handler = new Handler();
+        handler.post(new Runnable() {
 
-				for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-					actionBar.addTab(actionBar.newTab()
-							.setIcon(mSectionsPagerAdapter.getIcon(i))
-							.setTabListener(MainActivity.this));
-				}
-			}
-		});
+            @Override
+            public void run() {
+                mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+                    @Override
+                    public void onPageSelected(int position) {
+                        actionBar.setSelectedNavigationItem(position);
+                    }
+                });
+
+                for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
+                    actionBar.addTab(actionBar.newTab()
+                            .setIcon(mSectionsPagerAdapter.getIcon(i))
+                            .setTabListener(MainActivity.this));
+                }
+            }
+        });
 
         setupPicker();
 
-    	DiscoveryManager.getInstance().setPairingLevel(PairingLevel.ON);
-		DiscoveryManager.getInstance().start();
+        DiscoveryManager.getInstance().setPairingLevel(PairingLevel.ON);
+        DiscoveryManager.getInstance().start();
     }
 
     public List<ConnectableDevice> getImageDevices() {
-    	List<ConnectableDevice> imageDevices = new ArrayList<ConnectableDevice>();
-    	
-    	for (ConnectableDevice device : DiscoveryManager.getInstance().getCompatibleDevices().values()) {
-    		if (device.hasCapability(MediaPlayer.Display_Image))
-    			imageDevices.add(device);
-    	}
-    	
-    	return imageDevices;
+        List<ConnectableDevice> imageDevices = new ArrayList<ConnectableDevice>();
+
+        for (ConnectableDevice device : DiscoveryManager.getInstance().getCompatibleDevices().values()) {
+            if (device.hasCapability(MediaPlayer.Display_Image))
+                imageDevices.add(device);
+        }
+
+        return imageDevices;
     }
 
     @Override
-	protected void onDestroy() {
-		super.onDestroy();
+    protected void onDestroy() {
+        super.onDestroy();
 
-		if ( dialog != null ) {
-			dialog.dismiss();
-		}
-		
-		if ( mTV != null ) {
-			mTV.disconnect();
-		}
-	}
+        if (dialog != null) {
+            dialog.dismiss();
+        }
+
+        if (mTV != null) {
+            mTV.disconnect();
+        }
+    }
 
     public void hConnectToggle()
     {
-    	if ( !this.isFinishing() ) {
+        if (!this.isFinishing()) {
             if (mTV != null)
             {
                 if (mTV.isConnected())
                     mTV.disconnect();
-                
+
                 connectItem.setTitle("Connect");
                 mTV.removeListener(deviceListener);
                 mTV = null;
                 for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-                	if (mSectionsPagerAdapter.getFragment(i) != null) {
-                		mSectionsPagerAdapter.getFragment(i).setTv(null);
-                	}
+                    if (mSectionsPagerAdapter.getFragment(i) != null) {
+                        mSectionsPagerAdapter.getFragment(i).setTv(null);
+                    }
                 }
             } else
             {
                 dialog.show();
             }
-    	}
+        }
     }
 
     private void setupPicker()
     {
-    	DiscoveryManager.getInstance().registerDefaultDeviceTypes();
+        DiscoveryManager.getInstance().registerDefaultDeviceTypes();
 
         dp = new DevicePicker(this);
         dialog = dp.getPickerDialog("Device List", new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-//            	DiscoveryManager.getInstance().stop();
+//              DiscoveryManager.getInstance().stop();
 
                 mTV = (ConnectableDevice)arg0.getItemAtPosition(arg2);
                 mTV.addListener(deviceListener);
                 mTV.connect();
                 connectItem.setTitle(mTV.getFriendlyName());
-                
+
                 dp.pickDevice(mTV);
             }
         });
-        
+
         pairingAlertDialog = new AlertDialog.Builder(this)
         .setTitle("Pairing with TV")
         .setMessage("Please confirm the connection on your TV")
         .setPositiveButton("Okay", null)
         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-			
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dp.cancelPicker();
-				
-				hConnectToggle();
-			}
-		})
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dp.cancelPicker();
+
+                hConnectToggle();
+            }
+        })
         .create();
-        
-	    final EditText input = new EditText(this);
-	    input.setInputType(InputType.TYPE_CLASS_NUMBER);
-        
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+
         pairingCodeDialog = new AlertDialog.Builder(this)
         .setTitle("Enter Pairing Code on TV")
-		.setView(input)
-		.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+        .setView(input)
+        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 
-			@Override
-			public void onClick(DialogInterface arg0, int arg1) {
-				if (mTV != null) {
-		            String value = input.getText().toString().trim();
-					mTV.sendPairingKey(value);
-				}
-			}
-	    })
-	    .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                if (mTV != null) {
+                    String value = input.getText().toString().trim();
+                    mTV.sendPairingKey(value);
+                }
+            }
+        })
+        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 
-	    	@Override
-	    	public void onClick(DialogInterface dialog, int whichButton) {
-				dp.cancelPicker();
-				
-				hConnectToggle();
-	        }
-	    })
-		.create();
+            @Override
+            public void onClick(DialogInterface dialog, int whichButton) {
+                dp.cancelPicker();
+
+                hConnectToggle();
+            }
+        })
+        .create();
     }
-    
+
     @Override
     protected void onResume() {
 
-    	super.onResume();
+        super.onResume();
     }
 
     void registerSuccess(ConnectableDevice device) {
@@ -274,23 +274,23 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         BaseFragment frag = mSectionsPagerAdapter.getFragment(mViewPager.getCurrentItem());
         if (frag != null)
-        	frag.setTv(mTV);
+            frag.setTv(mTV);
     }
 
     void connectFailed(ConnectableDevice device) {
-    	if (device != null)
-    		Log.d("2ndScreenAPP", "Failed to connect to " + device.getIpAddress());
+        if (device != null)
+            Log.d("2ndScreenAPP", "Failed to connect to " + device.getIpAddress());
 
         if (mTV != null) {
-        	mTV.removeListener(deviceListener);
-        	mTV.disconnect();
-        	mTV = null;
+            mTV.removeListener(deviceListener);
+            mTV.disconnect();
+            mTV = null;
         }
     }
 
     void connectEnded(ConnectableDevice device) {
-        if ( pairingAlertDialog.isShowing() ) {
-        	pairingAlertDialog.dismiss();
+        if (pairingAlertDialog.isShowing()) {
+            pairingAlertDialog.dismiss();
         }
         mTV.removeListener(deviceListener);
         mTV = null;
@@ -306,23 +306,23 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-    	switch (item.getItemId()) {
-    	case R.id.action_connect:
-    		hConnectToggle();
-    		return true;
-    	}
+        switch (item.getItemId()) {
+            case R.id.action_connect:
+                hConnectToggle();
+                return true;
+        }
         return super.onOptionsItemSelected(item);
     }
-    
-	@Override
-	public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-		mViewPager.setCurrentItem(tab.getPosition());
-		getSupportActionBar().setTitle(mSectionsPagerAdapter.getTitle(tab.getPosition()));
-		BaseFragment frag = mSectionsPagerAdapter.getFragment(tab.getPosition());
-		if (frag != null)
-			frag.setTv(mTV);
-	}
 
-	@Override public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) { }
-	@Override public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) { }
+    @Override
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        mViewPager.setCurrentItem(tab.getPosition());
+        getSupportActionBar().setTitle(mSectionsPagerAdapter.getTitle(tab.getPosition()));
+        BaseFragment frag = mSectionsPagerAdapter.getFragment(tab.getPosition());
+        if (frag != null)
+            frag.setTv(mTV);
+    }
+
+    @Override public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) { }
+    @Override public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) { }
 }

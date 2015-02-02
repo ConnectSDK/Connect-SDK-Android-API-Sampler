@@ -41,25 +41,25 @@ public class TVFragment extends BaseFragment {
 
     public ListView channelListView;
     public ChannelAdapter adapter;
-    
+
     boolean mode3DToggle;
     boolean incomingCallToggle;
-    
+
     private ServiceSubscription<ChannelListener> mCurrentChannelSubscription;
 
     public TVFragment() {};
-    
+
     public TVFragment(Context context)
     {
         super(context);
     }
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		View rootView = inflater.inflate(
-				R.layout.fragment_tv, container, false);
-		
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
+        View rootView = inflater.inflate(
+                R.layout.fragment_tv, container, false);
+
         channelUpButton = (Button) rootView.findViewById(R.id.channelUpButton);
         channelDownButton = (Button) rootView.findViewById(R.id.channelDownButton);
         powerOffButton = (Button) rootView.findViewById(R.id.powerOffButton);
@@ -76,129 +76,129 @@ public class TVFragment extends BaseFragment {
                 powerOffButton, 
                 mode3DButton
         };
-        
+
         mode3DToggle = false;
         incomingCallToggle = false;
-        
+
         channelListView.setOnItemClickListener(new OnItemClickListener() {
 
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				ChannelInfo channelInfo = (ChannelInfo) arg0.getItemAtPosition(arg2);
-				getTVControl().setChannel(channelInfo, null);
-			}
-		});
-        
-		return rootView;
-	}
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                ChannelInfo channelInfo = (ChannelInfo) arg0.getItemAtPosition(arg2);
+                getTVControl().setChannel(channelInfo, null);
+            }
+        });
+
+        return rootView;
+    }
 
     @Override
     public void enableButtons()
     {
         super.enableButtons();
 
-    	if ( getTv().hasCapability(TVControl.Channel_Up) ) {
-	        channelUpButton.setOnClickListener(new View.OnClickListener() {
-	            @Override
-	            public void onClick(View view) {
-	            	getTVControl().channelUp(null);
-	            }
-	        });
-    	}
-    	else {
-    		disableButton(channelUpButton);
-    	}
-
-    	if ( getTv().hasCapability(TVControl.Channel_Down) ) {
-	        channelDownButton.setOnClickListener(new View.OnClickListener() {
-	            @Override
-	            public void onClick(View view) {
-	            	getTVControl().channelDown(null);
-	            }
-	        });
-    	}
-    	else {
-    		disableButton(channelDownButton);
-    	}
-
-    	if ( getTv().hasCapability(PowerControl.Off) ) {
-	        powerOffButton.setOnClickListener(new View.OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					getPowerControl().powerOff(null);
-				}
-			});
-    	}
-    	else {
-    		disableButton(powerOffButton);
-    	}
-        
-		if ( getTv().hasCapability(TVControl.Set_3D) ) {
-	        mode3DButton.setOnClickListener(new View.OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-			        if ( getTv().hasCapability(TVControl.Set_3D) ) {
-			        	if ( getTVControl() != null ) {
-			        		mode3DToggle = !mode3DToggle;
-			        		getTVControl().set3DEnabled(mode3DToggle, null);
-			        	}
-			        }
-				}
-			});
-		}
-		else {
-			disableButton(mode3DButton);
-		}
-		
-		if ( getTv().hasCapability(TVControl.Channel_List) ) {
-            getTVControl().getChannelList(new ChannelListListener() {
-    			
-    			@Override
-    			public void onSuccess(List<ChannelInfo> channelList) {
-    				adapter.clear();
-    				for (ChannelInfo channel : channelList)
-    					adapter.add(channel);
-    				adapter.sort();
-    			}
-    			
-    			@Override
-    			public void onError(ServiceCommandError arg0) {
-    				
-    			}
-    		});
+        if (getTv().hasCapability(TVControl.Channel_Up)) {
+            channelUpButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    getTVControl().channelUp(null);
+                }
+            });
         }
-        
-        if ( getTv().hasCapability(TVControl.Channel_Subscribe) ) {
-        	mCurrentChannelSubscription = getTVControl().subscribeCurrentChannel(new ChannelListener() {
-    			
-    			@Override
-    			public void onSuccess(final ChannelInfo ch) {
-    				adapter.setCurrentChannel(ch);
-    				adapter.notifyDataSetChanged();
-    				
-    				int position = adapter.getPosition(ch);
-    				channelListView.setSelection(position);
-    			}
-    			
-    			@Override
-    			public void onError(ServiceCommandError error) {
-    				
-    			}
-    		});
+        else {
+            disableButton(channelUpButton);
+        }
+
+        if (getTv().hasCapability(TVControl.Channel_Down)) {
+            channelDownButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    getTVControl().channelDown(null);
+                }
+            });
+        }
+        else {
+            disableButton(channelDownButton);
+        }
+
+        if (getTv().hasCapability(PowerControl.Off)) {
+            powerOffButton.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    getPowerControl().powerOff(null);
+                }
+            });
+        }
+        else {
+            disableButton(powerOffButton);
+        }
+
+        if (getTv().hasCapability(TVControl.Set_3D)) {
+            mode3DButton.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    if (getTv().hasCapability(TVControl.Set_3D)) {
+                        if (getTVControl() != null) {
+                            mode3DToggle = !mode3DToggle;
+                            getTVControl().set3DEnabled(mode3DToggle, null);
+                        }
+                    }
+                }
+            });
+        }
+        else {
+            disableButton(mode3DButton);
+        }
+
+        if (getTv().hasCapability(TVControl.Channel_List)) {
+            getTVControl().getChannelList(new ChannelListListener() {
+
+                @Override
+                public void onSuccess(List<ChannelInfo> channelList) {
+                    adapter.clear();
+                    for (ChannelInfo channel : channelList)
+                        adapter.add(channel);
+                    adapter.sort();
+                }
+
+                @Override
+                public void onError(ServiceCommandError arg0) {
+
+                }
+            });
+        }
+
+        if (getTv().hasCapability(TVControl.Channel_Subscribe)) {
+            mCurrentChannelSubscription = getTVControl().subscribeCurrentChannel(new ChannelListener() {
+
+                @Override
+                public void onSuccess(final ChannelInfo ch) {
+                    adapter.setCurrentChannel(ch);
+                    adapter.notifyDataSetChanged();
+
+                    int position = adapter.getPosition(ch);
+                    channelListView.setSelection(position);
+                }
+
+                @Override
+                public void onError(ServiceCommandError error) {
+
+                }
+            });
         }
     }
 
     @Override
     public void disableButtons()
     {
-    	adapter.clear();
-        
+        adapter.clear();
+
         if (mCurrentChannelSubscription != null)
         {
-        	mCurrentChannelSubscription.unsubscribe();
-        	mCurrentChannelSubscription = null;
+            mCurrentChannelSubscription.unsubscribe();
+            mCurrentChannelSubscription = null;
         }
 
         super.disableButtons();

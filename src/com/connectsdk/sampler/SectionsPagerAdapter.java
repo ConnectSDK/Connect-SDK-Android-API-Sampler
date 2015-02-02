@@ -30,36 +30,36 @@ import com.connectsdk.sampler.fragments.WebAppFragment;
  * one of the sections/tabs/pages.
  */
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
-	private int[] mItems;
-	private String[] mTitles;
-	private FragmentManager mFragmentManager;
-	private Context mContext;
+    private int[] mItems;
+    private String[] mTitles;
+    private FragmentManager mFragmentManager;
+    private Context mContext;
 
-	public SectionsPagerAdapter(Context context, FragmentManager fm) {
-		super(fm);
-		mContext = context;
-		mFragmentManager = fm;
-		
-		TypedArray items = context.getResources().obtainTypedArray(R.array.tab_icons);
-		mTitles = context.getResources().getStringArray(R.array.tab_titles);
-		
-		mItems = new int[items.length()];
-		
-		for (int i = 0; i < items.length(); i++) {
-			mItems[i] = items.getResourceId(i, -1);
-		}
-		
-		items.recycle();
-	}
+    public SectionsPagerAdapter(Context context, FragmentManager fm) {
+        super(fm);
+        mContext = context;
+        mFragmentManager = fm;
 
-	@Override
-	public Fragment getItem(int position) {
-		BaseFragment newFragment;
+        TypedArray items = context.getResources().obtainTypedArray(R.array.tab_icons);
+        mTitles = context.getResources().getStringArray(R.array.tab_titles);
+
+        mItems = new int[items.length()];
+
+        for (int i = 0; i < items.length(); i++) {
+            mItems[i] = items.getResourceId(i, -1);
+        }
+
+        items.recycle();
+    }
+
+    @Override
+    public Fragment getItem(int position) {
+        BaseFragment newFragment;
 
         switch (position)
         {
             case 1:
-            	newFragment = new WebAppFragment(mContext);
+                newFragment = new WebAppFragment(mContext);
                 break;
 
             case 2:
@@ -73,33 +73,33 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
             case 4:
                 newFragment = new TVFragment(mContext);
                 break;
-           
+
             case 5:
                 newFragment = new SystemFragment(mContext);
-            	break;
+                break;
 
             case 0:
             default:
                 newFragment = new MediaPlayerFragment(mContext);
         }
 
-		return newFragment;
-	}
-	
-	public BaseFragment getFragment(int position) {
-		return (BaseFragment) mFragmentManager.findFragmentByTag("android:switcher:" + R.id.pager + ":" + position);
-	}
+        return newFragment;
+    }
 
-	@Override
-	public int getCount() {
-		return mItems.length;
-	}
-	
-	public int getIcon(int position) {
-		return mItems[position];
-	}
-	
-	public String getTitle(int position) {
-		return mTitles[position];
-	}
+    public BaseFragment getFragment(int position) {
+        return (BaseFragment) mFragmentManager.findFragmentByTag("android:switcher:" + R.id.pager + ":" + position);
+    }
+
+    @Override
+    public int getCount() {
+        return mItems.length;
+    }
+
+    public int getIcon(int position) {
+        return mItems[position];
+    }
+
+    public String getTitle(int position) {
+        return mTitles[position];
+    }
 }

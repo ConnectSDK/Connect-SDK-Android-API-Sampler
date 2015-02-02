@@ -29,49 +29,49 @@ public class AppAdapter extends ArrayAdapter<AppInfo> {
     int resourceId; 
     String runningAppId;
 
-	public AppAdapter(Context context, int resource) {
-		super(context, resource);
-		this.context = context;
-		this.resourceId = resource;
-	}
+    public AppAdapter(Context context, int resource) {
+        super(context, resource);
+        this.context = context;
+        this.resourceId = resource;
+    }
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		View view = convertView;
-        
-		if (convertView == null) {
-			view = View.inflate(getContext(), resourceId, null);
-		}
-		
-		AppInfo app = this.getItem(position);
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View view = convertView;
 
-		TextView textView = (TextView) view.findViewById(R.id.itemTitle);
-		TextView subTextView = (TextView) view.findViewById(R.id.itemSubTitle);
-		ImageView imageView = (ImageView) view.findViewById(R.id.itemCheck);
-		textView.setText(app.getName());
-		subTextView.setText(app.getId());
-		if ( runningAppId != null && runningAppId.equals(app.getId()) ) {
-			System.out.println("runningAppId: " + runningAppId + ", id: " + app.getId());
-			textView.setTextColor(Color.RED);
-			imageView.setVisibility(View.VISIBLE);
-		} else {
-			textView.setTextColor(Color.BLACK);
-			imageView.setVisibility(View.INVISIBLE);
-		}
-		
-		return view;
-	}
-	
-	public void setRunningAppId(String appId) {
-		runningAppId = appId;
-	}
-	
-	public void sort() {
-		this.sort(new Comparator<AppInfo>() {
-			@Override
-			public int compare(AppInfo lhs, AppInfo rhs) {
-				return lhs.getName().compareTo(rhs.getName());
-			}
-		});
-	}
+        if (convertView == null) {
+            view = View.inflate(getContext(), resourceId, null);
+        }
+
+        AppInfo app = this.getItem(position);
+
+        TextView textView = (TextView) view.findViewById(R.id.itemTitle);
+        TextView subTextView = (TextView) view.findViewById(R.id.itemSubTitle);
+        ImageView imageView = (ImageView) view.findViewById(R.id.itemCheck);
+        textView.setText(app.getName());
+        subTextView.setText(app.getId());
+        if (runningAppId != null && runningAppId.equals(app.getId())) {
+            System.out.println("runningAppId: " + runningAppId + ", id: " + app.getId());
+            textView.setTextColor(Color.RED);
+            imageView.setVisibility(View.VISIBLE);
+        } else {
+            textView.setTextColor(Color.BLACK);
+            imageView.setVisibility(View.INVISIBLE);
+        }
+
+        return view;
+    }
+
+    public void setRunningAppId(String appId) {
+        runningAppId = appId;
+    }
+
+    public void sort() {
+        this.sort(new Comparator<AppInfo>() {
+            @Override
+            public int compare(AppInfo lhs, AppInfo rhs) {
+                return lhs.getName().compareTo(rhs.getName());
+            }
+        });
+    }
 }
