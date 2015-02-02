@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,6 +28,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -238,6 +240,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
 
+        final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+
         pairingCodeDialog = new AlertDialog.Builder(this)
         .setTitle("Enter Pairing Code on TV")
         .setView(input)
@@ -248,6 +252,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 if (mTV != null) {
                     String value = input.getText().toString().trim();
                     mTV.sendPairingKey(value);
+                    imm.hideSoftInputFromWindow(input.getWindowToken(), 0);
                 }
             }
         })
@@ -258,6 +263,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 dp.cancelPicker();
 
                 hConnectToggle();
+                imm.hideSoftInputFromWindow(input.getWindowToken(), 0);
             }
         })
         .create();
