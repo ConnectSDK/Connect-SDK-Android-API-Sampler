@@ -37,9 +37,9 @@ import com.connectsdk.device.ConnectableDevice;
 import com.connectsdk.device.ConnectableDeviceListener;
 import com.connectsdk.device.DevicePicker;
 import com.connectsdk.discovery.DiscoveryManager;
-import com.connectsdk.discovery.DiscoveryManager.PairingLevel;
 import com.connectsdk.sampler.fragments.BaseFragment;
 import com.connectsdk.service.DeviceService;
+import com.connectsdk.service.DeviceService.PairingLevel;
 import com.connectsdk.service.DeviceService.PairingType;
 import com.connectsdk.service.capability.MediaPlayer;
 import com.connectsdk.service.command.ServiceCommandError;
@@ -151,7 +151,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         setupPicker();
 
-        DiscoveryManager.getInstance().setPairingLevel(PairingLevel.ON);
         DiscoveryManager.getInstance().start();
     }
 
@@ -215,6 +214,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
                 mTV = (ConnectableDevice)arg0.getItemAtPosition(arg2);
                 mTV.addListener(deviceListener);
+                mTV.setPairingLevel(PairingLevel.ON);
                 mTV.connect();
                 connectItem.setTitle(mTV.getFriendlyName());
 
