@@ -149,12 +149,12 @@ public class WebAppFragment extends BaseFragment {
             webAppId = "ConnectSDKSampler";
 
 
-        if (!isLaunched) {
+        if (getTv().hasCapability(WebAppLauncher.Pin)) {
+            subscribeIfWebAppIsPinned();
+        }
+        else {
             disableButton(pinWebAppButton);
             disableButton(unPinWebAppButton);
-        }
-        else if (getTv().hasCapability(WebAppLauncher.Pin)) {
-            checkIfWebAppIsPinned();
         }
     }
 
@@ -186,9 +186,6 @@ public class WebAppFragment extends BaseFragment {
                         connectionListener.onSuccess(webAppSession.launchSession);
 
                     mWebAppSession = webAppSession;
-                    if (getTv().hasCapability(WebAppLauncher.Pin)) {
-                        checkIfWebAppIsPinned();
-                    }
                 }
             });
         }
@@ -221,7 +218,6 @@ public class WebAppFragment extends BaseFragment {
                     leaveWebAppButton.setEnabled(getTv().hasCapability(WebAppLauncher.Disconnect));
                     if (getTv().hasCapabilities(WebAppLauncher.Message_Send_JSON)) sendJSONButton.setEnabled(true);
                     if (getTv().hasCapabilities(WebAppLauncher.Close)) closeWebAppButton.setEnabled(true);
-                    if (getTv().hasCapability(WebAppLauncher.Pin)) checkIfWebAppIsPinned();
                     isLaunched = true;
                     disconnectMediaPlayerSession();
                 }
@@ -253,8 +249,8 @@ public class WebAppFragment extends BaseFragment {
 
         @Override
         public void onClick(View v) {
-            if (mWebAppSession != null) {
-                mWebAppSession.pinWebApp(new ResponseListener<Object>() {
+            if (getTv() != null) {
+                getTv().getWebAppLauncher().pinWebApp(webAppId, new ResponseListener<Object>() {
 
                     @Override
                     public void onError(ServiceCommandError error) {
@@ -264,7 +260,6 @@ public class WebAppFragment extends BaseFragment {
                     @Override
                     public void onSuccess(Object object) {
                         Log.d(TAG, "pin web app success");
-                        checkIfWebAppIsPinned();
                     }
                 });
             }
@@ -278,8 +273,8 @@ public class WebAppFragment extends BaseFragment {
             if (webAppId == null)
                 return;
 
-            if (mWebAppSession != null) {
-                mWebAppSession.unPinWebApp(webAppId, new ResponseListener<Object>() {
+            if (getTv() != null) {
+                getTv().getWebAppLauncher().unPinWebApp(webAppId, new ResponseListener<Object>() {
 
                     @Override
                     public void onError(ServiceCommandError error) {
@@ -289,7 +284,6 @@ public class WebAppFragment extends BaseFragment {
                     @Override
                     public void onSuccess(Object object) {
                         Log.d(TAG, "unpin web app success");
-                        checkIfWebAppIsPinned();
                     }
                 });
             }
@@ -300,7 +294,7 @@ public class WebAppFragment extends BaseFragment {
         if (webAppId == null)
             return;
 
-        getTv().getWebAppLauncher().isWebAppPinned(webAppId, new WebAppPinStatusListener() {
+        getTv().getWebAppLauncher().isWebAppPinned( webAppId, new WebAppPinStatusListener() {
 
             @Override
             public void onError(ServiceCommandError error) {
@@ -338,9 +332,7 @@ public class WebAppFragment extends BaseFragment {
             unPinWebAppButton.setEnabled(true);
         }
         else {
-            if (mWebAppSession != null) {
-                pinWebAppButton.setEnabled(true);
-            }
+            pinWebAppButton.setEnabled(true);
             unPinWebAppButton.setEnabled(false);
         }
     }
