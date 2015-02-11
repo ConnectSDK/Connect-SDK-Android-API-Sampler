@@ -28,9 +28,11 @@ import com.connectsdk.sampler.R;
 import com.connectsdk.service.capability.WebAppLauncher;
 import com.connectsdk.service.capability.listeners.ResponseListener;
 import com.connectsdk.service.command.ServiceCommandError;
+import com.connectsdk.service.command.ServiceSubscription;
 import com.connectsdk.service.sessions.LaunchSession;
 import com.connectsdk.service.sessions.WebAppSession;
 import com.connectsdk.service.sessions.WebAppSession.LaunchListener;
+import com.connectsdk.service.sessions.WebAppSession.WebAppPinStatusListener;
 import com.connectsdk.service.sessions.WebAppSessionListener;
 
 public class WebAppFragment extends BaseFragment {
@@ -41,6 +43,8 @@ public class WebAppFragment extends BaseFragment {
     public Button closeWebAppButton;
     public Button sendMessageButton;
     public Button sendJSONButton;
+    public Button pinWebAppButton;
+    public Button unPinWebAppButton;
 
     private final static String WEBOSID = "webOS TV";
     private final static String CASTID = "Chromecast";
@@ -52,17 +56,19 @@ public class WebAppFragment extends BaseFragment {
     LaunchSession runningAppSession;
 
     static WebAppSession mWebAppSession;
+    ServiceSubscription<WebAppPinStatusListener> isWebAppPinnedSubscription;
+    String webAppId = null;
 
     public WebAppFragment() {};
 
-    public WebAppFragment(Context context) 
+    public WebAppFragment(Context context)
     {
         super(context);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         setRetainInstance(true);
         View rootView = inflater.inflate(
                 R.layout.fragment_webapp, container, false);
@@ -75,13 +81,18 @@ public class WebAppFragment extends BaseFragment {
         sendJSONButton = (Button) rootView.findViewById(R.id.sendJSONButton);
         responseMessageTextView = (TextView) rootView.findViewById(R.id.responseMessageTextView);
 
+        pinWebAppButton = (Button) rootView.findViewById(R.id.pinWebAppButton);
+        unPinWebAppButton = (Button) rootView.findViewById(R.id.unPinWebAppButton);
+
         buttons = new Button[]{
-                launchWebAppButton, 
-                joinWebAppButton, 
-                leaveWebAppButton, 
-                closeWebAppButton, 
-                sendMessageButton, 
-                sendJSONButton
+                launchWebAppButton,
+                joinWebAppButton,
+                leaveWebAppButton,
+                closeWebAppButton,
+                sendMessageButton,
+                sendJSONButton,
+                pinWebAppButton,
+                unPinWebAppButton
         };
 
         return rootView;
@@ -113,6 +124,11 @@ public class WebAppFragment extends BaseFragment {
             sendJSONButton.setOnClickListener(sendJson);
         }
 
+        if (getTv().hasCapability(WebAppLauncher.Pin)) {
+            pinWebAppButton.setOnClickListener(pinWebApp);
+            unPinWebAppButton.setOnClickListener(unPinWebApp);
+        }
+
         responseMessageTextView.setText("");
 
         if (!isLaunched) {
@@ -124,20 +140,29 @@ public class WebAppFragment extends BaseFragment {
         else {
             disableButton(launchWebAppButton);
         }
+
+        if (getTv().getServiceByName(WEBOSID) != null)
+            webAppId = "WebAppTester";
+        else if (getTv().getServiceByName(CASTID) != null)
+            webAppId = "DDCEDE96";
+        else if (getTv().getServiceByName(MULTISCREENID) != null)
+            webAppId = "ConnectSDKSampler";
+
+
+        if (getTv().hasCapability(WebAppLauncher.Pin)) {
+            subscribeIfWebAppIsPinned();
+        }
+        else {
+            disableButton(pinWebAppButton);
+            disableButton(unPinWebAppButton);
+        }
     }
 
     public View.OnClickListener launchWebApp = new View.OnClickListener() {
 
         @Override
         public void onClick(View v) {
-            String webAppId = "";
-            if (getTv().getServiceByName(WEBOSID) != null)
-                webAppId = "SampleWebApp";
-            else if (getTv().getServiceByName(CASTID) != null)
-                webAppId = "DDCEDE96";
-            else if (getTv().getServiceByName(MULTISCREENID) != null)
-                webAppId = "ConnectSDKSampler";
-            else
+            if (webAppId == null)
                 return;
 
             launchWebAppButton.setEnabled(false);
@@ -161,7 +186,7 @@ public class WebAppFragment extends BaseFragment {
                         connectionListener.onSuccess(webAppSession.launchSession);
 
                     mWebAppSession = webAppSession;
-                    }
+                }
             });
         }
     };
@@ -170,14 +195,7 @@ public class WebAppFragment extends BaseFragment {
 
         @Override
         public void onClick(View v) {
-            String webAppId = "";
-            if (getTv().getServiceByName(WEBOSID) != null)
-                webAppId = "SampleWebApp";
-            else if (getTv().getServiceByName(CASTID) != null)
-                webAppId = "DDCEDE96";
-            else if (getTv().getServiceByName(MULTISCREENID) != null)
-                webAppId = "ConnectSDKSampler";
-            else
+            if (webAppId == null)
                 return;
 
             getTv().getWebAppLauncher().joinWebApp(webAppId, new LaunchListener() {
@@ -227,6 +245,97 @@ public class WebAppFragment extends BaseFragment {
         }
     };
 
+    public View.OnClickListener pinWebApp = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+            if (getTv() != null) {
+                getTv().getWebAppLauncher().pinWebApp(webAppId, new ResponseListener<Object>() {
+
+                    @Override
+                    public void onError(ServiceCommandError error) {
+                        Log.w(TAG, "pin web app failure, " + error.getLocalizedMessage());
+                    }
+
+                    @Override
+                    public void onSuccess(Object object) {
+                        Log.d(TAG, "pin web app success");
+                    }
+                });
+            }
+        }
+    };
+
+    public View.OnClickListener unPinWebApp = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+            if (webAppId == null)
+                return;
+
+            if (getTv() != null) {
+                getTv().getWebAppLauncher().unPinWebApp(webAppId, new ResponseListener<Object>() {
+
+                    @Override
+                    public void onError(ServiceCommandError error) {
+                        Log.w(TAG, "unpin web app failture, " + error.getLocalizedMessage());
+                    }
+
+                    @Override
+                    public void onSuccess(Object object) {
+                        Log.d(TAG, "unpin web app success");
+                    }
+                });
+            }
+        }
+    };
+
+    public void checkIfWebAppIsPinned() {
+        if (webAppId == null)
+            return;
+
+        getTv().getWebAppLauncher().isWebAppPinned( webAppId, new WebAppPinStatusListener() {
+
+            @Override
+            public void onError(ServiceCommandError error) {
+                Log.w(TAG, "isWebAppPinned failture, " + error.getLocalizedMessage());
+            }
+
+            @Override
+            public void onSuccess(Boolean status) {
+                updatePinButton(status);
+            }
+        });
+    }
+
+    public void subscribeIfWebAppIsPinned() {
+        if (webAppId == null)
+            return;
+
+        isWebAppPinnedSubscription = getTv().getWebAppLauncher().subscribeIsWebAppPinned(webAppId, new WebAppPinStatusListener() {
+
+            @Override
+            public void onError(ServiceCommandError error) {
+                Log.w(TAG, "isWebAppPinned failure, " + error.getLocalizedMessage());
+            }
+
+            @Override
+            public void onSuccess(Boolean status) {
+                updatePinButton(status);
+            }
+        });
+    }
+
+    public void updatePinButton(boolean status) {
+        if (status) {
+            pinWebAppButton.setEnabled(false);
+            unPinWebAppButton.setEnabled(true);
+        }
+        else {
+            pinWebAppButton.setEnabled(true);
+            unPinWebAppButton.setEnabled(false);
+        }
+    }
 
     public WebAppSessionListener webAppListener = new WebAppSessionListener() {
 
@@ -401,6 +510,7 @@ public class WebAppFragment extends BaseFragment {
         isLaunched = false;
 
         responseMessageTextView.setText("");
+        webAppId = null;
     }
 
     public void setRunningAppInfo(LaunchSession session) {
