@@ -14,7 +14,14 @@ For more information, visit our [website](http://www.connectsdk.com/).
 - [Connect-SDK-Android-Core](https://github.com/ConnectSDK/Connect-SDK-Android-Core)
 - [Connect-SDK-Android-Google-Cast](https://github.com/ConnectSDK/Connect-SDK-Android-Google-Cast) for full version of Connect-SDK
 
-##Setup
+##Setup with Android Studio
+1. Download the Sampler project
+    ```
+    git clone https://github.com/ConnectSDK/Connect-SDK-Android-API-Sampler.git
+    ```
+2. Import the Sampler project into Android Studio
+
+##Setup with Eclipse
 1. Setup Connect-SDK-Android [full](https://github.com/ConnectSDK/Connect-SDK-Android) or [lite](https://github.com/ConnectSDK/Connect-SDK-Android-Lite) version
 2. Import the Android v7 appcompat libary into your Eclipse workspace
 3. Import the Google google-play-services library into your Eclipse workspace (for full version of Connect-SDK)
