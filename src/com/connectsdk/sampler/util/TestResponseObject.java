@@ -6,6 +6,8 @@ public class TestResponseObject {
 	public int httpResponseCode;	
 	public String responseMessage;
 	
+	public static final String display_image = "ImageDisplayed";
+	
 	public TestResponseObject() {
 		super();
 		this.isSuccess = false;
