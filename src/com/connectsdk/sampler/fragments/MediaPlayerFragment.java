@@ -378,7 +378,7 @@ public class MediaPlayerFragment extends BaseFragment {
             public void onSuccess(MediaLaunchObject object) {
                 launchSession = object.launchSession;
                 closeButton.setEnabled(true);
-                testResponse =  new TestResponseObject(true, 200, TestResponseObject.display_image);
+                testResponse =  new TestResponseObject(true, 200, TestResponseObject.Display_image);
                 closeButton.setOnClickListener(closeListener);
                 stopUpdating();
                 isPlayingImage = true;
