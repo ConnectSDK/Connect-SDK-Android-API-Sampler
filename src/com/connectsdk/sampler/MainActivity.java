@@ -46,18 +46,23 @@ import com.connectsdk.service.command.ServiceCommandError;
 
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
 
-    private ConnectableDevice mTV;
-    private AlertDialog dialog;
-    private AlertDialog pairingAlertDialog;
-    private AlertDialog pairingCodeDialog;
-    private DevicePicker dp; 
+    ConnectableDevice mTV;
+    AlertDialog dialog;
+    AlertDialog pairingAlertDialog;
+    AlertDialog pairingCodeDialog;
+    DevicePicker dp; 
 
-    private MenuItem connectItem;
+    MenuItem connectItem;
 
     SectionsPagerAdapter mSectionsPagerAdapter;
 
     ViewPager mViewPager;
-
+    ActionBar actionBar;
+    
+    ActionBar getSupportedActionBar(){
+		return getSupportActionBar();
+	}
+    
     private ConnectableDeviceListener deviceListener = new ConnectableDeviceListener() {
 
         @Override
@@ -114,6 +119,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         }
     };
+	
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,7 +127,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         setContentView(R.layout.activity_main);
 
-        final ActionBar actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());

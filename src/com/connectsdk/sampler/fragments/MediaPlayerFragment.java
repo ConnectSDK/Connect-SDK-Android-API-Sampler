@@ -38,6 +38,7 @@ import android.widget.TextView;
 import com.connectsdk.core.MediaInfo;
 import com.connectsdk.device.ConnectableDevice;
 import com.connectsdk.sampler.R;
+import com.connectsdk.sampler.util.TestResponseObject;
 import com.connectsdk.service.capability.MediaControl;
 import com.connectsdk.service.capability.MediaControl.DurationListener;
 import com.connectsdk.service.capability.MediaControl.PlayStateListener;
@@ -89,6 +90,7 @@ public class MediaPlayerFragment extends BaseFragment {
     public long totalTimeDuration;
     public boolean mIsGettingPlayPosition;
 
+    
     static boolean isPlayingImage = false;
     static boolean isPlaying = false;
 
@@ -96,6 +98,8 @@ public class MediaPlayerFragment extends BaseFragment {
     private PlaylistControl mPlaylistControl = null;
 
     private Timer refreshTimer;
+    
+    public TestResponseObject testResponse;
 
     public MediaPlayerFragment() {};
 
@@ -106,6 +110,7 @@ public class MediaPlayerFragment extends BaseFragment {
         mIsUserSeeking = false;
         mSeeking = false;
         mIsGettingPlayPosition = false;
+        testResponse = new TestResponseObject();
     }
 
     @Override
@@ -373,10 +378,12 @@ public class MediaPlayerFragment extends BaseFragment {
             public void onSuccess(MediaLaunchObject object) {
                 launchSession = object.launchSession;
                 closeButton.setEnabled(true);
+                testResponse =  new TestResponseObject(true, 200, TestResponseObject.Display_image);
                 closeButton.setOnClickListener(closeListener);
                 stopUpdating();
                 isPlayingImage = true;
                 disconnectWebAppSession();
+               
             }
 
             @Override
@@ -385,9 +392,11 @@ public class MediaPlayerFragment extends BaseFragment {
                 if (launchSession != null) {
                     launchSession.close(null);
                     launchSession = null;
+                    testResponse =  new TestResponseObject(false, error.getCode(), error.getMessage());
                     stopUpdating();
                     disableMedia();
                     isPlaying = isPlayingImage = false;
+                    
                 }
             }
         });
