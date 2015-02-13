@@ -59,10 +59,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     ViewPager mViewPager;
     ActionBar actionBar;
     
-    ActionBar getSupportedActionBar(){
-		return getSupportActionBar();
-	}
-    
     private ConnectableDeviceListener deviceListener = new ConnectableDeviceListener() {
 
         @Override
