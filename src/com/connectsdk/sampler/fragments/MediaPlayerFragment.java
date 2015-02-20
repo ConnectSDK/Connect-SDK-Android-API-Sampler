@@ -189,6 +189,7 @@ public class MediaPlayerFragment extends BaseFragment {
     public void onPause() {
         stopUpdating();
         super.onPause();
+        testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Paused_Media);
     }
 
     @Override
@@ -303,6 +304,7 @@ public class MediaPlayerFragment extends BaseFragment {
                 if (launchSession != null) {
                     launchSession.close(null);
                     launchSession = null;
+                    testResponse =  new TestResponseObject(false, error.getCode(), error.getMessage());
                     stopUpdating();
                     disableMedia();
                     isPlaying = isPlayingImage = false;
@@ -314,9 +316,10 @@ public class MediaPlayerFragment extends BaseFragment {
                 Log.d("LG", "Started playing audio");
 
                 launchSession = object.launchSession;
+                testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Play_Audio);
                 mMediaControl = object.mediaControl;
                 mPlaylistControl = object.playlistControl;
-
+                
                 stopUpdating();
                 enableMedia();
                 isPlaying = true;
@@ -378,7 +381,7 @@ public class MediaPlayerFragment extends BaseFragment {
             public void onSuccess(MediaLaunchObject object) {
                 launchSession = object.launchSession;
                 closeButton.setEnabled(true);
-                testResponse =  new TestResponseObject(true, 200, TestResponseObject.Display_image);
+                testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Display_image);
                 closeButton.setOnClickListener(closeListener);
                 stopUpdating();
                 isPlayingImage = true;
@@ -413,6 +416,7 @@ public class MediaPlayerFragment extends BaseFragment {
 
             public void onSuccess(MediaLaunchObject object) {
                 launchSession = object.launchSession;
+                testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Play_Video);
                 mMediaControl = object.mediaControl;
                 mPlaylistControl = object.playlistControl;
                 stopUpdating();
@@ -426,6 +430,7 @@ public class MediaPlayerFragment extends BaseFragment {
                 if (launchSession != null) {
                     launchSession.close(null);
                     launchSession = null;
+                    testResponse =  new TestResponseObject(false, error.getCode(), error.getMessage());
                     stopUpdating();
                     disableMedia();
                     isPlaying = isPlayingImage = false;
@@ -546,14 +551,16 @@ public class MediaPlayerFragment extends BaseFragment {
         public void onClick(View view) {
             if (mMediaControl != null)
                 mMediaControl.play(null);
+            testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Played_Media);
         }
     };
 
     public View.OnClickListener pauseListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if (mMediaControl != null)
+        	if (mMediaControl != null)
                 mMediaControl.pause(null);
+        	    testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Paused_Media);
         }
     };
 
@@ -590,12 +597,12 @@ public class MediaPlayerFragment extends BaseFragment {
             if (getMediaPlayer() != null) {
                 if (launchSession != null)
                     launchSession.close(null);
-
-                launchSession = null;
+                    launchSession = null;
 
                 disableMedia();
                 stopUpdating();
                 isPlaying = isPlayingImage = false;
+                testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Closed_Media);
             }
         }
     };
@@ -610,6 +617,7 @@ public class MediaPlayerFragment extends BaseFragment {
                     public void onSuccess(Object response) {
                         stopMedia();
                         stopUpdating();
+                        testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Stopped_image);
                         isPlaying = false;
                         isPlayingImage = true;
                     }
@@ -626,6 +634,7 @@ public class MediaPlayerFragment extends BaseFragment {
         public void onClick(View view) {
             if (mMediaControl != null)
                 mMediaControl.rewind(null);
+            testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Rewind_Media);
         }
     };
 
@@ -634,6 +643,7 @@ public class MediaPlayerFragment extends BaseFragment {
         public void onClick(View view) {
             if (mMediaControl != null)
                 mMediaControl.fastForward(null);
+            testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.FastForward_Media);
         }
     };
 
