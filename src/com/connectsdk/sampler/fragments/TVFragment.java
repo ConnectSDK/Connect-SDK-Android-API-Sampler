@@ -26,8 +26,10 @@ import android.widget.ListView;
 import com.connectsdk.core.ChannelInfo;
 import com.connectsdk.sampler.R;
 import com.connectsdk.sampler.widget.ChannelAdapter;
+import com.connectsdk.service.capability.KeyControl;
 import com.connectsdk.service.capability.PowerControl;
 import com.connectsdk.service.capability.TVControl;
+import com.connectsdk.service.capability.KeyControl.KeyCode;
 import com.connectsdk.service.capability.TVControl.ChannelListListener;
 import com.connectsdk.service.capability.TVControl.ChannelListener;
 import com.connectsdk.service.command.ServiceCommandError;
@@ -38,6 +40,10 @@ public class TVFragment extends BaseFragment {
     public Button channelDownButton;
     public Button powerOffButton;
     public Button mode3DButton;
+
+    public Button[] numberButtons = new Button[10];
+    public Button dashButton;
+    public Button enterButton;
 
     public ListView channelListView;
     public ChannelAdapter adapter;
@@ -60,6 +66,20 @@ public class TVFragment extends BaseFragment {
         View rootView = inflater.inflate(
                 R.layout.fragment_tv, container, false);
 
+        numberButtons[0] = (Button) rootView.findViewById(R.id.numberButton0);
+        numberButtons[1] = (Button) rootView.findViewById(R.id.numberButton1);
+        numberButtons[2] = (Button) rootView.findViewById(R.id.numberButton2);
+        numberButtons[3] = (Button) rootView.findViewById(R.id.numberButton3);
+        numberButtons[4] = (Button) rootView.findViewById(R.id.numberButton4);
+        numberButtons[5] = (Button) rootView.findViewById(R.id.numberButton5);
+        numberButtons[6] = (Button) rootView.findViewById(R.id.numberButton6);
+        numberButtons[7] = (Button) rootView.findViewById(R.id.numberButton7);
+        numberButtons[8] = (Button) rootView.findViewById(R.id.numberButton8);
+        numberButtons[9] = (Button) rootView.findViewById(R.id.numberButton9);
+
+        dashButton = (Button) rootView.findViewById(R.id.dashButton);
+        enterButton = (Button) rootView.findViewById(R.id.enterButton);
+
         channelUpButton = (Button) rootView.findViewById(R.id.channelUpButton);
         channelDownButton = (Button) rootView.findViewById(R.id.channelDownButton);
         powerOffButton = (Button) rootView.findViewById(R.id.powerOffButton);
@@ -71,9 +91,21 @@ public class TVFragment extends BaseFragment {
         channelListView.setAdapter(adapter);
 
         buttons = new Button[] {
-                channelUpButton, 
-                channelDownButton, 
-                powerOffButton, 
+                numberButtons[0],
+                numberButtons[1],
+                numberButtons[2],
+                numberButtons[3],
+                numberButtons[4],
+                numberButtons[5],
+                numberButtons[6],
+                numberButtons[7],
+                numberButtons[8],
+                numberButtons[9],
+                dashButton,
+                enterButton,
+                channelUpButton,
+                channelDownButton,
+                powerOffButton,
                 mode3DButton
         };
 
@@ -96,6 +128,118 @@ public class TVFragment extends BaseFragment {
     public void enableButtons()
     {
         super.enableButtons();
+
+        if (getTv().hasAnyCapability(KeyControl.KeyCode)) {
+            numberButtons[0].setOnClickListener(new View.OnClickListener() {
+                
+                @Override
+                public void onClick(View v) {
+                    getKeyControl().sendKeyCode(KeyCode.NUM_0, null);;
+                }
+            });
+            
+            numberButtons[1].setOnClickListener(new View.OnClickListener() {
+                
+                @Override
+                public void onClick(View v) {
+                    getKeyControl().sendKeyCode(KeyCode.NUM_1, null);;
+                }
+            });
+
+            numberButtons[2].setOnClickListener(new View.OnClickListener() {
+                
+                @Override
+                public void onClick(View v) {
+                    getKeyControl().sendKeyCode(KeyCode.NUM_2, null);;
+                }
+            });
+
+            numberButtons[3].setOnClickListener(new View.OnClickListener() {
+                
+                @Override
+                public void onClick(View v) {
+                    getKeyControl().sendKeyCode(KeyCode.NUM_3, null);;
+                }
+            });
+
+            numberButtons[4].setOnClickListener(new View.OnClickListener() {
+                
+                @Override
+                public void onClick(View v) {
+                    getKeyControl().sendKeyCode(KeyCode.NUM_4, null);;
+                }
+            });
+
+            numberButtons[5].setOnClickListener(new View.OnClickListener() {
+                
+                @Override
+                public void onClick(View v) {
+                    getKeyControl().sendKeyCode(KeyCode.NUM_5, null);;
+                }
+            });
+
+            numberButtons[6].setOnClickListener(new View.OnClickListener() {
+                
+                @Override
+                public void onClick(View v) {
+                    getKeyControl().sendKeyCode(KeyCode.NUM_6, null);;
+                }
+            });
+
+            numberButtons[7].setOnClickListener(new View.OnClickListener() {
+                
+                @Override
+                public void onClick(View v) {
+                    getKeyControl().sendKeyCode(KeyCode.NUM_7, null);;
+                }
+            });
+
+            numberButtons[8].setOnClickListener(new View.OnClickListener() {
+                
+                @Override
+                public void onClick(View v) {
+                    getKeyControl().sendKeyCode(KeyCode.NUM_8, null);;
+                }
+            });
+
+            numberButtons[9].setOnClickListener(new View.OnClickListener() {
+                
+                @Override
+                public void onClick(View v) {
+                    getKeyControl().sendKeyCode(KeyCode.NUM_9, null);;
+                }
+            });
+
+            dashButton.setOnClickListener(new View.OnClickListener() {
+                
+                @Override
+                public void onClick(View v) {
+                    getKeyControl().sendKeyCode(KeyCode.DASH, null);;
+                }
+            });
+
+            enterButton.setOnClickListener(new View.OnClickListener() {
+                
+                @Override
+                public void onClick(View v) {
+                    getKeyControl().sendKeyCode(KeyCode.ENTER, null);;
+                }
+            });
+        }
+        else {
+            disableButton(numberButtons[0]);
+            disableButton(numberButtons[1]);
+            disableButton(numberButtons[2]);
+            disableButton(numberButtons[3]);
+            disableButton(numberButtons[4]);
+            disableButton(numberButtons[5]);
+            disableButton(numberButtons[6]);
+            disableButton(numberButtons[7]);
+            disableButton(numberButtons[8]);
+            disableButton(numberButtons[9]);
+            disableButton(dashButton);
+            disableButton(enterButton);
+        }
 
         if (getTv().hasCapability(TVControl.Channel_Up)) {
             channelUpButton.setOnClickListener(new View.OnClickListener() {
