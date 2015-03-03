@@ -167,7 +167,7 @@ public class WebAppFragment extends BaseFragment {
 
             launchWebAppButton.setEnabled(false);
 
-            getTv().getWebAppLauncher().launchWebApp(webAppId, new LaunchListener() {
+            getWebAppLauncher().launchWebApp(webAppId, new LaunchListener() {
 
                 @Override
                 public void onError(ServiceCommandError error) {
@@ -198,7 +198,7 @@ public class WebAppFragment extends BaseFragment {
             if (webAppId == null)
                 return;
 
-            getTv().getWebAppLauncher().joinWebApp(webAppId, new LaunchListener() {
+            getWebAppLauncher().joinWebApp(webAppId, new LaunchListener() {
 
                 @Override
                 public void onError(ServiceCommandError error) {
@@ -250,7 +250,7 @@ public class WebAppFragment extends BaseFragment {
         @Override
         public void onClick(View v) {
             if (getTv() != null) {
-                getTv().getWebAppLauncher().pinWebApp(webAppId, new ResponseListener<Object>() {
+                getWebAppLauncher().pinWebApp(webAppId, new ResponseListener<Object>() {
 
                     @Override
                     public void onError(ServiceCommandError error) {
@@ -274,7 +274,7 @@ public class WebAppFragment extends BaseFragment {
                 return;
 
             if (getTv() != null) {
-                getTv().getWebAppLauncher().unPinWebApp(webAppId, new ResponseListener<Object>() {
+                getWebAppLauncher().unPinWebApp(webAppId, new ResponseListener<Object>() {
 
                     @Override
                     public void onError(ServiceCommandError error) {
@@ -294,7 +294,7 @@ public class WebAppFragment extends BaseFragment {
         if (webAppId == null)
             return;
 
-        getTv().getWebAppLauncher().isWebAppPinned( webAppId, new WebAppPinStatusListener() {
+        getWebAppLauncher().isWebAppPinned( webAppId, new WebAppPinStatusListener() {
 
             @Override
             public void onError(ServiceCommandError error) {
@@ -312,7 +312,7 @@ public class WebAppFragment extends BaseFragment {
         if (webAppId == null)
             return;
 
-        isWebAppPinnedSubscription = getTv().getWebAppLauncher().subscribeIsWebAppPinned(webAppId, new WebAppPinStatusListener() {
+        isWebAppPinnedSubscription = getWebAppLauncher().subscribeIsWebAppPinned(webAppId, new WebAppPinStatusListener() {
 
             @Override
             public void onError(ServiceCommandError error) {

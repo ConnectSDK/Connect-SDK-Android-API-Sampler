@@ -230,7 +230,7 @@ public class AppsFragment extends BaseFragment {
         }
 
         if (getTv().hasCapability(Launcher.Application_List)) {
-            getTv().getLauncher().getAppList(new AppListListener() {
+            getLauncher().getAppList(new AppListListener() {
 
                 @Override
                 public void onSuccess(List<AppInfo> appList) {

@@ -84,18 +84,18 @@ public class BaseFragment extends Fragment {
             disableButtons();
         }
         else {
-            launcher = mTv.getLauncher();
-            mediaPlayer = mTv.getMediaPlayer();
-            mediaControl = mTv.getMediaControl();
-            tvControl = mTv.getTVControl();
-            volumeControl = mTv.getVolumeControl();
-            toastControl = mTv.getToastControl();
-            textInputControl = mTv.getTextInputControl();
-            mouseControl = mTv.getMouseControl();
-            externalInputControl = mTv.getExternalInputControl();
-            powerControl = mTv.getPowerControl();
-            keyControl = mTv.getKeyControl();
-            webAppLauncher = mTv.getWebAppLauncher();
+            launcher = mTv.getCapability(Launcher.class);
+            mediaPlayer = mTv.getCapability(MediaPlayer.class);
+            mediaControl = mTv.getCapability(MediaControl.class);
+            tvControl = mTv.getCapability(TVControl.class);
+            volumeControl = mTv.getCapability(VolumeControl.class);
+            toastControl = mTv.getCapability(ToastControl.class);
+            textInputControl = mTv.getCapability(TextInputControl.class);
+            mouseControl = mTv.getCapability(MouseControl.class);
+            externalInputControl = mTv.getCapability(ExternalInputControl.class);
+            powerControl = mTv.getCapability(PowerControl.class);
+            keyControl = mTv.getCapability(KeyControl.class);
+            webAppLauncher = mTv.getCapability(WebAppLauncher.class);
 
             enableButtons();
         }
