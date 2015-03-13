@@ -391,7 +391,7 @@ public class MediaPlayerFragment extends BaseFragment {
 
             @Override
             public void onError(ServiceCommandError error) {
-                Log.e("Error", error.getMessage());
+                Log.e("Error", "Error displaying Image");
                 if (launchSession != null) {
                     launchSession.close(null);
                     launchSession = null;
