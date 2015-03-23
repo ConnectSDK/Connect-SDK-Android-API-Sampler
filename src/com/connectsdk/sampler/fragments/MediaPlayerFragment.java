@@ -245,6 +245,7 @@ public class MediaPlayerFragment extends BaseFragment {
                 @Override
                 public void onClick(View view) {
                     playM3U();
+                    testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Played_Playlist);
                 }
             });
         } else {
@@ -569,6 +570,7 @@ public class MediaPlayerFragment extends BaseFragment {
         public void onClick(View view) {
             if (mPlaylistControl != null)
                 mPlaylistControl.previous(null);
+            testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Previous);
         }
     };
 
@@ -577,6 +579,7 @@ public class MediaPlayerFragment extends BaseFragment {
         public void onClick(View view) {
             if (mPlaylistControl != null)
                 mPlaylistControl.next(null);
+            testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Next);
         }
     };
 
@@ -585,6 +588,7 @@ public class MediaPlayerFragment extends BaseFragment {
         public void onClick(View view) {
             if (mPlaylistControl != null) {
                 mPlaylistControl.jumpToTrack(Integer.parseInt(positionTrackView.getText().toString()), null);
+                testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Jump);
             }
         }
     };
@@ -617,7 +621,7 @@ public class MediaPlayerFragment extends BaseFragment {
                     public void onSuccess(Object response) {
                         stopMedia();
                         stopUpdating();
-                        testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Stopped_image);
+                        testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Stopped_Media);
                         isPlaying = false;
                         isPlayingImage = true;
                     }

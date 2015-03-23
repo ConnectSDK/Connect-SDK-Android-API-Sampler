@@ -37,6 +37,7 @@ import android.widget.TextView.OnEditorActionListener;
 import com.connectsdk.core.TextInputStatusInfo;
 import com.connectsdk.core.TextInputStatusInfo.TextInputType;
 import com.connectsdk.sampler.R;
+import com.connectsdk.sampler.util.TestResponseObject;
 import com.connectsdk.service.capability.KeyControl;
 import com.connectsdk.service.capability.TextInputControl;
 import com.connectsdk.service.capability.TextInputControl.TextInputStatusListener;
@@ -52,6 +53,7 @@ public class KeyControlFragment extends BaseFragment {
     public Button homeButton;
     public Button openKeyboardButton;
     public View trackpadView;
+    public TestResponseObject testResponse;
 
     boolean isDown = false;
     boolean isMoving = false;
@@ -78,6 +80,7 @@ public class KeyControlFragment extends BaseFragment {
     public KeyControlFragment(Context context)
     {
         super(context);
+        testResponse = new TestResponseObject();
     }
 
     @Override
@@ -231,6 +234,7 @@ public class KeyControlFragment extends BaseFragment {
                 public void onClick(View view) {
                     if (getKeyControl() != null) {
                         getKeyControl().up(null);
+                        testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.UpClicked);
                     }
                 }
             });
@@ -245,6 +249,7 @@ public class KeyControlFragment extends BaseFragment {
                 public void onClick(View view) {
                     if (getKeyControl() != null) {
                         getKeyControl().left(null);
+                        testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.LeftClicked);
                     }
                 }
             });
@@ -259,6 +264,7 @@ public class KeyControlFragment extends BaseFragment {
                 public void onClick(View view) {
                     if (getKeyControl() != null) {
                         getKeyControl().ok(null);
+                        testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Clicked);
                     }
                 }
             });
@@ -273,6 +279,7 @@ public class KeyControlFragment extends BaseFragment {
                 public void onClick(View view) {
                     if (getKeyControl() != null) {
                         getKeyControl().right(null);
+                        testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.RightClicked);
                     }
                 }
             });
@@ -301,6 +308,7 @@ public class KeyControlFragment extends BaseFragment {
                 public void onClick(View view) {
                     if (getKeyControl() != null) {
                         getKeyControl().down(null);
+                        testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.DownClicked);
                     }
                 }
             });
@@ -315,6 +323,7 @@ public class KeyControlFragment extends BaseFragment {
                 public void onClick(View view) {
                     if (getKeyControl() != null) {
                         getKeyControl().home(null);
+                        testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.HomeClicked);
                     }
                 }
             });

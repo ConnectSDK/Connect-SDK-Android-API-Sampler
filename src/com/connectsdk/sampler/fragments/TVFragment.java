@@ -25,6 +25,7 @@ import android.widget.ListView;
 
 import com.connectsdk.core.ChannelInfo;
 import com.connectsdk.sampler.R;
+import com.connectsdk.sampler.util.TestResponseObject;
 import com.connectsdk.sampler.widget.ChannelAdapter;
 import com.connectsdk.service.capability.KeyControl;
 import com.connectsdk.service.capability.PowerControl;
@@ -50,6 +51,7 @@ public class TVFragment extends BaseFragment {
 
     boolean mode3DToggle;
     boolean incomingCallToggle;
+    public TestResponseObject testResponse;
 
     private ServiceSubscription<ChannelListener> mCurrentChannelSubscription;
 
@@ -58,6 +60,7 @@ public class TVFragment extends BaseFragment {
     public TVFragment(Context context)
     {
         super(context);
+        testResponse = new TestResponseObject();
     }
 
     @Override
@@ -270,6 +273,7 @@ public class TVFragment extends BaseFragment {
 
                 @Override
                 public void onClick(View v) {
+                	testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Power_OFF);
                     getPowerControl().powerOff(null);
                 }
             });
