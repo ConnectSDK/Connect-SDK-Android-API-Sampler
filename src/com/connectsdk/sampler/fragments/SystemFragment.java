@@ -30,6 +30,7 @@ import android.widget.SeekBar;
 
 import com.connectsdk.core.ExternalInputInfo;
 import com.connectsdk.sampler.R;
+import com.connectsdk.sampler.util.TestResponseObject;
 import com.connectsdk.service.capability.ExternalInputControl;
 import com.connectsdk.service.capability.ExternalInputControl.ExternalInputListListener;
 import com.connectsdk.service.capability.Launcher;
@@ -59,6 +60,8 @@ public class SystemFragment extends BaseFragment {
     public ArrayAdapter<String> adapter;
 
     public LaunchSession inputPickerSession;
+    
+    public TestResponseObject testResponse;
 
     private ServiceSubscription<VolumeListener> mVolumeSubscription;
     private ServiceSubscription<MuteListener> mMuteSubscription;
@@ -68,6 +71,7 @@ public class SystemFragment extends BaseFragment {
     public SystemFragment(Context context)
     {
         super(context);
+        testResponse = new TestResponseObject();
     }
 
     @Override
@@ -164,6 +168,11 @@ public class SystemFragment extends BaseFragment {
         @Override
         public void onClick(View view) {
             getVolumeControl().setMute(muteToggleButton.isChecked(), null);
+            if(muteToggleButton.isChecked()) {
+            testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Muted_Media);
+            } else if(!muteToggleButton.isChecked()){
+            	testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.UnMuted_Media);
+            }
         }
     };
 
@@ -174,9 +183,11 @@ public class SystemFragment extends BaseFragment {
             switch (v.getId()) {
                 case R.id.volumeDownButton:
                     getVolumeControl().volumeDown(null);
+                    testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.VolumeDown);
                     break;
                 case R.id.volumeUpButton:
                     getVolumeControl().volumeUp(null);
+                    testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.VolumeUp);
                     break;
             }
         }
@@ -201,6 +212,7 @@ public class SystemFragment extends BaseFragment {
 
                         public void onSuccess(LaunchSession object) {
                             inputPickerSession = object;
+                            testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.InputPickerVisible);
                         }
                     });
                 }
