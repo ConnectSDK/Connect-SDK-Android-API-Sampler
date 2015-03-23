@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.connectsdk.sampler.R;
+import com.connectsdk.sampler.util.TestResponseObject;
 import com.connectsdk.service.capability.WebAppLauncher;
 import com.connectsdk.service.capability.listeners.ResponseListener;
 import com.connectsdk.service.command.ServiceCommandError;
@@ -45,6 +46,7 @@ public class WebAppFragment extends BaseFragment {
     public Button sendJSONButton;
     public Button pinWebAppButton;
     public Button unPinWebAppButton;
+    public TestResponseObject testResponse;
 
     private final static String WEBOSID = "webOS TV";
     private final static String CASTID = "Chromecast";
@@ -64,6 +66,7 @@ public class WebAppFragment extends BaseFragment {
     public WebAppFragment(Context context)
     {
         super(context);
+        testResponse = new TestResponseObject();
     }
 
     @Override
@@ -177,6 +180,7 @@ public class WebAppFragment extends BaseFragment {
 
                 @Override
                 public void onSuccess(WebAppSession webAppSession) {
+                	testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Launched_WebAPP);
                     webAppSession.setWebAppSessionListener(webAppListener);
                     isLaunched = true;
                     disconnectMediaPlayerSession();
@@ -186,6 +190,7 @@ public class WebAppFragment extends BaseFragment {
                         connectionListener.onSuccess(webAppSession.launchSession);
 
                     mWebAppSession = webAppSession;
+                    
                 }
             });
         }
@@ -207,6 +212,7 @@ public class WebAppFragment extends BaseFragment {
 
                 @Override
                 public void onSuccess(WebAppSession webAppSession) {
+                	testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Joined_WebAPP);
                     if (getTv() == null)
                         return;
 
@@ -220,6 +226,7 @@ public class WebAppFragment extends BaseFragment {
                     if (getTv().hasCapabilities(WebAppLauncher.Close)) closeWebAppButton.setEnabled(true);
                     isLaunched = true;
                     disconnectMediaPlayerSession();
+                    
                 }
             });
         }
@@ -259,6 +266,7 @@ public class WebAppFragment extends BaseFragment {
 
                     @Override
                     public void onSuccess(Object object) {
+                    	testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Pinned_WebAPP);
                         Log.d(TAG, "pin web app success");
                     }
                 });
@@ -283,6 +291,7 @@ public class WebAppFragment extends BaseFragment {
 
                     @Override
                     public void onSuccess(Object object) {
+                    	testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.UnPinned_WebAPP);
                         Log.d(TAG, "unpin web app success");
                     }
                 });
@@ -421,6 +430,7 @@ public class WebAppFragment extends BaseFragment {
 
                 @Override
                 public void onSuccess(Object response) {
+                	testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Sent_Message);
                     Log.d(TAG, "Sent message : " + response);
                 }
 
@@ -463,6 +473,7 @@ public class WebAppFragment extends BaseFragment {
 
                 @Override
                 public void onSuccess(Object response) {
+                	testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Sent_JSON);
                     Log.d(TAG, "Sent message : " + response);
                 }
 
@@ -491,6 +502,7 @@ public class WebAppFragment extends BaseFragment {
 
                 @Override
                 public void onSuccess(Object response) {
+                	testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Close_WebAPP);
                     launchWebAppButton.setEnabled(true);
                 }
 
