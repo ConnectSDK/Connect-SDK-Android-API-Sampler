@@ -240,7 +240,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         .create();
 
         final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
 
         final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 
