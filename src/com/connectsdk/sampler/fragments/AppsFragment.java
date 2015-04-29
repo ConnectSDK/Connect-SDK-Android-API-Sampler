@@ -27,6 +27,7 @@ import android.widget.ListView;
 
 import com.connectsdk.core.AppInfo;
 import com.connectsdk.sampler.R;
+import com.connectsdk.sampler.util.TestResponseObject;
 import com.connectsdk.sampler.widget.AppAdapter;
 import com.connectsdk.service.capability.Launcher;
 import com.connectsdk.service.capability.Launcher.AppInfoListener;
@@ -52,14 +53,19 @@ public class AppsFragment extends BaseFragment {
     LaunchSession runningAppSession;
     LaunchSession appStoreSession;
     LaunchSession myAppSession;
+    public TestResponseObject testResponse;
 
     ServiceSubscription<AppInfoListener> runningAppSubs;
 
-    public AppsFragment() {};
+    public AppsFragment() {
+    	testResponse = new TestResponseObject();
+    	
+    };
 
     public AppsFragment(Context context)
     {
         super(context);
+        testResponse = new TestResponseObject();
     }
 
     @Override
@@ -115,6 +121,7 @@ public class AppsFragment extends BaseFragment {
 
                             public void onSuccess(LaunchSession session) {
                                 setRunningAppInfo(session);
+                                testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Launched_Browser);
                             }
 
                             public void onError(ServiceCommandError error) {
@@ -134,6 +141,7 @@ public class AppsFragment extends BaseFragment {
                 @Override
                 public void onClick(View v) {
                     getToastControl().showToast("Yeah, toast!", getToastIconData(), "png", null);
+                    testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Show_Toast);
                 }
             });
         }
@@ -160,6 +168,7 @@ public class AppsFragment extends BaseFragment {
                             @Override
                             public void onSuccess(LaunchSession session) {
                                 setRunningAppInfo(session);
+                                testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Launched_Netflix);
                             }
 
                             @Override
@@ -192,6 +201,7 @@ public class AppsFragment extends BaseFragment {
                             @Override
                             public void onSuccess(LaunchSession session) {
                                 setRunningAppInfo(session);
+                                testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Launched_Youtube);
                             }
 
                             @Override

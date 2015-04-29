@@ -11,9 +11,6 @@
 
 package com.connectsdk.sampler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -43,6 +40,9 @@ import com.connectsdk.service.DeviceService;
 import com.connectsdk.service.DeviceService.PairingType;
 import com.connectsdk.service.capability.MediaPlayer;
 import com.connectsdk.service.command.ServiceCommandError;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
 
@@ -153,6 +153,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         setupPicker();
 
+        DiscoveryManager.getInstance().registerDefaultDeviceTypes();
         DiscoveryManager.getInstance().setPairingLevel(PairingLevel.ON);
         DiscoveryManager.getInstance().start();
     }
@@ -204,16 +205,12 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         }
     }
 
-    private void setupPicker()
-    {
-        DiscoveryManager.getInstance().registerDefaultDeviceTypes();
-
+    private void setupPicker() {
         dp = new DevicePicker(this);
         dialog = dp.getPickerDialog("Device List", new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-//              DiscoveryManager.getInstance().stop();
 
                 mTV = (ConnectableDevice)arg0.getItemAtPosition(arg2);
                 mTV.addListener(deviceListener);
@@ -240,7 +237,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         .create();
 
         final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
 
         final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 
