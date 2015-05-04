@@ -180,7 +180,7 @@ public class WebAppFragment extends BaseFragment {
 
                 @Override
                 public void onSuccess(WebAppSession webAppSession) {
-                	testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Launched_WebAPP);
+                    testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Launched_WebAPP);
                     webAppSession.setWebAppSessionListener(webAppListener);
                     isLaunched = true;
                     disconnectMediaPlayerSession();
@@ -212,7 +212,7 @@ public class WebAppFragment extends BaseFragment {
 
                 @Override
                 public void onSuccess(WebAppSession webAppSession) {
-                	testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Joined_WebAPP);
+                    testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Joined_WebAPP);
                     if (getTv() == null)
                         return;
 
@@ -266,7 +266,7 @@ public class WebAppFragment extends BaseFragment {
 
                     @Override
                     public void onSuccess(Object object) {
-                    	testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Pinned_WebAPP);
+                        testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Pinned_WebAPP);
                         Log.d(TAG, "pin web app success");
                     }
                 });
@@ -291,7 +291,7 @@ public class WebAppFragment extends BaseFragment {
 
                     @Override
                     public void onSuccess(Object object) {
-                    	testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.UnPinned_WebAPP);
+                        testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.UnPinned_WebAPP);
                         Log.d(TAG, "unpin web app success");
                     }
                 });
