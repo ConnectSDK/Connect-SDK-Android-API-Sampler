@@ -11,12 +11,6 @@
 
 package com.connectsdk.sampler.fragments;
 
-import java.io.InputStream;
-import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -29,6 +23,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -54,6 +49,12 @@ import com.connectsdk.service.capability.listeners.ResponseListener;
 import com.connectsdk.service.command.ServiceCommandError;
 import com.connectsdk.service.sessions.LaunchSession;
 
+import java.io.InputStream;
+import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
+
 public class MediaPlayerFragment extends BaseFragment {
     public Button photoButton;
     public Button videoButton;
@@ -69,6 +70,7 @@ public class MediaPlayerFragment extends BaseFragment {
     public Button previousButton;
     public Button nextButton;
     public Button jumpButton;
+    public CheckBox loopingButton;
 
     public static LaunchSession launchSession;
 
@@ -135,6 +137,7 @@ public class MediaPlayerFragment extends BaseFragment {
         previousButton = (Button) rootView.findViewById(R.id.previousButton);
         nextButton = (Button) rootView.findViewById(R.id.nextButton);
         jumpButton = (Button) rootView.findViewById(R.id.jumpButton);
+        loopingButton = (CheckBox) rootView.findViewById(R.id.loopingButton);
 
         positionTextView = (TextView) rootView.findViewById(R.id.stream_position);
         durationTextView = (TextView) rootView.findViewById(R.id.stream_duration);
@@ -158,7 +161,8 @@ public class MediaPlayerFragment extends BaseFragment {
                 playlistButton,
                 previousButton,
                 nextButton,
-                jumpButton
+                jumpButton,
+                loopingButton,
         };
 
         mHandler = new Handler();
@@ -210,6 +214,8 @@ public class MediaPlayerFragment extends BaseFragment {
         }
 
         totalTimeDuration = -1;
+
+        loopingButton.setEnabled(getTv().hasCapability(MediaPlayer.Loop));
 
         if (getTv().hasCapability(MediaPlayer.Play_Video)) {
             videoButton.setEnabled(true);
@@ -295,7 +301,7 @@ public class MediaPlayerFragment extends BaseFragment {
         String title = "The Song that Doesn't End";
         String description = "Lamb Chop's Play Along";
         String mimeType = "audio/mp3";
-        boolean shouldLoop = false;
+        boolean shouldLoop = loopingButton.isChecked();
 
         getMediaPlayer().playMedia(mediaURL, mimeType, title, description, iconURL, shouldLoop, new MediaPlayer.LaunchListener() {
 
@@ -336,8 +342,7 @@ public class MediaPlayerFragment extends BaseFragment {
         String title = "Playlist";
         String description = "Playlist description";
         String mimeType = "application/x-mpegurl";
-
-        boolean shouldLoop = false;
+        boolean shouldLoop = loopingButton.isChecked();
 
         getMediaPlayer().playMedia(mediaURL, mimeType, title, description, iconURL, shouldLoop, new MediaPlayer.LaunchListener() {
 
@@ -412,8 +417,9 @@ public class MediaPlayerFragment extends BaseFragment {
         String title = "Sintel Trailer";
         String description = "Blender Open Movie Project";
         String icon = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/videoIcon.jpg";
+        boolean shouldLoop = loopingButton.isChecked();
 
-        getMediaPlayer().playMedia(videoPath, mimeType, title, description, icon, false, new MediaPlayer.LaunchListener() {
+        getMediaPlayer().playMedia(videoPath, mimeType, title, description, icon, shouldLoop, new MediaPlayer.LaunchListener() {
 
             public void onSuccess(MediaLaunchObject object) {
                 launchSession = object.launchSession;
@@ -450,7 +456,9 @@ public class MediaPlayerFragment extends BaseFragment {
 
         mediaInfoTextView.setText("");
         mediaInfoImageView.setImageBitmap(null);
+        positionTrackView.setEnabled(false);
 
+        loopingButton.setChecked(false);
         super.disableButtons();
     }
 
@@ -489,6 +497,7 @@ public class MediaPlayerFragment extends BaseFragment {
         previousButton.setEnabled(getTv().hasCapability(PlaylistControl.Previous));
         nextButton.setEnabled(getTv().hasCapability(PlaylistControl.Next));
         jumpButton.setEnabled(getTv().hasCapability(PlaylistControl.JumpToTrack));
+        positionTrackView.setEnabled(getTv().hasCapability(PlaylistControl.JumpToTrack));
 
 
         fastForwardButton.setOnClickListener(fastForwardListener);
@@ -536,6 +545,7 @@ public class MediaPlayerFragment extends BaseFragment {
         nextButton.setOnClickListener(null);
         jumpButton.setEnabled(false);
         jumpButton.setOnClickListener(null);
+        positionTrackView.setEnabled(false);
 
         mSeekBar.setEnabled(false);
         mSeekBar.setOnSeekBarChangeListener(null);
