@@ -21,24 +21,12 @@ For more information, visit our [website](http://www.connectsdk.com/).
     ```
 2. Import the Sampler project into Android Studio
 
-##Setup with Eclipse
-1. Setup Connect-SDK-Android [full](https://github.com/ConnectSDK/Connect-SDK-Android) or [lite](https://github.com/ConnectSDK/Connect-SDK-Android-Lite) version
-2. Import the Android v7 appcompat libary into your Eclipse workspace
-3. Import the Google google-play-services library into your Eclipse workspace (for full version of Connect-SDK)
-4. [Clone project](https://github.com/ConnectSDK/Connect-SDK-Android-API-Sampler) or [Download & unzip](https://github.com/ConnectSDK/Connect-SDK-Android-API-Sampler/archive/master.zip) the Connect SDK Sampler App ZIP file
-5. Import the Sampler project into Eclipse
-6. Right-click the `Connect-SDK-Android-API-Sampler` project and select `Properties`, in the `Library` pane of the `Android` tab add following libraries
-   - android-support-v7-appcompat
-   - Connect-SDK-Android-Core
-   - Connect-SDK-Android-Google-Cast (for full version)
-8. See [https://github.com/ConnectSDK/Connect-SDK-Android](https://github.com/ConnectSDK/Connect-SDK-Android) for the remainder of the setup
-
 ##Contact
-* Twitter: [@ConnectSDK](https://www.twitter.com/ConnectSDK)
-* Ask a question with the "tv" tag on [Stack Overflow](http://stackoverflow.com/tags/tv)
-* General Inquiries: info@connectsdk.com
-* Developer Support: support@connectsdk.com
-* Partnerships: partners@connectsdk.com
+* Twitter [@ConnectSDK](https://www.twitter.com/ConnectSDK)
+* Ask a question on Stack Overflow with the [Connect-SDK tag](https://stackoverflow.com/tags/connect-sdk) (or [TV tag](https://stackoverflow.com/tags/tv))
+* General Inquiries info@connectsdk.com
+* Developer Support support@connectsdk.com
+* Partnerships partners@connectsdk.com
 
 ##License
 
