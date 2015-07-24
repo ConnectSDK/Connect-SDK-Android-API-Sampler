@@ -425,12 +425,12 @@ public class MediaPlayerFragment extends BaseFragment {
         boolean shouldLoop = loopingButton.isChecked();
         SubtitleInfo subtitle;
         if (getTv().hasCapability(MediaPlayer.Subtitle_VTT)) {
-            subtitle = new SubtitleInfo.Builder(URL_SUBTITLES_VTT, "text/vtt")
+            subtitle = new SubtitleInfo.Builder(URL_SUBTITLES_VTT)
                     .setLabel("English")
                     .setLanguage("en")
                     .build();
         } else {
-            subtitle = new SubtitleInfo.Builder(URL_SUBTITLE_SRT, "text/srt")
+            subtitle = new SubtitleInfo.Builder(URL_SUBTITLE_SRT)
                     .setLabel("English")
                     .setLanguage("en")
                     .build();
