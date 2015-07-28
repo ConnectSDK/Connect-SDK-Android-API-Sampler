@@ -423,23 +423,20 @@ public class MediaPlayerFragment extends BaseFragment {
 
     private void playVideo() {
         boolean shouldLoop = loopingButton.isChecked();
-        SubtitleInfo subtitle;
+
+        SubtitleInfo.Builder subtitleBuilder;
         if (getTv().hasCapability(MediaPlayer.Subtitle_VTT)) {
-            subtitle = new SubtitleInfo.Builder(URL_SUBTITLES_VTT)
-                    .setLabel("English")
-                    .setLanguage("en")
-                    .build();
+            subtitleBuilder = new SubtitleInfo.Builder(URL_SUBTITLES_VTT);
         } else {
-            subtitle = new SubtitleInfo.Builder(URL_SUBTITLE_SRT)
-                    .setLabel("English")
-                    .setLanguage("en")
-                    .build();
+            subtitleBuilder = new SubtitleInfo.Builder(URL_SUBTITLE_SRT);
         }
+        subtitleBuilder.setLabel("English").setLanguage("en");
+
         MediaInfo mediaInfo = new MediaInfo.Builder(URL_VIDEO_MP4, "video/mp4")
                 .setTitle("Sintel Trailer")
                 .setDescription("Blender Open Movie Project")
                 .setIcon(URL_IMAGE_ICON)
-                .setSubtitle(subtitle)
+                .setSubtitleInfo(subtitleBuilder.build())
                 .build();
 
         getMediaPlayer().playMedia(mediaInfo, shouldLoop, new MediaPlayer.LaunchListener() {
