@@ -57,7 +57,7 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 public class MediaPlayerFragment extends BaseFragment {
-    public static final String URL_SUBTITLES_VTT =
+    public static final String URL_SUBTITLES_WEBVTT =
             "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/sintel_en.vtt";
     public static final String URL_SUBTITLE_SRT =
             "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/sintel_en.srt";
@@ -425,8 +425,8 @@ public class MediaPlayerFragment extends BaseFragment {
         boolean shouldLoop = loopingButton.isChecked();
 
         SubtitleInfo.Builder subtitleBuilder;
-        if (getTv().hasCapability(MediaPlayer.Subtitle_VTT)) {
-            subtitleBuilder = new SubtitleInfo.Builder(URL_SUBTITLES_VTT);
+        if (getTv().hasCapability(MediaPlayer.Subtitle_WebVTT)) {
+            subtitleBuilder = new SubtitleInfo.Builder(URL_SUBTITLES_WEBVTT);
         } else {
             subtitleBuilder = new SubtitleInfo.Builder(URL_SUBTITLE_SRT);
         }
