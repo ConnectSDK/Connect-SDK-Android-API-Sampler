@@ -10,7 +10,7 @@ For more information, visit our [website](http://www.connectsdk.com/).
 
 ##Dependencies
 - [Android v7 appcompat library](http://developer.android.com/tools/support-library/features.html#v7-appcompat)
-- Android SDK v21 (the Sampler app targets v21, but works on v9 and greater)
+- Android SDK v22 (the Sampler app targets v22, but works on v10 and greater)
 - [Connect-SDK-Android-Core](https://github.com/ConnectSDK/Connect-SDK-Android-Core)
 - [Connect-SDK-Android-Google-Cast](https://github.com/ConnectSDK/Connect-SDK-Android-Google-Cast) for full version of Connect-SDK
 
@@ -20,6 +20,9 @@ For more information, visit our [website](http://www.connectsdk.com/).
     git clone https://github.com/ConnectSDK/Connect-SDK-Android-API-Sampler.git
     ```
 2. Import the Sampler project into Android Studio
+
+##Using dev branch
+If you use dev branch you should [setup](https://github.com/ConnectSDK/Connect-SDK-Android#including-connect-sdk-in-your-app-with-android-studio-from-sources) Connect-SDK-Android from sources and you should use Connect-SDK-Android dev branch as well
 
 ##Contact
 * Twitter [@ConnectSDK](https://www.twitter.com/ConnectSDK)

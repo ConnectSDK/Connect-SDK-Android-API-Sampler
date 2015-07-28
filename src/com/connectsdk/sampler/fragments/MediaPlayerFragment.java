@@ -31,6 +31,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 import com.connectsdk.core.MediaInfo;
+import com.connectsdk.core.SubtitleInfo;
 import com.connectsdk.device.ConnectableDevice;
 import com.connectsdk.sampler.R;
 import com.connectsdk.sampler.util.TestResponseObject;
@@ -56,6 +57,15 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 public class MediaPlayerFragment extends BaseFragment {
+    public static final String URL_SUBTITLES_WEBVTT =
+            "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/sintel_en.vtt";
+    public static final String URL_SUBTITLE_SRT =
+            "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/sintel_en.srt";
+    public static final String URL_VIDEO_MP4 =
+            "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/video.mp4";
+    public static final String URL_IMAGE_ICON =
+            "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/videoIcon.jpg";
+
     public Button photoButton;
     public Button videoButton;
     public Button audioButton;
@@ -387,12 +397,12 @@ public class MediaPlayerFragment extends BaseFragment {
             public void onSuccess(MediaLaunchObject object) {
                 launchSession = object.launchSession;
                 closeButton.setEnabled(true);
-                testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Display_image);
+                testResponse = new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Display_image);
                 closeButton.setOnClickListener(closeListener);
                 stopUpdating();
                 isPlayingImage = true;
                 disconnectWebAppSession();
-               
+
             }
 
             @Override
@@ -401,29 +411,39 @@ public class MediaPlayerFragment extends BaseFragment {
                 if (launchSession != null) {
                     launchSession.close(null);
                     launchSession = null;
-                    testResponse =  new TestResponseObject(false, error.getCode(), error.getMessage());
+                    testResponse = new TestResponseObject(false, error.getCode(), error.getMessage());
                     stopUpdating();
                     disableMedia();
                     isPlaying = isPlayingImage = false;
-                    
+
                 }
             }
         });
     }
 
     private void playVideo() {
-        String videoPath = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/video.mp4";
-        String mimeType = "video/mp4";
-        String title = "Sintel Trailer";
-        String description = "Blender Open Movie Project";
-        String icon = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/videoIcon.jpg";
         boolean shouldLoop = loopingButton.isChecked();
 
-        getMediaPlayer().playMedia(videoPath, mimeType, title, description, icon, shouldLoop, new MediaPlayer.LaunchListener() {
+        SubtitleInfo.Builder subtitleBuilder;
+        if (getTv().hasCapability(MediaPlayer.Subtitle_WebVTT)) {
+            subtitleBuilder = new SubtitleInfo.Builder(URL_SUBTITLES_WEBVTT);
+        } else {
+            subtitleBuilder = new SubtitleInfo.Builder(URL_SUBTITLE_SRT);
+        }
+        subtitleBuilder.setLabel("English").setLanguage("en");
+
+        MediaInfo mediaInfo = new MediaInfo.Builder(URL_VIDEO_MP4, "video/mp4")
+                .setTitle("Sintel Trailer")
+                .setDescription("Blender Open Movie Project")
+                .setIcon(URL_IMAGE_ICON)
+                .setSubtitleInfo(subtitleBuilder.build())
+                .build();
+
+        getMediaPlayer().playMedia(mediaInfo, shouldLoop, new MediaPlayer.LaunchListener() {
 
             public void onSuccess(MediaLaunchObject object) {
                 launchSession = object.launchSession;
-                testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Play_Video);
+                testResponse = new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Play_Video);
                 mMediaControl = object.mediaControl;
                 mPlaylistControl = object.playlistControl;
                 stopUpdating();
@@ -437,7 +457,7 @@ public class MediaPlayerFragment extends BaseFragment {
                 if (launchSession != null) {
                     launchSession.close(null);
                     launchSession = null;
-                    testResponse =  new TestResponseObject(false, error.getCode(), error.getMessage());
+                    testResponse = new TestResponseObject(false, error.getCode(), error.getMessage());
                     stopUpdating();
                     disableMedia();
                     isPlaying = isPlayingImage = false;
