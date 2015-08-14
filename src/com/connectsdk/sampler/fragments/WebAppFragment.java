@@ -57,7 +57,7 @@ public class WebAppFragment extends BaseFragment {
     TextView responseMessageTextView;
     LaunchSession runningAppSession;
 
-    static WebAppSession mWebAppSession;
+    WebAppSession mWebAppSession;
     ServiceSubscription<WebAppPinStatusListener> isWebAppPinnedSubscription;
     String webAppId = null;
 
@@ -183,14 +183,13 @@ public class WebAppFragment extends BaseFragment {
                     testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Launched_WebAPP);
                     webAppSession.setWebAppSessionListener(webAppListener);
                     isLaunched = true;
-                    disconnectMediaPlayerSession();
+
                     if (getTv().hasAnyCapability(WebAppLauncher.Message_Send, WebAppLauncher.Message_Receive, WebAppLauncher.Message_Receive_JSON, WebAppLauncher.Message_Send_JSON))
                         webAppSession.connect(connectionListener);
                     else
                         connectionListener.onSuccess(webAppSession.launchSession);
 
                     mWebAppSession = webAppSession;
-                    
                 }
             });
         }
@@ -225,8 +224,6 @@ public class WebAppFragment extends BaseFragment {
                     if (getTv().hasCapabilities(WebAppLauncher.Message_Send_JSON)) sendJSONButton.setEnabled(true);
                     if (getTv().hasCapabilities(WebAppLauncher.Close)) closeWebAppButton.setEnabled(true);
                     isLaunched = true;
-                    disconnectMediaPlayerSession();
-                    
                 }
             });
         }
@@ -529,11 +526,4 @@ public class WebAppFragment extends BaseFragment {
         runningAppSession = session;
     }
 
-    private void disconnectMediaPlayerSession() {
-        if (MediaPlayerFragment.launchSession != null) {
-            MediaPlayerFragment.launchSession.close(null);
-            MediaPlayerFragment.launchSession = null;
-            MediaPlayerFragment.isPlaying = MediaPlayerFragment.isPlayingImage = false;
-        }
-    }
 }

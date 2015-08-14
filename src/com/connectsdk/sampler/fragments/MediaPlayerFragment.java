@@ -82,7 +82,7 @@ public class MediaPlayerFragment extends BaseFragment {
     public Button jumpButton;
     public CheckBox loopingButton;
 
-    public static LaunchSession launchSession;
+    public LaunchSession launchSession;
 
     public TextView positionTextView;
     public TextView durationTextView;
@@ -97,14 +97,14 @@ public class MediaPlayerFragment extends BaseFragment {
 
     public boolean mSeeking;
     public Runnable mRefreshRunnable;
-    public static final int REFRESH_INTERVAL_MS = (int) TimeUnit.SECONDS.toMillis(1);
+    public final int REFRESH_INTERVAL_MS = (int) TimeUnit.SECONDS.toMillis(1);
     public Handler mHandler;
     public long totalTimeDuration;
     public boolean mIsGettingPlayPosition;
 
     
-    static boolean isPlayingImage = false;
-    static boolean isPlaying = false;
+    boolean isPlayingImage = false;
+    boolean isPlaying = false;
 
     private MediaControl mMediaControl = null;
     private PlaylistControl mPlaylistControl = null;
@@ -317,21 +317,13 @@ public class MediaPlayerFragment extends BaseFragment {
 
             @Override
             public void onError(ServiceCommandError error) {
-                Log.d("LG", "Error playing audio");
-                if (launchSession != null) {
-                    launchSession.close(null);
-                    launchSession = null;
-                    testResponse =  new TestResponseObject(false, error.getCode(), error.getMessage());
-                    stopUpdating();
-                    disableMedia();
-                    isPlaying = isPlayingImage = false;
-                }
+                Log.d("LG", "Error playing audio", error);
+                stopMediaSession();
             }
 
             @Override
             public void onSuccess(MediaLaunchObject object) {
                 Log.d("LG", "Started playing audio");
-
                 launchSession = object.launchSession;
                 testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Play_Audio);
                 mMediaControl = object.mediaControl;
@@ -340,8 +332,6 @@ public class MediaPlayerFragment extends BaseFragment {
                 stopUpdating();
                 enableMedia();
                 isPlaying = true;
-                disconnectWebAppSession();
-
             }
         });
     }
@@ -358,14 +348,8 @@ public class MediaPlayerFragment extends BaseFragment {
 
             @Override
             public void onError(ServiceCommandError error) {
-                Log.d("LG", "Error playing audio");
-                if (launchSession != null) {
-                    launchSession.close(null);
-                    launchSession = null;
-                    stopUpdating();
-                    disableMedia();
-                    isPlaying = isPlayingImage = false;
-                }
+                Log.d("LG", "Error playing audio", error);
+                stopMediaSession();
             }
 
             @Override
@@ -377,7 +361,6 @@ public class MediaPlayerFragment extends BaseFragment {
                 stopUpdating();
                 enableMedia();
                 isPlaying = true;
-                disconnectWebAppSession();
             }
         });
     }
@@ -391,32 +374,24 @@ public class MediaPlayerFragment extends BaseFragment {
         String description = "Blender Open Movie Project";
         String icon = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/photoIcon.jpg";
 
-        getMediaPlayer().displayImage(imagePath, mimeType, title, description, icon, new MediaPlayer.LaunchListener() {
+        getMediaPlayer().displayImage(imagePath, mimeType, title, description, icon, new
+                MediaPlayer.LaunchListener() {
+
+            @Override
+            public void onError(ServiceCommandError error) {
+                Log.e("Error", "Error displaying Image", error);
+                stopMediaSession();
+            }
 
             @Override
             public void onSuccess(MediaLaunchObject object) {
                 launchSession = object.launchSession;
                 closeButton.setEnabled(true);
-                testResponse = new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Display_image);
+                testResponse = new TestResponseObject(true, TestResponseObject.SuccessCode,
+                        TestResponseObject.Display_image);
                 closeButton.setOnClickListener(closeListener);
                 stopUpdating();
                 isPlayingImage = true;
-                disconnectWebAppSession();
-
-            }
-
-            @Override
-            public void onError(ServiceCommandError error) {
-                Log.e("Error", "Error displaying Image");
-                if (launchSession != null) {
-                    launchSession.close(null);
-                    launchSession = null;
-                    testResponse = new TestResponseObject(false, error.getCode(), error.getMessage());
-                    stopUpdating();
-                    disableMedia();
-                    isPlaying = isPlayingImage = false;
-
-                }
             }
         });
     }
@@ -441,29 +416,35 @@ public class MediaPlayerFragment extends BaseFragment {
 
         getMediaPlayer().playMedia(mediaInfo, shouldLoop, new MediaPlayer.LaunchListener() {
 
+            @Override
+            public void onError(ServiceCommandError error) {
+                Log.e("Error", "Error playing video", error);
+                stopMediaSession();
+            }
+
             public void onSuccess(MediaLaunchObject object) {
                 launchSession = object.launchSession;
-                testResponse = new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Play_Video);
+                testResponse = new TestResponseObject(true, TestResponseObject.SuccessCode,
+                        TestResponseObject.Play_Video);
                 mMediaControl = object.mediaControl;
                 mPlaylistControl = object.playlistControl;
                 stopUpdating();
                 enableMedia();
                 isPlaying = true;
-                disconnectWebAppSession();
-            }
-
-            @Override
-            public void onError(ServiceCommandError error) {
-                if (launchSession != null) {
-                    launchSession.close(null);
-                    launchSession = null;
-                    testResponse = new TestResponseObject(false, error.getCode(), error.getMessage());
-                    stopUpdating();
-                    disableMedia();
-                    isPlaying = isPlayingImage = false;
-                }
             }
         });
+    }
+
+
+    private void stopMediaSession() {
+        // don't call launchSession.close() here, currently it can close
+        // a different web app in WebOS
+        if (launchSession != null) {
+            launchSession = null;
+            stopUpdating();
+            disableMedia();
+            isPlaying = isPlayingImage = false;
+        }
     }
 
     @Override
@@ -852,14 +833,6 @@ public class MediaPlayerFragment extends BaseFragment {
         }
 
         return time;
-    }
-
-    private void disconnectWebAppSession() {
-        if (WebAppFragment.mWebAppSession != null) {
-            WebAppFragment.mWebAppSession.setWebAppSessionListener(null);
-            WebAppFragment.mWebAppSession.close(null);
-            WebAppFragment.isLaunched = false;
-        }
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
