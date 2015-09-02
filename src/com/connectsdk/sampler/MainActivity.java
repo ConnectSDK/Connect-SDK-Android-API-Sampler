@@ -72,6 +72,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     break;
 
                 case PIN_CODE:
+                case MIXED:
                     Log.d("2ndScreenAPP", "Pin Code");
                     pairingCodeDialog.show();
                     break;
@@ -90,9 +91,12 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         @Override
         public void onDeviceReady(ConnectableDevice device) {
+            Log.d("2ndScreenAPP", "onPairingSuccess");
             if (pairingAlertDialog.isShowing()) {
-                Log.d("2ndScreenAPP", "onPairingSuccess");
                 pairingAlertDialog.dismiss();
+            }
+            if (pairingCodeDialog.isShowing()) {
+                pairingCodeDialog.dismiss();
             }
             registerSuccess(mTV);
         }
@@ -214,6 +218,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
                 mTV = (ConnectableDevice)arg0.getItemAtPosition(arg2);
                 mTV.addListener(deviceListener);
+                mTV.setPairingType(null);
                 mTV.connect();
                 connectItem.setTitle(mTV.getFriendlyName());
 
@@ -296,6 +301,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     void connectEnded(ConnectableDevice device) {
         if (pairingAlertDialog.isShowing()) {
             pairingAlertDialog.dismiss();
+        }
+        if (pairingCodeDialog.isShowing()) {
+            pairingCodeDialog.dismiss();
         }
         mTV.removeListener(deviceListener);
         mTV = null;
