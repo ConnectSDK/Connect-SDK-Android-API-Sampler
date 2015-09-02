@@ -81,6 +81,7 @@ public class MediaPlayerFragment extends BaseFragment {
     public Button nextButton;
     public Button jumpButton;
     public CheckBox loopingButton;
+    public CheckBox subtitlesButton;
 
     public LaunchSession launchSession;
 
@@ -148,6 +149,7 @@ public class MediaPlayerFragment extends BaseFragment {
         nextButton = (Button) rootView.findViewById(R.id.nextButton);
         jumpButton = (Button) rootView.findViewById(R.id.jumpButton);
         loopingButton = (CheckBox) rootView.findViewById(R.id.loopingButton);
+        subtitlesButton = (CheckBox) rootView.findViewById(R.id.subtitlesButton);
 
         positionTextView = (TextView) rootView.findViewById(R.id.stream_position);
         durationTextView = (TextView) rootView.findViewById(R.id.stream_duration);
@@ -173,6 +175,7 @@ public class MediaPlayerFragment extends BaseFragment {
                 nextButton,
                 jumpButton,
                 loopingButton,
+                subtitlesButton,
         };
 
         mHandler = new Handler();
@@ -226,6 +229,7 @@ public class MediaPlayerFragment extends BaseFragment {
         totalTimeDuration = -1;
 
         loopingButton.setEnabled(getTv().hasCapability(MediaPlayer.Loop));
+        subtitlesButton.setEnabled(true);
 
         if (getTv().hasCapability(MediaPlayer.Play_Video)) {
             videoButton.setEnabled(true);
@@ -399,19 +403,19 @@ public class MediaPlayerFragment extends BaseFragment {
     private void playVideo() {
         boolean shouldLoop = loopingButton.isChecked();
 
-        SubtitleInfo.Builder subtitleBuilder;
-        if (getTv().hasCapability(MediaPlayer.Subtitle_WebVTT)) {
-            subtitleBuilder = new SubtitleInfo.Builder(URL_SUBTITLES_WEBVTT);
-        } else {
-            subtitleBuilder = new SubtitleInfo.Builder(URL_SUBTITLE_SRT);
+        SubtitleInfo.Builder subtitleBuilder = null;
+        if (subtitlesButton.isChecked()) {
+            subtitleBuilder = new SubtitleInfo.Builder(
+                    getTv().hasCapability(MediaPlayer.Subtitle_WebVTT) ? URL_SUBTITLES_WEBVTT :
+                            URL_SUBTITLE_SRT);
+            subtitleBuilder.setLabel("English").setLanguage("en");
         }
-        subtitleBuilder.setLabel("English").setLanguage("en");
 
         MediaInfo mediaInfo = new MediaInfo.Builder(URL_VIDEO_MP4, "video/mp4")
                 .setTitle("Sintel Trailer")
                 .setDescription("Blender Open Movie Project")
                 .setIcon(URL_IMAGE_ICON)
-                .setSubtitleInfo(subtitleBuilder.build())
+                .setSubtitleInfo(subtitleBuilder == null ? null : subtitleBuilder.build())
                 .build();
 
         getMediaPlayer().playMedia(mediaInfo, shouldLoop, new MediaPlayer.LaunchListener() {
@@ -460,6 +464,7 @@ public class MediaPlayerFragment extends BaseFragment {
         positionTrackView.setEnabled(false);
 
         loopingButton.setChecked(false);
+        subtitlesButton.setEnabled(false);
         super.disableButtons();
     }
 
