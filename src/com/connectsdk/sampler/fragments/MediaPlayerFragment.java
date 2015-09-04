@@ -317,7 +317,13 @@ public class MediaPlayerFragment extends BaseFragment {
         String mimeType = "audio/mp3";
         boolean shouldLoop = loopingButton.isChecked();
 
-        getMediaPlayer().playMedia(mediaURL, mimeType, title, description, iconURL, shouldLoop, new MediaPlayer.LaunchListener() {
+        MediaInfo mediaInfo = new MediaInfo.Builder(mediaURL, mimeType)
+                .setTitle(title)
+                .setDescription(description)
+                .setIcon(iconURL)
+                .build();
+
+        getMediaPlayer().playMedia(mediaInfo, shouldLoop, new MediaPlayer.LaunchListener() {
 
             @Override
             public void onError(ServiceCommandError error) {
@@ -348,7 +354,13 @@ public class MediaPlayerFragment extends BaseFragment {
         String mimeType = "application/x-mpegurl";
         boolean shouldLoop = loopingButton.isChecked();
 
-        getMediaPlayer().playMedia(mediaURL, mimeType, title, description, iconURL, shouldLoop, new MediaPlayer.LaunchListener() {
+        MediaInfo mediaInfo = new MediaInfo.Builder(mediaURL, mimeType)
+                .setTitle(title)
+                .setDescription(description)
+                .setIcon(iconURL)
+                .build();
+
+        getMediaPlayer().playMedia(mediaInfo, shouldLoop, new MediaPlayer.LaunchListener() {
 
             @Override
             public void onError(ServiceCommandError error) {
@@ -378,8 +390,13 @@ public class MediaPlayerFragment extends BaseFragment {
         String description = "Blender Open Movie Project";
         String icon = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/photoIcon.jpg";
 
-        getMediaPlayer().displayImage(imagePath, mimeType, title, description, icon, new
-                MediaPlayer.LaunchListener() {
+        MediaInfo mediaInfo = new MediaInfo.Builder(imagePath, mimeType)
+                .setTitle(title)
+                .setDescription(description)
+                .setIcon(icon)
+                .build();
+
+        getMediaPlayer().displayImage(mediaInfo, new MediaPlayer.LaunchListener() {
 
             @Override
             public void onError(ServiceCommandError error) {
