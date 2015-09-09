@@ -229,7 +229,8 @@ public class MediaPlayerFragment extends BaseFragment {
         totalTimeDuration = -1;
 
         loopingButton.setEnabled(getTv().hasCapability(MediaPlayer.Loop));
-        subtitlesButton.setEnabled(true);
+        subtitlesButton.setEnabled(getTv().hasCapability(MediaPlayer.Subtitle_SRT)
+                || getTv().hasCapability(MediaPlayer.Subtitle_WebVTT));
 
         if (getTv().hasCapability(MediaPlayer.Play_Video)) {
             videoButton.setEnabled(true);
