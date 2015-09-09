@@ -31,6 +31,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 import com.connectsdk.core.MediaInfo;
+import com.connectsdk.core.SubtitleInfo;
 import com.connectsdk.device.ConnectableDevice;
 import com.connectsdk.sampler.R;
 import com.connectsdk.sampler.util.TestResponseObject;
@@ -56,6 +57,15 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 public class MediaPlayerFragment extends BaseFragment {
+    public static final String URL_SUBTITLES_WEBVTT =
+            "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/sintel_en.vtt";
+    public static final String URL_SUBTITLE_SRT =
+            "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/sintel_en.srt";
+    public static final String URL_VIDEO_MP4 =
+            "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/video.mp4";
+    public static final String URL_IMAGE_ICON =
+            "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/videoIcon.jpg";
+
     public Button photoButton;
     public Button videoButton;
     public Button audioButton;
@@ -71,8 +81,9 @@ public class MediaPlayerFragment extends BaseFragment {
     public Button nextButton;
     public Button jumpButton;
     public CheckBox loopingButton;
+    public CheckBox subtitlesButton;
 
-    public static LaunchSession launchSession;
+    public LaunchSession launchSession;
 
     public TextView positionTextView;
     public TextView durationTextView;
@@ -87,14 +98,14 @@ public class MediaPlayerFragment extends BaseFragment {
 
     public boolean mSeeking;
     public Runnable mRefreshRunnable;
-    public static final int REFRESH_INTERVAL_MS = (int) TimeUnit.SECONDS.toMillis(1);
+    public final int REFRESH_INTERVAL_MS = (int) TimeUnit.SECONDS.toMillis(1);
     public Handler mHandler;
     public long totalTimeDuration;
     public boolean mIsGettingPlayPosition;
 
     
-    static boolean isPlayingImage = false;
-    static boolean isPlaying = false;
+    boolean isPlayingImage = false;
+    boolean isPlaying = false;
 
     private MediaControl mMediaControl = null;
     private PlaylistControl mPlaylistControl = null;
@@ -138,6 +149,7 @@ public class MediaPlayerFragment extends BaseFragment {
         nextButton = (Button) rootView.findViewById(R.id.nextButton);
         jumpButton = (Button) rootView.findViewById(R.id.jumpButton);
         loopingButton = (CheckBox) rootView.findViewById(R.id.loopingButton);
+        subtitlesButton = (CheckBox) rootView.findViewById(R.id.subtitlesButton);
 
         positionTextView = (TextView) rootView.findViewById(R.id.stream_position);
         durationTextView = (TextView) rootView.findViewById(R.id.stream_duration);
@@ -163,6 +175,7 @@ public class MediaPlayerFragment extends BaseFragment {
                 nextButton,
                 jumpButton,
                 loopingButton,
+                subtitlesButton,
         };
 
         mHandler = new Handler();
@@ -216,6 +229,8 @@ public class MediaPlayerFragment extends BaseFragment {
         totalTimeDuration = -1;
 
         loopingButton.setEnabled(getTv().hasCapability(MediaPlayer.Loop));
+        subtitlesButton.setEnabled(getTv().hasCapability(MediaPlayer.Subtitle_SRT)
+                || getTv().hasCapability(MediaPlayer.Subtitle_WebVTT));
 
         if (getTv().hasCapability(MediaPlayer.Play_Video)) {
             videoButton.setEnabled(true);
@@ -303,25 +318,23 @@ public class MediaPlayerFragment extends BaseFragment {
         String mimeType = "audio/mp3";
         boolean shouldLoop = loopingButton.isChecked();
 
-        getMediaPlayer().playMedia(mediaURL, mimeType, title, description, iconURL, shouldLoop, new MediaPlayer.LaunchListener() {
+        MediaInfo mediaInfo = new MediaInfo.Builder(mediaURL, mimeType)
+                .setTitle(title)
+                .setDescription(description)
+                .setIcon(iconURL)
+                .build();
+
+        getMediaPlayer().playMedia(mediaInfo, shouldLoop, new MediaPlayer.LaunchListener() {
 
             @Override
             public void onError(ServiceCommandError error) {
-                Log.d("LG", "Error playing audio");
-                if (launchSession != null) {
-                    launchSession.close(null);
-                    launchSession = null;
-                    testResponse =  new TestResponseObject(false, error.getCode(), error.getMessage());
-                    stopUpdating();
-                    disableMedia();
-                    isPlaying = isPlayingImage = false;
-                }
+                Log.d("LG", "Error playing audio", error);
+                stopMediaSession();
             }
 
             @Override
             public void onSuccess(MediaLaunchObject object) {
                 Log.d("LG", "Started playing audio");
-
                 launchSession = object.launchSession;
                 testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Play_Audio);
                 mMediaControl = object.mediaControl;
@@ -330,8 +343,6 @@ public class MediaPlayerFragment extends BaseFragment {
                 stopUpdating();
                 enableMedia();
                 isPlaying = true;
-                disconnectWebAppSession();
-
             }
         });
     }
@@ -344,18 +355,18 @@ public class MediaPlayerFragment extends BaseFragment {
         String mimeType = "application/x-mpegurl";
         boolean shouldLoop = loopingButton.isChecked();
 
-        getMediaPlayer().playMedia(mediaURL, mimeType, title, description, iconURL, shouldLoop, new MediaPlayer.LaunchListener() {
+        MediaInfo mediaInfo = new MediaInfo.Builder(mediaURL, mimeType)
+                .setTitle(title)
+                .setDescription(description)
+                .setIcon(iconURL)
+                .build();
+
+        getMediaPlayer().playMedia(mediaInfo, shouldLoop, new MediaPlayer.LaunchListener() {
 
             @Override
             public void onError(ServiceCommandError error) {
-                Log.d("LG", "Error playing audio");
-                if (launchSession != null) {
-                    launchSession.close(null);
-                    launchSession = null;
-                    stopUpdating();
-                    disableMedia();
-                    isPlaying = isPlayingImage = false;
-                }
+                Log.d("LG", "Error playing audio", error);
+                stopMediaSession();
             }
 
             @Override
@@ -367,7 +378,6 @@ public class MediaPlayerFragment extends BaseFragment {
                 stopUpdating();
                 enableMedia();
                 isPlaying = true;
-                disconnectWebAppSession();
             }
         });
     }
@@ -381,69 +391,82 @@ public class MediaPlayerFragment extends BaseFragment {
         String description = "Blender Open Movie Project";
         String icon = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/photoIcon.jpg";
 
-        getMediaPlayer().displayImage(imagePath, mimeType, title, description, icon, new MediaPlayer.LaunchListener() {
+        MediaInfo mediaInfo = new MediaInfo.Builder(imagePath, mimeType)
+                .setTitle(title)
+                .setDescription(description)
+                .setIcon(icon)
+                .build();
+
+        getMediaPlayer().displayImage(mediaInfo, new MediaPlayer.LaunchListener() {
+
+            @Override
+            public void onError(ServiceCommandError error) {
+                Log.e("Error", "Error displaying Image", error);
+                stopMediaSession();
+            }
 
             @Override
             public void onSuccess(MediaLaunchObject object) {
                 launchSession = object.launchSession;
                 closeButton.setEnabled(true);
-                testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Display_image);
+                testResponse = new TestResponseObject(true, TestResponseObject.SuccessCode,
+                        TestResponseObject.Display_image);
                 closeButton.setOnClickListener(closeListener);
                 stopUpdating();
                 isPlayingImage = true;
-                disconnectWebAppSession();
-               
-            }
-
-            @Override
-            public void onError(ServiceCommandError error) {
-                Log.e("Error", "Error displaying Image");
-                if (launchSession != null) {
-                    launchSession.close(null);
-                    launchSession = null;
-                    testResponse =  new TestResponseObject(false, error.getCode(), error.getMessage());
-                    stopUpdating();
-                    disableMedia();
-                    isPlaying = isPlayingImage = false;
-                    
-                }
             }
         });
     }
 
     private void playVideo() {
-        String videoPath = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/video.mp4";
-        String mimeType = "video/mp4";
-        String title = "Sintel Trailer";
-        String description = "Blender Open Movie Project";
-        String icon = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/videoIcon.jpg";
         boolean shouldLoop = loopingButton.isChecked();
 
-        getMediaPlayer().playMedia(videoPath, mimeType, title, description, icon, shouldLoop, new MediaPlayer.LaunchListener() {
+        SubtitleInfo.Builder subtitleBuilder = null;
+        if (subtitlesButton.isChecked()) {
+            subtitleBuilder = new SubtitleInfo.Builder(
+                    getTv().hasCapability(MediaPlayer.Subtitle_WebVTT) ? URL_SUBTITLES_WEBVTT :
+                            URL_SUBTITLE_SRT);
+            subtitleBuilder.setLabel("English").setLanguage("en");
+        }
+
+        MediaInfo mediaInfo = new MediaInfo.Builder(URL_VIDEO_MP4, "video/mp4")
+                .setTitle("Sintel Trailer")
+                .setDescription("Blender Open Movie Project")
+                .setIcon(URL_IMAGE_ICON)
+                .setSubtitleInfo(subtitleBuilder == null ? null : subtitleBuilder.build())
+                .build();
+
+        getMediaPlayer().playMedia(mediaInfo, shouldLoop, new MediaPlayer.LaunchListener() {
+
+            @Override
+            public void onError(ServiceCommandError error) {
+                Log.e("Error", "Error playing video", error);
+                stopMediaSession();
+            }
 
             public void onSuccess(MediaLaunchObject object) {
                 launchSession = object.launchSession;
-                testResponse =  new TestResponseObject(true, TestResponseObject.SuccessCode, TestResponseObject.Play_Video);
+                testResponse = new TestResponseObject(true, TestResponseObject.SuccessCode,
+                        TestResponseObject.Play_Video);
                 mMediaControl = object.mediaControl;
                 mPlaylistControl = object.playlistControl;
                 stopUpdating();
                 enableMedia();
                 isPlaying = true;
-                disconnectWebAppSession();
-            }
-
-            @Override
-            public void onError(ServiceCommandError error) {
-                if (launchSession != null) {
-                    launchSession.close(null);
-                    launchSession = null;
-                    testResponse =  new TestResponseObject(false, error.getCode(), error.getMessage());
-                    stopUpdating();
-                    disableMedia();
-                    isPlaying = isPlayingImage = false;
-                }
             }
         });
+    }
+
+
+    private void stopMediaSession() {
+        // don't call launchSession.close() here, currently it can close
+        // a different web app in WebOS
+        if (launchSession != null) {
+            launchSession = null;
+            stopUpdating();
+            disableMedia();
+            isPlaying = isPlayingImage = false;
+        }
     }
 
     @Override
@@ -459,6 +482,7 @@ public class MediaPlayerFragment extends BaseFragment {
         positionTrackView.setEnabled(false);
 
         loopingButton.setChecked(false);
+        subtitlesButton.setEnabled(false);
         super.disableButtons();
     }
 
@@ -832,14 +856,6 @@ public class MediaPlayerFragment extends BaseFragment {
         }
 
         return time;
-    }
-
-    private void disconnectWebAppSession() {
-        if (WebAppFragment.mWebAppSession != null) {
-            WebAppFragment.mWebAppSession.setWebAppSessionListener(null);
-            WebAppFragment.mWebAppSession.close(null);
-            WebAppFragment.isLaunched = false;
-        }
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
