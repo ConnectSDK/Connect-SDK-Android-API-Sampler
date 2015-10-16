@@ -35,6 +35,7 @@ import com.connectsdk.core.SubtitleInfo;
 import com.connectsdk.device.ConnectableDevice;
 import com.connectsdk.sampler.R;
 import com.connectsdk.sampler.util.TestResponseObject;
+import com.connectsdk.service.NetcastTVService;
 import com.connectsdk.service.capability.MediaControl;
 import com.connectsdk.service.capability.MediaControl.DurationListener;
 import com.connectsdk.service.capability.MediaControl.PlayStateListener;
@@ -218,7 +219,21 @@ public class MediaPlayerFragment extends BaseFragment {
 
                 @Override
                 public void onClick(View view) {
-                    showImage();
+                    if (launchSession != null && getTv().getServiceByName(NetcastTVService.ID) != null) {
+                        launchSession.close(new ResponseListener<Object>() {
+                            @Override
+                            public void onSuccess(Object object) {
+                                showImage();
+                            }
+
+                            @Override
+                            public void onError(ServiceCommandError error) {
+                                error.printStackTrace();
+                            }
+                        });
+                    } else {
+                        showImage();
+                    }
                 }
             });
         }
@@ -237,7 +252,21 @@ public class MediaPlayerFragment extends BaseFragment {
 
                 @Override
                 public void onClick(View view) {
-                    playVideo();
+                    if (launchSession != null && getTv().getServiceByName(NetcastTVService.ID) != null) {
+                        launchSession.close(new ResponseListener<Object>() {
+                            @Override
+                            public void onSuccess(Object object) {
+                                playVideo();
+                            }
+
+                            @Override
+                            public void onError(ServiceCommandError error) {
+                                error.printStackTrace();
+                            }
+                        });
+                    } else {
+                        playVideo();
+                    }
                 }
             });
         }
@@ -251,7 +280,21 @@ public class MediaPlayerFragment extends BaseFragment {
 
                 @Override
                 public void onClick(View view) {
-                    playAudio();
+                    if (launchSession != null && getTv().getServiceByName(NetcastTVService.ID) != null) {
+                        launchSession.close(new ResponseListener<Object>() {
+                            @Override
+                            public void onSuccess(Object object) {
+                                playAudio();
+                            }
+
+                            @Override
+                            public void onError(ServiceCommandError error) {
+                                error.printStackTrace();
+                            }
+                        });
+                    } else {
+                        playAudio();
+                    }
                 }
             });
         } else {
