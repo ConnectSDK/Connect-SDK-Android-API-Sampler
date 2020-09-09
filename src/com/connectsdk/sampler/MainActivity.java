@@ -35,6 +35,7 @@ import com.connectsdk.device.ConnectableDeviceListener;
 import com.connectsdk.device.DevicePicker;
 import com.connectsdk.discovery.DiscoveryManager;
 import com.connectsdk.discovery.DiscoveryManager.PairingLevel;
+import com.connectsdk.discovery.DiscoveryProvider;
 import com.connectsdk.sampler.fragments.BaseFragment;
 import com.connectsdk.service.DeviceService;
 import com.connectsdk.service.DeviceService.PairingType;
@@ -55,6 +56,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     MenuItem connectItem;
 
     SectionsPagerAdapter mSectionsPagerAdapter;
+
+    private DiscoveryManager mDiscoveryManager;
 
     ViewPager mViewPager;
     ActionBar actionBar;
@@ -157,8 +160,30 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         setupPicker();
 
-        DiscoveryManager.getInstance().registerDefaultDeviceTypes();
-        DiscoveryManager.getInstance().setPairingLevel(PairingLevel.ON);
+        mDiscoveryManager = DiscoveryManager.getInstance();
+        mDiscoveryManager.registerDefaultDeviceTypes();
+        mDiscoveryManager.setPairingLevel(PairingLevel.ON);
+
+        // To show all services in a device, a device item in DevicePickerList
+        // mDiscoveryManager.setServiceIntegration(true);
+
+        // To search devices with specific service types
+        /*
+        try {
+            // AirPlay
+            mDiscoveryManager.registerDeviceService((Class<DeviceService>) Class.forName("com.connectsdk.service.AirPlayService"),
+                    (Class<DiscoveryProvider>)Class.forName("com.connectsdk.discovery.provider.ZeroconfDiscoveryProvider"));
+            // webOS SSAP (Simple Service Access Protocol)
+            mDiscoveryManager.registerDeviceService((Class<DeviceService>) Class.forName("com.connectsdk.service.WebOSTVService"),
+                    (Class<DiscoveryProvider>)Class.forName("com.connectsdk.discovery.provider.SSDPDiscoveryProvider"));
+            // DLNA
+            mDiscoveryManager.registerDeviceService((Class<DeviceService>) Class.forName("com.connectsdk.service.DLNAService"),
+                    (Class<DiscoveryProvider>)Class.forName("com.connectsdk.discovery.provider.SSDPDiscoveryProvider"));
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        */
+
         DiscoveryManager.getInstance().start();
     }
 
@@ -305,8 +330,11 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         if (pairingCodeDialog.isShowing()) {
             pairingCodeDialog.dismiss();
         }
-        mTV.removeListener(deviceListener);
-        mTV = null;
+
+        if (mTV.isConnecting == false) {
+            mTV.removeListener(deviceListener);
+            mTV = null;
+        }
     }
 
     @Override

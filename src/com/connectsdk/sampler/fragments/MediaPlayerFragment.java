@@ -57,14 +57,10 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 public class MediaPlayerFragment extends BaseFragment {
-    public static final String URL_SUBTITLES_WEBVTT =
-            "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/sintel_en.vtt";
-    public static final String URL_SUBTITLE_SRT =
-            "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/sintel_en.srt";
-    public static final String URL_VIDEO_MP4 =
-            "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/video.mp4";
-    public static final String URL_IMAGE_ICON =
-            "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/videoIcon.jpg";
+    public static final String URL_SUBTITLES_WEBVTT = "http://connectsdk.com/ConnectSDK.vtt";
+    public static final String URL_SUBTITLE_SRT = "http://connectsdk.com/ConnectSDK.srt";
+    public static final String URL_VIDEO_MP4 = "http://connectsdk.com/ConnectSDK.mp4";
+    public static final String URL_IMAGE_ICON = "http://connectsdk.com/ConnectSDK_Logo.jpg";
 
     public Button photoButton;
     public Button videoButton;
@@ -311,10 +307,10 @@ public class MediaPlayerFragment extends BaseFragment {
     }
 
     private void playAudio() {
-        String mediaURL = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/audio.mp3";
-        String iconURL = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/audioIcon.jpg";
-        String title = "The Song that Doesn't End";
-        String description = "Lamb Chop's Play Along";
+        String mediaURL = "http://connectsdk.com/ConnectSDK.mp3";
+        String iconURL = "http://connectsdk.com/ConnectSDK_Logo.jpg";
+        String title = "Connect SDK";
+        String description = "One SDK Eight Media Platforms";
         String mimeType = "audio/mp3";
         boolean shouldLoop = loopingButton.isChecked();
 
@@ -385,11 +381,11 @@ public class MediaPlayerFragment extends BaseFragment {
     private void showImage() {
         disableMedia();
 
-        String imagePath = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/photo.jpg";
+        String imagePath = "http://connectsdk.com/ConnectSDK.jpg";
         String mimeType = "image/jpeg";
-        String title = "Sintel Character Design";
-        String description = "Blender Open Movie Project";
-        String icon = "http://ec2-54-201-108-205.us-west-2.compute.amazonaws.com/samples/media/photoIcon.jpg";
+        String title = "Connect SDK";
+        String description = "One SDK Eight Media Platforms";
+        String icon = "http://connectsdk.com/ConnectSDK_Logo.jpg";
 
         MediaInfo mediaInfo = new MediaInfo.Builder(imagePath, mimeType)
                 .setTitle(title)
@@ -430,8 +426,8 @@ public class MediaPlayerFragment extends BaseFragment {
         }
 
         MediaInfo mediaInfo = new MediaInfo.Builder(URL_VIDEO_MP4, "video/mp4")
-                .setTitle("Sintel Trailer")
-                .setDescription("Blender Open Movie Project")
+                .setTitle("Connect SDK")
+                .setDescription("One SDK Eight Media Platforms")
                 .setIcon(URL_IMAGE_ICON)
                 .setSubtitleInfo(subtitleBuilder == null ? null : subtitleBuilder.build())
                 .build();
