@@ -145,7 +145,7 @@ public class WebAppFragment extends BaseFragment {
         }
 
         if (getTv().getServiceByName(WEBOSID) != null)
-            webAppId = "WebAppTester";
+            webAppId = "SampleWebApp";
         else if (getTv().getServiceByName(CASTID) != null)
             webAppId = "DDCEDE96";
         else if (getTv().getServiceByName(MULTISCREENID) != null)

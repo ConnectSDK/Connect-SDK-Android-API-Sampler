@@ -16,10 +16,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
@@ -29,6 +25,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
 
 import com.connectsdk.device.ConnectableDevice;
 import com.connectsdk.device.ConnectableDeviceListener;
@@ -45,7 +46,7 @@ import com.connectsdk.service.command.ServiceCommandError;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
+public class MainActivity extends AppCompatActivity implements ActionBar.TabListener {
 
     ConnectableDevice mTV;
     AlertDialog dialog;
@@ -355,15 +356,15 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         return super.onOptionsItemSelected(item);
     }
 
+    @Override public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) { }
+    @Override public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) { }
+
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
         mViewPager.setCurrentItem(tab.getPosition());
-        getSupportActionBar().setTitle(mSectionsPagerAdapter.getTitle(tab.getPosition()));
+        setTitle(mSectionsPagerAdapter.getTitle(tab.getPosition()));
         BaseFragment frag = mSectionsPagerAdapter.getFragment(tab.getPosition());
         if (frag != null)
             frag.setTv(mTV);
     }
-
-    @Override public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) { }
-    @Override public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) { }
 }
